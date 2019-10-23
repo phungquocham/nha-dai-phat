@@ -1,0 +1,35 @@
+<div fxLayout="column" class="pb-1 pl-1 pr-1 import-contacts" [ngStyle]="{ 'width': '400px' }" [ngStyle.xs]="{ 'width': '255px' }">
+  <h3>Import File</h3>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div fxLayout="row wrap">
+      <mat-form-field appearance="outline" class="custom-input" [fxFlex]="100">
+        <mat-label *ngIf="form.controls['source'].hasError('required') && form.controls['source'].touched; else sourceLabel">
+          Nguồn: </mat-label>
+        <ng-template #sourceLabel>
+          <mat-label>Nguồn: </mat-label>
+        </ng-template>
+        <input matInput autocomplete="off" formControlName="source">
+      </mat-form-field>
+
+      <div fxFlex="100" class="pb-1">
+        <!-- <input autocomplete="off" placeholder="File" type="file" accept=".csv" (change)="uploadFile($event)">
+        <p *ngIf="!valid" style="color: #f44336">Chưa chọn tập tin</p> -->
+
+        <div class="inf__drop-area">
+          <span class="inf__btn">Browse...</span>
+          <span class="inf__hint"> {{file && file.name ? file.name : 'Chọn tệp tin'}}</span>
+          <input autocomplete="off" type="file" name="files" accept=".csv" (change)="uploadFile($event)">
+        </div>
+        <mat-progress-bar [fxShow]="isUploadingFile" mode="indeterminate"></mat-progress-bar>
+        <span *ngIf="!valid" class="file-message">Chưa chọn tệp tin</span>
+      </div>
+    </div>
+  </form>
+
+  <div>
+    <button mat-raised-button color="primary" (click)="onSubmit()" class="mr-1">
+      <span>Import</span>
+    </button>
+    <button mat-raised-button (click)="closeDialog()">Hủy</button>
+  </div>
+</div>

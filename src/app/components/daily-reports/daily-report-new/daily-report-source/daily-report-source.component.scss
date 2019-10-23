@@ -1,0 +1,32 @@
+.delete-hover {
+  position: absolute;
+  margin-left: -69px;
+  margin-top: -11px;
+}
+
+.mat-icon {
+  font-size: 16px;
+  margin-top: -13px;
+  cursor: pointer;
+}
+
+.btn-remove {
+  position: absolute;
+  right: 0px;
+  margin-top: 29px;
+  margin-right: 5px;
+}
+
+.source-xs {
+  position: unset;
+  margin-top: 0px;
+  margin-right: 1em;
+  width: 100%;
+  mat-icon {
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+}

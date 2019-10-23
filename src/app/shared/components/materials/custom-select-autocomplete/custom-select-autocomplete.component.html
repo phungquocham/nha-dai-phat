@@ -1,0 +1,13 @@
+<div class="custom-select-autocomplete" #container>
+  <mat-form-field appearance="outline" class="custom-input w-100" [ngClass]="customClass">
+    <mat-label>{{ label }}</mat-label>
+    <input [placeholder]="placeholder" matInput type="text" autocomplete="off" (focus)="focus()" (blur)="blur()" [(ngModel)]="searchStr" (ngModelChange)="filterOptions()">
+    <mat-icon style="color: rgba(0, 0, 0, 0.54); position: absolute; top: 3px; right: -5px">arrow_drop_down</mat-icon>
+  </mat-form-field>
+  <div class="items" (mousedown)="mouseDownContainer($event)" #listElement [style.max-height]="idealHeightWhenOutParentNote">
+    <div class="item" fxLayout="row wrap" fxLayoutAlign="start center" *ngFor="let option of filteredOptions" (click)="toggleOption(option);" matRipple>
+      <mat-checkbox class="checkbox" color="primary" (click)="$event.preventDefault()" [(ngModel)]="option.selected"></mat-checkbox>
+      <div class="label" [ngStyle]="{'color': isColorName ? option.color : ''}">{{ option.name }}</div>
+    </div>
+  </div>
+</div>

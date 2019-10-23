@@ -1,0 +1,25 @@
+<div class="p-2 bd-card" fxLayout="column">
+  <div>
+    <!-- <mat-chip-list fxLayoutAlign="center">
+      <mat-chip>Ngày</mat-chip>
+      <mat-chip>1 Tuần</mat-chip>
+      <mat-chip>1 Tháng</mat-chip>
+      <mat-chip>3 Tháng</mat-chip>
+      <mat-chip>Tùy chọn</mat-chip>
+    </mat-chip-list> -->
+    <mat-calendar [selected]="selectedDate" (selectedChange)="onSelect($event)"></mat-calendar>
+    <div fxLayout="row wrap" class="pl-1 pt-1">
+      <mat-form-field appearance="outline" class="pr-1">
+        <mat-label>Bắt đầu</mat-label>
+        <input matInput autocomplete="off" [(ngModel)]="startDate">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="pr-1">
+        <mat-label>Kết thúc</mat-label>
+        <input matInput autocomplete="off" [(ngModel)]="endDate">
+      </mat-form-field>
+    </div>
+    <div class="pl-1">
+      <button mat-raised-button color="primary" (click)="closeDialog()">Ok</button>
+    </div>
+  </div>
+</div>

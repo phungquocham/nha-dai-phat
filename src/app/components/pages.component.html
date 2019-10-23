@@ -1,0 +1,191 @@
+<mat-sidenav-container class="pos-a top-0 right-0 bottom-0 left-0 sidenav-container" style="height: 100vh">
+  <mat-sidenav [mode]="(sidenavIsPinned) ? 'side' : 'over'" #sidenav class="sidebar-panel">
+
+    <mat-toolbar color="primary" fxLayoutAlign="space-between center" class="sidenav-header">
+      <img src="/assets/logo-full.png" alt="Nhà Đại Phát" class="pointer" (click)="routeToDashboardPage()">
+      <svg class="pin" (click)="sidenavIsPinned = !sidenavIsPinned">
+        <path *ngIf="!sidenavIsPinned" d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
+        <path *ngIf="sidenavIsPinned"
+          d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+      </svg>
+    </mat-toolbar>
+    <mat-nav-list appAccordion class="navigation">
+      <mat-list-item appAccordionLink *ngFor="let menuitem of menuList" group="{{menuitem.state}}" fxLayout="column">
+        <a appAccordionToggle class="relative" appRouterHover [routersList]="[]" *ngIf="(menuitem.type === 'link') && (menuitem.special === 'project'); else otherLinks" (click)="$event.preventDefault(); toggleSidenav(); openPage([])">
+          <mat-icon>{{ menuitem.icon }}</mat-icon>
+          <span>{{ menuitem.name }}</span>
+          <span fxFlex></span>
+        </a>
+        <ng-template #otherLinks>
+          <a appAccordionToggle class="relative" appRouterHover [routersList]="[menuitem.state]" *ngIf="menuitem.type === 'link'" (click)="$event.preventDefault(); toggleSidenav(); openPage([menuitem.state])">
+            <mat-icon>{{ menuitem.icon }}</mat-icon>
+            <span>{{ menuitem.name }}</span>
+            <span fxFlex></span>
+          </a>
+        </ng-template>
+        <a appAccordionToggle class="relative" *ngIf="menuitem.type === 'sub'">
+          <mat-icon>{{ menuitem.icon }}</mat-icon>
+          <span>{{ menuitem.name }}</span>
+          <span fxFlex></span>
+          <mat-icon class="menu-caret">arrow_drop_down</mat-icon>
+        </a>
+        <mat-nav-list class="sub-menu" *ngIf="menuitem.type === 'sub'">
+          <mat-list-item *ngFor="let childitem of menuitem['children']" routerLinkActive="open">
+            <a class="relative" appRouterHover [routersList]="[menuitem.state, childitem.state]" (click)="$event.preventDefault(); toggleSidenav(); openPage([menuitem.state, childitem.state])">{{
+              childitem.name }}</a>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content style="overflow: hidden;">
+    <mat-toolbar color="primary" style="color:white;" class="top-bar">
+      <div fxLayout="row wrap" fxFlex>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <button mat-icon-button (click)="toggleSidenav()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <h2 fxLayout="center center">{{ title }}</h2>
+        </div>
+        <div fxFlex fxLayoutAlign="end center">
+          <input *ngIf="showSearchInput" matInput type="text" autocomplete="off" placeholder="Tìm kiếm" class="search" (focus)="checkCopyText()" [(ngModel)]="searchString" (ngModelChange)="changeSearchString($event)">
+        </div>
+        <div fxLayout="row " fxLayoutAlign="end center">
+          <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" #notificationsMenuTrigger="matMenuTrigger" (click)="hideNewNotification()">
+                <mat-icon>notifications</mat-icon>
+                <span class="dot-notifications" [ngClass]="{'hide': !isNewNotification, 'show': isNewNotification}"></span>
+              </button>
+          <mat-menu #notificationsMenu="matMenu" [overlapTrigger]="false" class="menu-notifications">
+            <div class="notifications" (click)="stopClickPropagate($event)">
+              <div fxLayout="column wrap" *ngFor="let notification of notificationsList | async; let i = index">
+                <hr *ngIf="i > 0" class="w-100">
+                <div fxLayout="row" class="py-1 notification">
+                  <ng-template [ngIf]="notification.Type === NOTIFICATION_TYPES.IMPORT_CONTACTS">
+                    <ng-template [ngIf]="notification.CompletedAt === 0">
+                      <div fxLayout="row wrap">
+                        <div fxFlex="50px" fxLayoutAlign="center">
+                          <mat-spinner [diameter]="20"></mat-spinner>
+                        </div>
+                        <div fxFlex fxLayout="column" style="padding-right: 1rem;">
+                          <div class="message">Đang tải thông tin khách hàng lên</div>
+                          <div class="date-groups">
+                            <div class="date">Bắt đầu: {{ notification.StartedAt | dateCustomConvert:'':true }}</div>
+                            <div *ngIf="notification.CompletedAt > 0" class="date">
+                              Hoàn thành: {{ notification.CompletedAt | dateCustomConvert:'':true }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <ng-template [ngIf]="notification.CompletedAt > 0">
+                      <div fxLayout="row wrap">
+                        <div fxFlex="50px" fxLayoutAlign="center">
+                          <mat-icon *ngIf="(notification.ErrorCount === 0) || !notification.ErrorCount" style="color: limegreen">check_circle_outline</mat-icon>
+                          <mat-icon *ngIf="notification.ErrorCount > 0" style="color: orange">error_outline</mat-icon>
+                        </div>
+                        <div fxFlex fxLayout="column" style="padding-right: 1rem;">
+                          <div *ngIf="notification.ErrorCount === 0" class="message">
+                            Đã tải thông tin khách hàng thành công.
+                          </div>
+                          <div *ngIf="notification.ErrorCount > 0">
+                            <div class="message">
+                              Không thể tải lên thông tin khách hàng. Một vài hàng không thể xử lý được.
+                            </div>
+                          </div>
+                          <div class="pointer see-details" *ngIf="!notification.seeDetail" (click)="changeDetailState(notification)">Hiện chi tiết</div>
+                          <div class="pointer hide-details" *ngIf="notification.seeDetail" (click)="changeDetailState(notification)">Ẩn chi tiết</div>
+                          <div *ngIf="notification.seeDetail">
+                            <ng-template [ngIf]="notification.SuccessCount > 0">
+                              <div class="message">
+                                {{ notification.SuccessCount }} hàng đã tải lên thành công.
+                              </div>
+                            </ng-template>
+
+                            <ng-template [ngIf]="notification.ErrorCount > 0">
+                              <div class="message">
+                                {{ notification.ErrorCount }} hàng có lỗi và không xử lý được.
+                              </div>
+                            </ng-template>
+
+                            <div *ngIf="notification.DownloadUrl" class="pointer ldc fw-bold download" (click)="download(notification.DownloadUrl)">
+                              Tải nhật ký xuống
+                            </div>
+                            <div class="date-groups">
+                              <div class="date">Bắt đầu: {{ notification.StartedAt | dateCustomConvert:'':true }}</div>
+                              <div class="date">Hoàn thành: {{ notification.CompletedAt | dateCustomConvert:'':true }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ng-template>
+                  <ng-template [ngIf]="notification.Type === NOTIFICATION_TYPES.EXPORT_CONTACTS">
+                    <ng-template [ngIf]="notification.CompletedAt === 0">
+                      <div fxLayout="row wrap">
+                        <div fxFlex="50px" fxLayoutAlign="center">
+                          <mat-spinner [diameter]="20"></mat-spinner>
+                        </div>
+                        <div fxFlex fxLayout="column" style="padding-right: 1rem;">
+                          <div class="message">Đang xuất thông tin khách hàng ra tệp CSV</div>
+                          <div class="date-groups">
+                            <div class="date">Bắt đầu: {{ notification.StartedAt | dateCustomConvert:'':true }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <ng-template [ngIf]="notification.CompletedAt > 0">
+                      <div fxLayout="row wrap">
+                        <div fxFlex="50px" fxLayoutAlign="center">
+                          <mat-icon style="color: limegreen">check_circle_outline</mat-icon>
+                        </div>
+                        <div fxFlex fxLayout="column" style="padding-right: 1rem;">
+                          <div class="message">
+                            Tệp CSV chứa thông tin khách hàng hiện đã có để tải xuống.
+                          </div>
+                          <div *ngIf="notification.DownloadUrl" class="pointer ldc fw-bold download" (click)="download(notification.DownloadUrl)">
+                            Tải xuống CSV
+                          </div>
+                          <div class="pointer see-details" *ngIf="!notification.seeDetail" (click)="changeDetailState(notification)">Hiện chi tiết</div>
+                          <div class="pointer hide-details" *ngIf="notification.seeDetail" (click)="changeDetailState(notification)">Ẩn chi tiết</div>
+                          <div *ngIf="notification.seeDetail">
+                            <div class="date-groups">
+                              <div class="date">Bắt đầu: {{ notification.StartedAt | dateCustomConvert:'':true }}</div>
+                              <div class="date">Hoàn thành: {{ notification.CompletedAt | dateCustomConvert:'':true }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </mat-menu>
+          <button mat-icon-button [matMenuTriggerFor]="settingsMenu" #userMenuTrigger="matMenuTrigger">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <mat-menu #settingsMenu="matMenu" [overlapTrigger]="false">
+            <div *ngIf="isAdmin">
+              <button mat-menu-item (click)="routeToManagerPage()">
+                <mat-icon>assignment</mat-icon>
+                <span>Quản lý</span>
+              </button>
+              <hr>
+              <button mat-menu-item (click)="signOut()">
+                <mat-icon>exit_to_app</mat-icon>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+            <div *ngIf="!isAdmin">
+              <button mat-menu-item (click)="signOut()">
+                <mat-icon>exit_to_app</mat-icon>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
+      </div>
+    </mat-toolbar>
+    <div class="inner-sidenav-content" #sidenavContent>
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>

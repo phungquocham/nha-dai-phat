@@ -1,0 +1,27 @@
+.contact-sources {
+  @import "./src/app/theme/styles/variables";
+  @import "./src/app/components/manager/manager.component.scss";
+  .mat-paginator-range-actions {
+    left: 0px;
+    position: absolute;
+  }
+  .mat-column-id {
+    min-width: 11px;
+  }
+  .custom-mat-table.reports {
+    height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 52px);
+    @media only screen and (min-width: 960px) and (max-width: 1279px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 49px);
+    }
+    @media only screen and (min-width: 600px) and (max-width: 960px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 46px - 46px + 42px);
+    }
+    @media only screen and (max-width: 600px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 2px - 127px);
+    }
+    overflow: auto;
+  }
+  .mat-row-hover{
+    cursor: pointer;
+  }
+}

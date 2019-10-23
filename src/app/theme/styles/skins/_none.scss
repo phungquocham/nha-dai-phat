@@ -1,0 +1,4 @@
+$default-theme-primary: mat-palette($mat-indigo);
+$default-theme-accent: mat-palette($mat-pink, A200, A100, A400);
+$default-theme-warn: mat-palette($mat-red, 500);
+$default-theme-theme: mat-light-theme($default-theme-primary, $default-theme-accent, $default-theme-warn);

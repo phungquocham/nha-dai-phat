@@ -1,0 +1,46 @@
+.component-contacts {
+  $height-paginator: 56px;
+  $height-padding-top-and-bottom: 2rem;
+  $height-filter-options-1: 125px;
+  $height-filter-options-2: 217px;
+  position: relative;
+  @import "./src/app/theme/styles/variables";
+  @import "./src/app/components/manager/manager.component.scss";
+  .mat-paginator-range-actions {
+    left: 0px;
+    position: absolute;
+  }
+  .mat-column-code,
+  .mat-column-name,
+  .mat-column-phones {
+    min-width: 95px;
+  }
+  .mat-column-suppliedSource {
+    min-width: 200px;
+  }
+  .mat-column-addresses {
+    min-width: 450px;
+  }
+  .mat-column-emails {
+    min-width: 175px;
+  }
+  .mat-column-id {
+    min-width: 11px;
+  }
+  .custom-mat-table.reports {
+    height: calc(100vh - #{$height-top-bar} - #{$height-padding-top-and-bottom} - #{$height-filter-options-1} - #{$height-paginator});
+    @media only screen and (min-width: 600px) and (max-width: 960px) {
+      height: calc(100vh - #{$height-top-bar} - #{$height-padding-top-and-bottom} - #{$height-filter-options-2} - #{$height-paginator});
+    }
+    @media only screen and (max-width: 600px) {
+      height: calc(100vh - #{$height-top-bar} - #{$height-paginator} - 2px - 1rem);
+    }
+    overflow: auto;
+  }
+  .search-mini {
+    position: absolute;
+    z-index: 999;
+    bottom: .5rem;
+    right: .5rem;
+  }
+}

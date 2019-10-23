@@ -1,0 +1,15 @@
+.component-login {
+  background-image: url('/assets/login.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  height: 100vh;
+  overflow: hidden;
+  .normal {
+    min-width: 400px;
+  }
+  .phone {
+    min-width: 330px;
+  }
+}

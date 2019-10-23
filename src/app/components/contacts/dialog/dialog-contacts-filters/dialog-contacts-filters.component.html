@@ -1,0 +1,11 @@
+<div class="dialog-contacts-filters p-1" fxLayout="column">
+
+  <app-contacts-filters #contactsFiltersElement [autoHideOnPhone]="false"></app-contacts-filters>
+
+  <div class="pb-1">
+    <button mat-raised-button color="primary" class="mr-1" (click)="emitQuery()">
+        <span>Tìm kiếm</span>
+      </button>
+    <button mat-raised-button (click)="closeDialog()">Hủy</button>
+  </div>
+</div>

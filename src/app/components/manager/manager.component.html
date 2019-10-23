@@ -1,0 +1,225 @@
+<div fxLayout="column" class="p-1">
+  <mat-tab-group class="bd-card w-100" [(selectedIndex)]="tabIndex" (selectedIndexChange)="changeTab(tabIndex)">
+    <mat-tab label="Phiểu" fxLayout="column">
+      <div fxLayout="row wrap" class="p-1">
+        <div>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" (keyup)="applyRatingsFilter($event.target.value)" />
+        </div>
+      </div>
+      <div *ngIf="ratingsListFilter.length > 0">
+        <table mat-table [dataSource]="ratingsListFilter" class="w-100 table-cells-no-padding">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>
+              <div fxLayout="row wrap" class="px-1">
+                <div fxFlex="24px"></div>
+                <span class="p-1">Phiểu</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div fxLayout="row wrap" class="px-1">
+                <div fxLayoutAlign="start center">
+                  <mat-icon [style.color]="element.color">local_offer</mat-icon><span class="p-1">{{ element.name }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="points">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="px-1">
+                Điểm
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div fxLayout="row wrap" class="px-1" fxLayoutAlign="center center">
+                <div fxLayoutAlign="start center" fxFlex="100px">
+                  {{ element.points }}
+                </div>
+                <div fxFlex fxLayoutAlign="start center">{{ element.description }}</div>
+                <div>
+                  <mat-icon class="pointer" (click)="openDialogUpdateRating(element)">edit</mat-icon>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsRating"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsRating;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Nguồn" fxLayout="column">
+      <div fxLayout="row wrap" class="p-1">
+        <div>
+          <button mat-raised-button color="primary" (click)="addSource()">Thêm mới</button>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" (keyup)="applySourceFilter($event.target.value)" />
+        </div>
+      </div>
+      <div *ngIf="sourcesListFilter.length > 0">
+        <table mat-table [dataSource]="sourcesListFilter" class="w-100 table-cells-no-padding">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>
+              <div fxLayout="row wrap" class="px-1">
+                <div fxFlex="24px"></div>
+                <span class="p-1">Tên nguồn</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <app-input-basic class="w-100" [onlyEvent]="true" [item]="element" [type]="TYPE_COMPONENT.SOURCES" [message]="sourceConfirmMessage" (confirm)="confirmDeleteSource($event)" (value)="updateSource($event, element)"></app-input-basic>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsSource"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsSource;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Dự án">
+      <div fxLayout="row wrap" class="p-1">
+        <div>
+          <button mat-raised-button color="primary" (click)="addProject()">Thêm mới</button>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" (keyup)="applyProjectFilter($event.target.value)" />
+        </div>
+      </div>
+      <div *ngIf="projectsListFilter.length > 0">
+        <table mat-table [dataSource]="projectsListFilter" class="w-100 table-cells-no-padding">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> <span class="p-1">Tên dự án</span> </th>
+            <td mat-cell *matCellDef="let element">
+              <app-input-basic class="w-100" [item]="element" [message]="projectConfirmMessage" (confirm)="confirmDeleteProject($event)" (value)="updateProject($event)">
+              </app-input-basic>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsProject"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsProject;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Nhóm">
+      <div fxLayout="row wrap" class="p-1">
+        <div>
+          <button mat-raised-button color="primary" (click)="addTeam()">Thêm mới</button>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" (keyup)="applyTeamFilter($event.target.value)" />
+        </div>
+      </div>
+      <div *ngIf="teamsListFilter.length > 0">
+        <table mat-table [dataSource]="teamsListFilter" class="w-100 table-cells-no-padding">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> <span class="p-1">Tên nhóm</span> </th>
+            <td mat-cell *matCellDef="let element">
+              <app-input-basic class="w-100" [item]="element" [message]="teamConfirmMessage" (confirm)="confirmDeleteTeam($event)" (value)="updateTeam($event)"></app-input-basic>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsTeam"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsTeam;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Nhân viên">
+
+      <div class="p-1">
+        <div>
+          <button mat-raised-button color="primary" (click)="addUser()">Thêm mới</button>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" [ngModel]="searchUserString" (ngModelChange)="searchUsers($event)" />
+        </div>
+
+      </div>
+
+      <div class="custom-mat-table sticky-end-border-left bd-top" [ngClass.lt-md]="'overflow'">
+        <table mat-table [dataSource]="usersList">
+
+          <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef> Tên </th>
+            <td mat-cell *matCellDef="let element"> {{element.firstName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef> Họ </th>
+            <td mat-cell *matCellDef="let element"> {{element.lastName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef> SĐT </th>
+            <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="teamName">
+            <th mat-header-cell *matHeaderCellDef> Nhóm </th>
+            <td mat-cell *matCellDef="let element"> {{element.teamName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef> Vai trò </th>
+            <td mat-cell *matCellDef="let element"> {{element.role}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="joinedDate">
+            <th mat-header-cell *matHeaderCellDef> Ngày tham gia </th>
+            <td mat-cell *matCellDef="let element"> {{ element.joinedDate | convertDatetime }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastReportedDate">
+            <th mat-header-cell *matHeaderCellDef> Lần cuối báo cáo </th>
+            <td mat-cell *matCellDef="let element"> {{element.lastReportedDate | convertDatetime}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
+            <td mat-cell *matCellDef="let element">
+              <span *ngIf="element.status === USER_STATUSES.ACTIVE" fxLayoutAlign="start center"><mat-icon
+                  class="pl-1" style="color: green">check_circle</mat-icon></span>
+              <span *ngIf="element.status === USER_STATUSES.LOCKED" fxLayoutAlign="start center"><mat-icon
+                  class="pl-1" style="color: orangered">cancel</mat-icon></span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="id" stickyEnd>
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element" style="padding: 8px;">
+              <div *ngIf="element.id > 1">
+                <button mat-icon-button (click)="$event.preventDefault()" [matMenuTriggerFor]="actionsMenu" #userMenuTrigger="matMenuTrigger">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #actionsMenu="matMenu" [overlapTrigger]="false">
+                  <button mat-menu-item (click)="editUser(element)">
+                    <span>Sửa</span>
+                  </button>
+                  <button *ngIf="element.status === USER_STATUSES.ACTIVE" mat-menu-item (click)="lockUser(element.id)">
+                    <span>Khóa</span>
+                  </button>
+                  <button *ngIf="element.status === USER_STATUSES.LOCKED" mat-menu-item (click)="unlockUser(element.id)">
+                    <span>Mở khóa</span>
+                  </button>
+                  <button *ngIf="element.id !== userProfileId" mat-menu-item (click)="confirmDeleteUser(element.id)">
+                      <span>Xóa</span>
+                    </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsUser; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsUser;"></tr>
+        </table>
+        <mat-paginator #paginator [length]="usersTotalCount" [pageSize]="pageSize" hidePageSize="true" (page)="onPagingEvent($event)"></mat-paginator>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

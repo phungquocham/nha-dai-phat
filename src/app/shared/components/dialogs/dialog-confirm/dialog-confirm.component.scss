@@ -1,0 +1,17 @@
+.dialog-confirm {
+  .label,
+  .message {
+    text-align: center;
+  }
+  .label {
+    // margin: 0 0 12px 0;
+    font-size: 1.5em;
+  }
+  .button {
+    text-align: center;
+  }
+}
+
+.message-align-left .dialog-confirm .message {
+  text-align: left;
+}

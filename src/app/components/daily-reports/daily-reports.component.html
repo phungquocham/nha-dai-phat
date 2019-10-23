@@ -1,0 +1,241 @@
+<div class="p-1 component-base">
+
+  <div class="bd-card" fxLayout="column" style="position: relative">
+    <div *ngIf="isLoading" class="table-loading-container" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
+    <button fxHide fxShow.xs fxShow.sm mat-fab color="primary" style="position: absolute; z-index: 999; bottom: -1rem; right: -1rem;" (click)="openDialogReportSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+    <div class="pt-1 pb-1 pl-1" fxShow fxHide.xs fxHide.sm>
+      <div fxLayout="row wrap">
+        <mat-form-field [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="pr-1 custom-input" (click)="startPicker.open()">
+          <mat-label>Bắt đầu</mat-label>
+          <input matInput [matDatepicker]="startPicker" [(ngModel)]="fromDate">
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="pr-1 custom-input" (click)="endPicker.open()">
+          <mat-label>Kết thúc</mat-label>
+          <input matInput [matDatepicker]="endPicker" [(ngModel)]="toDate">
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+        <div *ngIf="permission !== 'Sales'" class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <app-custom-select-autocomplete #selectTeams [label]="'Nhóm'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedTeams($event)"></app-custom-select-autocomplete>
+        </div>
+        <div *ngIf="permission !== 'Sales'" class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <app-custom-select-autocomplete #selectUsers [label]="'Nhân viên'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedusers($event)"></app-custom-select-autocomplete>
+        </div>
+        <div class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <app-custom-select-autocomplete #selectSources [label]="'Nguồn'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedSources($event)"></app-custom-select-autocomplete>
+        </div>
+        <div [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100" class="pr-1 custom-button">
+          <button mat-raised-button color="primary" (click)="search()" class="mr-1">Tìm</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="custom-mat-table reports sticky-end-border-left">
+      <table mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="reportDate" sticky>
+          <th mat-header-cell *matHeaderCellDef><span>Ngày </span></th>
+          <td mat-cell *matCellDef="let element"><span>{{element.reportDate}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdUserName" sticky>
+          <th mat-header-cell *matHeaderCellDef class="bd-right"><span>Tên</span></th>
+          <td mat-cell *matCellDef="let element">
+            <span [matTooltip]="element.reportUserNameTooltip">{{element.reportUserName}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="goldenHours">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center">Giờ vàng </span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{ element.goldenHours }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="regularPouring">
+          <th mat-header-cell *matHeaderCellDef class="bd-left bd-right">
+            <div fxLayout="column">
+              <div fxLayoutAlign="center" class="py-0-5">ĐỔ ĐỀU ĐẶN</div>
+              <div fxLayout="row wrap">
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KLL</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KBM</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KNC</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">CM</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">2 câu</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">> 2 câu</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">Tổng</div>
+              </div>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div fxLayout="column">
+              <div fxLayout="row wrap">
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.uncontactable }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.notPickUp }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.noNeed }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.hangUp }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.twoSentences }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.regularPouring.moreThanTwoSentences }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{element.regularPouring.uncontactable +
+                element.regularPouring.notPickUp +
+                element.regularPouring.noNeed +
+                element.regularPouring.hangUp +
+                element.regularPouring.twoSentences +
+                element.regularPouring.moreThanTwoSentences}}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="selfPouring">
+          <th mat-header-cell *matHeaderCellDef class="bd-right">
+            <div fxLayout="column">
+              <div fxLayoutAlign="center" class="py-0-5">TỰ ĐỔ</div>
+              <div fxLayout="row wrap">
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KLL</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KBM</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">KNC</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">CM</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">2 câu</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">> 2 câu</div>
+                <div fxFlex="14.2857142857" class="px-1 text-align-center">Tổng</div>
+              </div>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <div fxLayout="column">
+              <div fxLayout="row wrap">
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.uncontactable }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.notPickUp }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.noNeed }}
+                </div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.hangUp }}
+                </div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.twoSentences }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{ element.selfPouring.moreThanTwoSentences }}</div>
+                <div fxFlex="14.2857142857" fxLayoutAlign="center center" class="px-1">
+                  {{element.selfPouring.uncontactable +
+                element.selfPouring.notPickUp +
+                element.selfPouring.noNeed +
+                element.selfPouring.hangUp +
+                element.selfPouring.twoSentences +
+                element.selfPouring.moreThanTwoSentences}}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- // -->
+
+        <ng-container matColumnDef="pushCount">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center">Đẩy </span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{element.pushCount}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="suggestionCount">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center"> Gợi mở</span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center"> {{element.suggestionCount}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="emailCount">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center"> Mail </span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{element.emailCount}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="zaloFlirtingCount">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center">Thính Zalo</span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{element.zaloFlirtingCount}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="facebookFlirtingCount">
+          <th mat-header-cell *matHeaderCellDef><span fxLayoutAlign="center"> Thính FB</span></th>
+          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{element.facebookFlirtingCount}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="latestRatings">
+          <th mat-header-cell *matHeaderCellDef style="border-bottom: 3px solid #ccc;">
+            <span fxLayoutAlign="center center">Tổng Phiểu</span></th>
+          <td mat-cell *matCellDef="let element">
+            <table cellpadding="10">
+              <tbody>
+              <tr>
+                <td nowrap>
+                  <span class="rating-chip-color min-width-95" [ngStyle]="{'background': r.color}" *ngFor="let r of
+                  element.latestRatingsSource">{{r.name}}
+                    : {{r.value}}</span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </ng-container>
+
+        <!-- // -->
+
+        <ng-container [matColumnDef]="source.column" *ngFor="let source of templateSources; let i = index">
+          <th mat-header-cell *matHeaderCellDef style="border-bottom: 3px solid;" [style.border-color]="source.color">
+            <span fxLayoutAlign="center center">Nguồn {{source.name}}</span></th>
+          <td mat-cell *matCellDef="let element">
+            <table cellpadding="10">
+              <tbody>
+              <tr>
+                <td nowrap style="border-right: 1px solid red;">
+                  <span class="rating-chip-color" [ngStyle]="{'background': item.color}" *ngFor="let item of source['ratings'+element.id+source.id].ratingPourings" [matTooltip]="item.tooltip">{{item.name}}
+                    : {{item.value ? item.value : 0}}</span>
+                </td>
+                <td nowrap style="border-right: 1px solid red;">
+                  <span class="rating-chip-color" [ngStyle]="{'background': item.color}" *ngFor="let item of source['ratings'+element.id+source.id].ratingPushings" [matTooltip]="item.tooltip">{{item.name}}
+                    : {{item.value ? item.value : 0}}</span>
+                </td>
+                <td nowrap>
+                  <span class="rating-chip-color" [ngStyle]="{'background': item.color}" *ngFor="let item of source['ratings'+element.id+source.id].ratingOthers" [matTooltip]="item.tooltip">{{item.name}}
+                    : {{item.value ? item.value : 0}}</span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="id" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-mini-fab color="primary" (click)="onAddDailyReport()" style="position: absolute; margin: auto; top: 0; left: 0; bottom: 0; right: 0;">
+              <mat-icon>add</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element" style="padding: 8px;">
+            <button mat-icon-button (click)="$event.preventDefault()" [matMenuTriggerFor]="actionsMenu" #userMenuTrigger="matMenuTrigger" *ngIf="element.createdAt">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #actionsMenu="matMenu" [overlapTrigger]="false">
+              <button mat-menu-item (click)="onEdit(element.id)">
+                <span>Sửa</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+      </table>
+    </div>
+    <!-- <mat-paginator class="no-margin" #bottomPaginator [ngStyle]="{'display': isLoadingResults ? 'none' : 'block'}" [length]="totalCount" [pageSize]="filterData.pageSize" [pageSizeOptions]="[25, 50, 100]" (page)="onPagingEvent($event)"></mat-paginator> -->
+    <mat-paginator class="no-margin" #bottomPaginator [ngStyle]="{'display': isLoadingResults ? 'none' : 'block'}" [length]="totalCount" [pageSize]="filterData.pageSize" hidePageSize="true" (page)="onPagingEvent($event)"></mat-paginator>
+  </div>
+
+</div>

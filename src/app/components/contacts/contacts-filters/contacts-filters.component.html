@@ -1,0 +1,34 @@
+<!-- <div *ngIf="(userRole === ROLE.ADMINISTRATOR) || (userRole === ROLE.MANAGER)" fxLayout="row" [fxHide.lt-sm]="true"> -->
+<div fxLayout="row" [fxHide.lt-sm]="autoHideOnPhone">
+  <div fxLayout="row wrap" fxFlex>
+    <div [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <app-custom-select-autocomplete #selectContactsElement [label]="'Nguồn'" [keyName]="'name'" [keyValue]="'id'" [customClass]="'wrapper-no-padding-bottom'" (emitValue)="getSelectedContacts($event)"></app-custom-select-autocomplete>
+    </div>
+    <mat-form-field appearance="outline" class="custom-input wrapper-no-padding-bottom" [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" (click)="fromAssignedDatePicker.open()" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label>Từ</mat-label>
+      <input matInput autocomplete="off" [matDatepicker]="fromAssignedDatePicker" [(ngModel)]="fromAssignedDate">
+      <mat-datepicker #fromAssignedDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="custom-input wrapper-no-padding-bottom" [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" (click)="toAssignedDatePicker.open()" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label>Đến</mat-label>
+      <input matInput autocomplete="off" [matDatepicker]="toAssignedDatePicker" [(ngModel)]="toAssignedDate">
+      <mat-datepicker #toAssignedDatePicker></mat-datepicker>
+    </mat-form-field>
+    <div *ngIf="userRole !== ROLE.SALES" [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <app-custom-select-autocomplete #selectTeamsElement [label]="'Nhóm'" [keyName]="'name'" [keyValue]="'id'" [customClass]="'wrapper-no-padding-bottom'" (emitValue)="getSelectedTeams($event)"></app-custom-select-autocomplete>
+    </div>
+    <div *ngIf="userRole !== ROLE.SALES" [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <app-custom-select-autocomplete #selectUsersElement [label]="'Nhân viên'" [keyName]="'name'" [keyValue]="'id'" [customClass]="'wrapper-no-padding-bottom'" (emitValue)="getSelectedUsers($event)"></app-custom-select-autocomplete>
+    </div>
+    <div [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <app-custom-select-autocomplete #selectContactResultsElement [label]="'Kết quả'" [keyName]="'name'" [keyValue]="'id'" [keyColorName]="'color'" [customClass]="'wrapper-no-padding-bottom'" (emitValue)="getSelectedContactResults($event)"></app-custom-select-autocomplete>
+    </div>
+    <mat-form-field appearance="outline" class="custom-input wrapper-no-padding-bottom" [ngClass]="{'pb-1': !autoHideOnPhone, 'pr-1': autoHideOnPhone}" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label>Số lượng</mat-label>
+      <input matInput autocomplete="off" type="number" min="1" [(ngModel)]="minMatches">
+    </mat-form-field>
+    <div *ngIf="autoHideOnPhone" class="pr-1" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <button mat-raised-button color="primary" style="top: 4px;" (click)="search()">Tìm kiếm</button>
+    </div>
+  </div>
+</div>

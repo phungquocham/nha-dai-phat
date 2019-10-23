@@ -1,0 +1,38 @@
+// app-input-basic:nth-child(odd) {
+//   .component-input-basic {
+//     background-color: #fff;
+//   }
+// }
+// testing search - BEGIN
+input.custom-outline[type=text],
+textarea.custom-outline {
+  // transition: all 0.30s ease-in-out;
+  outline: none;
+  padding: 0 10px;
+  border: 1px solid #DDDDDD;
+  border-radius: 5px;
+  height: 36px;
+}
+
+input.custom-outline[type=text]:focus,
+textarea.custom-outline:focus {
+  box-shadow: 0 0 5px #3f51b5;
+  padding: 0 10px;
+  border: 1px solid #3f51b5;
+}
+
+::-webkit-input-placeholder {
+  /* Edge */
+  // color: red;
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  // color: red;
+}
+
+::placeholder {
+  // color: red;
+}
+
+// testing search - END

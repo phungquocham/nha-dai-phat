@@ -1,0 +1,32 @@
+$numbersREM: "0" 0,
+"0-5" .5rem,
+"1" 1rem,
+"2" 2rem,
+"24p" 24px,
+"2p" 2px;
+// padding
+@each $i in $numbersREM {
+  .p-#{nth($i, 1)} {
+    padding: nth($i, 2) !important;
+  }
+  .pt-#{nth($i, 1)} {
+    padding-top: nth($i, 2) !important;
+  }
+  .pb-#{nth($i, 1)} {
+    padding-bottom: nth($i, 2) !important;
+  }
+  .pr-#{nth($i, 1)} {
+    padding-right: nth($i, 2) !important;
+  }
+  .pl-#{nth($i, 1)} {
+    padding-left: nth($i, 2) !important;
+  }
+  .px-#{nth($i, 1)} {
+    padding-left: nth($i, 2) !important;
+    padding-right: nth($i, 2) !important;
+  }
+  .py-#{nth($i, 1)} {
+    padding-top: nth($i, 2) !important;
+    padding-bottom: nth($i, 2) !important;
+  }
+}

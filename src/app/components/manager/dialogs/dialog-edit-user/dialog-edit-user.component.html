@@ -1,0 +1,82 @@
+<form [formGroup]="form">
+  <h3 class="pl-1" *ngIf="!isNewType">Sửa người dùng</h3>
+  <h3 class="pl-1" *ngIf="isNewType">Thêm người dùng</h3>
+  <div fxLayout="row wrap" class="pl-1 pt-1">
+    <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['lastName'].hasError('required') && form.controls['lastName'].touched; else lastNameLabel">
+        Yêu cầu nhập họ</mat-label>
+      <ng-template #lastNameLabel>
+        <mat-label>Họ *</mat-label>
+      </ng-template>
+      <input matInput autocomplete="off" formControlName="lastName">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['firstName'].hasError('required') && form.controls['firstName'].touched; else firstNameLabel">
+        Yêu cầu nhập tên</mat-label>
+      <ng-template #firstNameLabel>
+        <mat-label>Tên *</mat-label>
+      </ng-template>
+      <input matInput autocomplete="off" formControlName="firstName">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['phone'].hasError('pattern'); else requirePhoneLabel">SĐT sai định dạng. (10 số)
+      </mat-label>
+      <ng-template #requirePhoneLabel>
+        <mat-label *ngIf="form.controls['phone'].hasError('required') && form.controls['phone'].touched; else phoneLabel">
+          Yêu cầu nhập SĐT</mat-label>
+        <ng-template #phoneLabel>
+          <mat-label>SĐT *</mat-label>
+        </ng-template>
+      </ng-template>
+      <input matInput autocomplete="off" formControlName="phone" maxlength="10">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['email'].hasError('pattern'); else requireEmailLabel">Email sai định dạng.
+      </mat-label>
+      <ng-template #requireEmailLabel>
+        <mat-label *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched; else emailLabel">
+          Yêu cầu nhập email</mat-label>
+        <ng-template #emailLabel>
+          <mat-label>Email *</mat-label>
+        </ng-template>
+      </ng-template>
+      <input matInput autocomplete="off" formControlName="email">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['role'].hasError('required') && form.controls['role'].touched; else roleLabel">
+        Yêu cầu chọn vai trò</mat-label>
+      <ng-template #roleLabel>
+        <mat-label>Vai trò *</mat-label>
+      </ng-template>
+      <mat-select formControlName="role" name="role">
+        <mat-option *ngFor="let role of rolesList" [value]="role">
+          {{role}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="form.controls['role'].value === ROLE.SALES" appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100">
+      <mat-label>Nhóm</mat-label>
+      <mat-select formControlName="teamId" name="team">
+        <mat-option *ngFor="let team of teamsList" [value]="team.id">
+          {{team.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="isNewType" appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="33.333" [fxFlex.gt-xs]="50" [fxFlex]="100" (click)="startPicker.open()">
+      <mat-label *ngIf="form.controls['joinedDate'].hasError('required') && form.controls['joinedDate'].touched; else joinDateLabel">
+        Yêu cầu chọn ngày</mat-label>
+      <ng-template #joinDateLabel>
+        <mat-label>Ngày tham gia *</mat-label>
+      </ng-template>
+      <input matInput autocomplete="off" [matDatepicker]="startPicker" [ngModelOptions]="{ standalone: true }" [(ngModel)]="joinedDate" (ngModelChange)="changeJoinDate()">
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="px-1 pb-1">
+    <button mat-raised-button color="primary" (click)="updateUser()" [disabled]="form.invalid" class="mr-1">
+      <span *ngIf="isNewType">Thêm</span>
+      <span *ngIf="!isNewType">Cập nhật</span>
+    </button>
+    <button mat-raised-button (click)="closeDialog()">Hủy</button>
+  </div>
+</form>

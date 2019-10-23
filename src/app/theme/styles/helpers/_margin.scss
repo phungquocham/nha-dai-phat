@@ -1,0 +1,32 @@
+$numbersREMImportant: "0" 0,
+"0-5" .5rem,
+"1" 1rem;
+@each $i in $numbersREMImportant {
+  .m-#{nth($i, 1)} {
+    margin: nth($i, 2) !important;
+  }
+  .mt-#{nth($i, 1)} {
+    margin-top: nth($i, 2) !important;
+  }
+  .mb-#{nth($i, 1)} {
+    margin-bottom: nth($i, 2) !important;
+  }
+  .mr-#{nth($i, 1)} {
+    margin-right: nth($i, 2) !important;
+  }
+  .ml-#{nth($i, 1)} {
+    margin-left: nth($i, 2) !important;
+  }
+  .mx-#{nth($i, 1)} {
+    margin-left: nth($i, 2) !important;
+    margin-right: nth($i, 2) !important;
+  }
+  .my-#{nth($i, 1)} {
+    margin-top: nth($i, 2) !important;
+    margin-bottom: nth($i, 2) !important;
+  }
+}
+
+.no-margin {
+  margin: 0;
+}

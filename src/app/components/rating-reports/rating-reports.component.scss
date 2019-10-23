@@ -1,0 +1,26 @@
+@import "./src/app/theme/styles/variables";
+.rating-reports {
+  .xs {
+    margin-top: 0px;
+  }
+  .mat-column-date {
+    width: 110px !important;
+  }
+  .bg {
+    background-color: gold !important;
+    font-weight: 600;
+  }
+  .custom-mat-table.reports {
+    height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 25px);
+    @media only screen and (min-width: 960px) and (max-width: 1279px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 24px);
+    }
+    @media only screen and (min-width: 600px) and (max-width: 960px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 46px - 46px + 167px);
+    }
+    @media only screen and (max-width: 600px) {
+      height: calc(100vh - #{$height-top-bar} - 2rem - 2px - 2px);
+    }
+    overflow: auto;
+  }
+}

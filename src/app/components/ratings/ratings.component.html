@@ -1,0 +1,12 @@
+<div class="p-1 ">
+  <div class="bd-card" fxLayout="column">
+    <div fxLayout="row wrap" class=" pl-1 pt-1">
+      <div *ngFor="let rating of ratingsList" class="pr-2 pb-2 pointer" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="25" [fxFlex.gt-xs]="50" [fxFlex]="100">
+        <mat-card [ngStyle]="{ 'background-color': rating.color }" (click)="openDialogUpdateRating(rating)">
+          <mat-card-title class="color-w">{{ rating.name }} </mat-card-title>
+          <mat-card-content class="color-w">{{ rating.description }}</mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

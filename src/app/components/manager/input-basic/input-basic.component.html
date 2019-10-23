@@ -1,0 +1,13 @@
+<div class="component-input-basic pointer" [ngClass]="{'hover': showActions}" fxLayout="row wrap" fxLayoutAlign="center center">
+  <ng-template [ngIf]="type === TYPE_COMPONENT.SOURCES">
+    <div class="pl-1">
+      <mat-icon matPrefix [style.color]="item.color">local_offer</mat-icon>
+    </div>
+  </ng-template>
+  <span class="p-1"> {{ item.name }}</span>
+  <span fxFlex></span>
+  <div *ngIf="showActions">
+    <button mat-icon-button (click)="edit()"><mat-icon>edit</mat-icon></button>
+    <button mat-icon-button (click)="confirmDelete()"><mat-icon>delete</mat-icon></button>
+  </div>
+</div>

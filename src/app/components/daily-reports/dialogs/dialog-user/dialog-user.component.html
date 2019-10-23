@@ -1,0 +1,19 @@
+<div fxLayout="column" class="pb-1 pl-1 pr-1" [ngStyle]="{ 'width': '400px' }" [ngStyle.xs]="{ 'width': '255px' }">
+  <h3>Chọn nhân viên</h3>
+  <div fxLayout="row wrap">
+    <mat-form-field [fxFlex]="100" appearance="outline" class="custom-input">
+      <mat-label>Nhân viên</mat-label>
+      <mat-select name="user" [(ngModel)]="usersSelected">
+        <mat-option *ngFor="let user of usersList" [value]="user.id">
+          {{user.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div>
+    <button mat-raised-button color="primary" (click)="onSubmit()" class="mr-1">
+      <span>Đồng ý</span>
+    </button>
+    <button mat-raised-button (click)="closeDialog()">Hủy</button>
+  </div>
+</div>

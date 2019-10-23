@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  FIREBASE: {
+    apiKey: 'AIzaSyBebx1WLevPWD-1vaQLetIrNo7la6clTr4',
+    authDomain: 'https://dev.nhadaiphat.net',
+    databaseURL: 'https://nhadaiphat-dev.firebaseapp.com',
+    projectId: 'nhadaiphat-dev',
+    storageBucket: 'nhadaiphat-dev.appspot.com'
+  },
+  API_DOMAIN: 'https://api.dev.nhadaiphat.net'
 };
 
 /*

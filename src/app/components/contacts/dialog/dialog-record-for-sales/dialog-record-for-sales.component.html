@@ -1,0 +1,50 @@
+<div class="pl-1 pt-1">
+  <h3 class="no-margin">{{ userInfo.assignedUserName }}</h3>
+</div>
+<div fxLayout="row wrap" class="pl-1 pt-1">
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100">
+    <mat-label>Kết quả</mat-label>
+    <mat-select [(ngModel)]="userInfo.contactResultId" (ngModelChange)="onChangeContactResult($event)">
+      <mat-option *ngFor="let item of data.contactResultsList" [value]="item.id">
+        <span [ngStyle]="{'color': item.color}">{{item.name}}</span>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100">
+    <mat-label>Dự án</mat-label>
+    <mat-select [(ngModel)]="userInfo.interestedProjectId" (ngModelChange)="onChangeInterestedProject($event)" [disabled]="!((userInfo.contactResultId === 9) || (userInfo.contactResultId === 10))">
+      <mat-option *ngFor="let item of projectsList" [value]="item.id">
+        {{item.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100" (click)="meetingDatePicker.open()">
+    <mat-label>Ngày hẹn</mat-label>
+    <input matInput autocomplete="off" [matDatepicker]="meetingDatePicker" [(ngModel)]="userInfo.appointmentDate" [disabled]="!(userInfo.contactResultId === 10)">
+    <mat-datepicker #meetingDatePicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100">
+    <mat-label>Email</mat-label>
+    <input matInput autocomplete="off" [(ngModel)]="userInfo.email">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100">
+    <mat-label>Zalo</mat-label>
+    <input matInput autocomplete="off" [(ngModel)]="userInfo.zalo">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input pr-1" [fxFlex.gt-xs]="50" [fxFlex]="100">
+    <mat-label>Facebook</mat-label>
+    <input matInput autocomplete="off" [(ngModel)]="userInfo.facebook">
+  </mat-form-field>
+</div>
+<div class="px-1 pb-1">
+  <mat-form-field class="w-100" appearance="outline">
+    <mat-label>Ghi chú</mat-label>
+    <textarea matInput [(ngModel)]="userInfo.note"></textarea>
+  </mat-form-field>
+</div>
+<div class="px-1 pb-1">
+  <button mat-raised-button color="primary" class="mr-1" (click)="update()">
+      <span>Cập nhật</span>
+    </button>
+  <button mat-raised-button (click)="closeDialog()">Cancel</button>
+</div>

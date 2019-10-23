@@ -1,0 +1,45 @@
+// @alias element
+@mixin e($element) {
+  &__#{$element} {
+    @content;
+  }
+}
+
+// @alias modifier
+@mixin m($modifier) {
+  &--#{$modifier} {
+    @content;
+  }
+}
+
+@mixin padding-left($value) {
+  padding-left: $value;
+}
+
+@mixin padding-right($value) {
+  padding-right: $value;
+}
+
+@mixin margin-right($value) {
+  margin-right: $value;
+}
+
+@mixin margin-left($value) {
+  margin-left: $value;
+}
+
+@mixin float($value) {
+  float: $value;
+}
+
+@mixin transform($arguments...) {
+  -webkit-transform: $arguments;
+  -moz-transform: $arguments;
+  -ms-transform: $arguments;
+  -o-transform: $arguments;
+  transform: $arguments;
+}
+
+@mixin rotate($deg: 5deg) {
+  @include transform(rotate($deg));
+}

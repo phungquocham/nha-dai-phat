@@ -1,0 +1,43 @@
+.rating-color {
+  background: #ccc;
+  margin: 0 3px;
+  padding: 3px 6px;
+  color: #fff;
+  min-width: 95px;
+}
+
+.total-rating-points {
+  min-width: 140px;
+  margin: 0 3px;
+  background-color: deeppink; // cadetblue
+  color: white;
+  padding: 3px 6px;
+}
+
+.hide {
+  display: none !important;
+}
+
+.table-loading-container {
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .1);
+}
+
+// .reports {
+//   padding: 1rem;
+// }
+// @media only screen and (max-width: 600px) {
+//   .reports {
+//     padding: 0;
+.search-mini {
+  position: absolute;
+  z-index: 999;
+  bottom: -1rem;
+  right: 0rem;
+}
+
+//   }
+// }

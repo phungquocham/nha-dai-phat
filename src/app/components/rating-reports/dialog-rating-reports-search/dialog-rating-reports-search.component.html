@@ -1,0 +1,22 @@
+<div fxLayout="column" class="p-2">
+  <mat-form-field [fxFlex.gt-sm]="20" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="pr-1 custom-input" (click)="startPicker.open()">
+    <mat-label>Bắt đầu</mat-label>
+    <input matInput [matDatepicker]="startPicker" [(ngModel)]="fromDate">
+    <mat-datepicker #startPicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field [fxFlex.gt-sm]="20" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="pr-1 custom-input" (click)="endPicker.open()">
+    <mat-label>Kết thúc</mat-label>
+    <input matInput [matDatepicker]="endPicker" [(ngModel)]="toDate">
+    <mat-datepicker #endPicker></mat-datepicker>
+  </mat-form-field>
+
+  <div [fxFlex.gt-sm]="20" [fxFlex.gt-xs]="50" [fxFlex]="100" class="pr-1">
+    <app-custom-select-autocomplete #selectTeams [label]="'Nhóm'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedTeams($event)"></app-custom-select-autocomplete>
+  </div>
+  <div [fxFlex.gt-sm]="20" [fxFlex.gt-xs]="50" [fxFlex]="100" class="pr-1">
+    <app-custom-select-autocomplete #selectUsers [label]="'Nhân viên'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedusers($event)"></app-custom-select-autocomplete>
+  </div>
+  <div>
+    <button mat-raised-button color="primary" (click)="search()">Tìm</button>
+  </div>
+</div>

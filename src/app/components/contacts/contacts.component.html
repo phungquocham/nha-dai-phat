@@ -1,0 +1,141 @@
+<div class="component-contacts" [ngClass.gt-sm]="'p-1'">
+
+  <div class="bd-card" fxLayout="column" style="position: relative">
+    <div *ngIf="isLoading" class="table-loading-container" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
+    <button [fxHide.gt-xs]="true" mat-mini-fab color="primary" class="search-mini" (click)="openDialogContactsFilters()"><mat-icon>search</mat-icon></button>
+    <div class="pt-1 pb-1 pl-1" fxHide.xs fxShow>
+      <app-contacts-filters #contactsFiltersElement></app-contacts-filters>
+    </div>
+
+    <div class="custom-mat-table reports sticky-end-border-left">
+      <table mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef class="bd-right pl-1">
+            <span fxLayout="row"> 
+                  <mat-checkbox fxLayoutAlign="center" (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" style="padding-right: 12px">
+                </mat-checkbox>
+                <span *ngIf="!selection.hasValue()">Mã KH</span>
+            <div *ngIf="selection.hasValue()">
+              <button mat-icon-button (click)="$event.preventDefault()" [matMenuTriggerFor]="menuWhenChecked" #checkedMenuTrigger="matMenuTrigger">
+                    <mat-icon>more_horiz</mat-icon>
+                  </button>
+              <mat-menu #menuWhenChecked="matMenu" [overlapTrigger]="false">
+                <button mat-menu-item (click)="confirmDelete()">
+                      <span>Xóa</span>
+                    </button>
+              </mat-menu>
+            </div>
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let element" class="pl-1">
+            <mat-checkbox class="checkbox" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(element) : null" [checked]="selection.isSelected(element)" style="padding-right: 12px">
+            </mat-checkbox>
+            <span>{{element.id}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef class="bd-right pl-1">
+            <span fxLayout="row"> 
+            Tên
+          </span>
+          </th>
+          <td mat-cell *matCellDef="let element" class="pl-1">
+            <span class="pointer text-copy" (click)="copyMessage(element.name)">{{element.name}}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="phones">
+          <th mat-header-cell *matHeaderCellDef class="pl-1"><span>Điện thoại</span> </th>
+          <td mat-cell *matCellDef="let element" class="pl-1">
+            <div fxLayout="column">
+              <span *ngFor="let item of element.phones" class="py-2p pointer text-copy" (click)="copyMessage(item)">{{item}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="emails">
+          <th mat-header-cell *matHeaderCellDef><span>Email</span> </th>
+          <td mat-cell *matCellDef="let element">
+            <div fxLayout="column">
+              <span *ngFor="let item of element.emails" class="py-2p pointer text-copy" (click)="copyMessage(item)">{{item}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="addresses">
+          <th mat-header-cell *matHeaderCellDef><span>Địa chỉ</span></th>
+          <td mat-cell *matCellDef="let element">
+            <div fxLayout="column">
+              <span *ngFor="let item of element.addresses" class="py-2p">{{item}}.</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="suppliedSource">
+          <th mat-header-cell *matHeaderCellDef class="pl-1"><span>Nguồn</span> </th>
+          <td mat-cell *matCellDef="let element" class="pl-1"><span>{{ element.contactSourceName }} </span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignments">
+          <th mat-header-cell *matHeaderCellDef> <span>Liên hệ</span> </th>
+          <td mat-cell *matCellDef="let element">
+            <table cellpadding="0">
+              <!-- old 10 -->
+              <tbody>
+                <tr>
+                  <td nowrap>
+                    <span *ngFor="let item of element.assignments" class="rating-chip-color pointer" [ngStyle]="{'background': item.contactResultColor}" style="width: auto;" [matTooltip]="item.tooltip" (click)="openDialogRecordForSales(element.id, item)">
+                      {{item.assignedUserName}}: {{item.contactResult}}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="id" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef style="padding: unset">
+            <div fxLayoutAlign="center center">
+              <div>
+                <button mat-mini-fab color="primary" (click)="$event.preventDefault()" [matMenuTriggerFor]="tableHeaderMenus" #userMenuTrigger="matMenuTrigger">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                <mat-menu #tableHeaderMenus="matMenu" [overlapTrigger]="false">
+                  <button *ngIf="(userRole === ROLE.ADMINISTRATOR) || (userRole === ROLE.MANAGER)" mat-menu-item (click)="onAddNew()">
+                        <span>Import</span>
+                          </button>
+                  <button mat-menu-item (click)="exportTable()">
+                        <span>Export</span>
+                      </button>
+                </mat-menu>
+              </div>
+              <!-- <button mat-mini-fab color="primary" (click)="onAddNew()">
+                    <mat-icon >add</mat-icon>
+                  </button> -->
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let element" style="padding: 8px;">
+            <div>
+              <button mat-icon-button (click)="$event.preventDefault()" [matMenuTriggerFor]="actionsMenu" #userMenuTrigger="matMenuTrigger">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionsMenu="matMenu" [overlapTrigger]="false">
+                <button *ngIf="userRole !== ROLE.SALES" mat-menu-item (click)="onAddNew(element.id)">
+                  <span>Sửa</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+      </table>
+    </div>
+    <mat-paginator class="no-margin" #bottomPaginator [ngStyle]="{'display': isLoadingResults ? 'none' : 'block'}" [length]="totalCount" [pageSize]="filterData.pageSize" hidePageSize="true" (page)="onPagingEvent($event)"></mat-paginator>
+  </div>
+
+</div>

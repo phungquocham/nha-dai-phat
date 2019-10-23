@@ -1,0 +1,66 @@
+<form [formGroup]="form">
+  <div fxLayout="row wrap" class="pl-1 pt-1">
+
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="19.5" fxFlex.gt-xs="19.5" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['rating'].hasError('required') && form.controls['rating'].touched; else ratingLabel">
+        Loại</mat-label>
+      <ng-template #ratingLabel>
+        <mat-label>Loại</mat-label>
+      </ng-template>
+      <mat-select formControlName="rating">
+        <mat-option *ngFor="let item of dataRating" [value]="item.id">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="19.5" fxFlex.gt-xs="19.5" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['project'].hasError('required') && form.controls['project'].touched; else projectLabel">
+        Dự án</mat-label>
+      <ng-template #projectLabel>
+        <mat-label>Dự án</mat-label>
+      </ng-template>
+      <mat-select formControlName="project">
+        <!-- #mySelect -->
+        <mat-option *ngFor="let item of dataProjects" [value]="item.id">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="sourceId === 1" appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="19.5" fxFlex.gt-xs="19.5" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['userId'].hasError('required') && form.controls['userId'].touched; else userIdLabel">
+        Telesales</mat-label>
+      <ng-template #userIdLabel>
+        <mat-label>Telesales</mat-label>
+      </ng-template>
+      <mat-select formControlName="userId">
+        <mat-option *ngFor="let item of usersList" [value]="item.id">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="19.5" fxFlex.gt-xs="19.5" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['quantity'].hasError('required') && form.controls['quantity'].touched; else quantityLabel">
+        Số lượng </mat-label>
+      <ng-template #quantityLabel>
+        <mat-label>Số lượng </mat-label>
+      </ng-template>
+      <input matInput type="number" autocomplete="off" formControlName="quantity" (focusin)="onfocus()">
+    </mat-form-field>
+
+    <mat-form-field *ngIf="this.form.controls['rating'].value === 4 || this.form.controls['rating'].value === 13"
+                    appearance="outline" class="pr-1 custom-input"
+                    fxFlex.gt-md="19.5" fxFlex.gt-xs="19.5" [fxFlex]="100" (click)="startPicker.open()">
+      <mat-label>Ngày hẹn</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="appointmentDate">
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+
+    <div fxLayoutAlign="start center" class="btn-remove" fxLayoutAlgin="start center" [ngClass.xs]="{'source-xs' : true}">
+      <mat-icon (click)="deleteAdditional()">clear</mat-icon>
+    </div>
+
+  </div>
+</form>

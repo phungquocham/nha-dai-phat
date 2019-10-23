@@ -1,0 +1,33 @@
+language: node_js
+node_js:
+  - "12"
+cache: yarn
+jobs:
+  include:
+    - stage: deploy to staging
+      install:
+        - yarn install
+        - yarn global add @angular/cli
+      script: ng build --configuration=staging
+      deploy:
+        skip_cleanup: true
+        provider: firebase
+        project: staging
+        token:
+          secure: $FIREBASE_TOKEN
+    - stage: deploy to production
+      install:
+        - yarn install
+        - yarn global add @angular/cli
+      script: ng build --configuration=production
+      deploy:
+        skip_cleanup: true
+        provider: firebase
+        project: production
+        token:
+          secure: $FIREBASE_TOKEN
+stages:
+  - name: deploy to staging
+    if: branch = master
+  - name: deploy to production
+    if: tag =~ ^v

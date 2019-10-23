@@ -1,0 +1,22 @@
+<div fxLayout="column" class="pb-1 pl-1 pr-1 import-contacts" [ngStyle]="{ 'width': '400px' }" [ngStyle.xs]="{ 'width': '255px' }">
+  <h3>Chỉnh sửa</h3>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div fxLayout="row wrap">
+      <mat-form-field appearance="outline" class="custom-input" [fxFlex]="100">
+        <mat-label *ngIf="form.controls['source'].hasError('required') && form.controls['source'].touched; else sourceLabel">
+          Nguồn: </mat-label>
+        <ng-template #sourceLabel>
+          <mat-label>Nguồn: </mat-label>
+        </ng-template>
+        <input matInput autocomplete="off" formControlName="source">
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div>
+    <button mat-raised-button color="primary" (click)="onSubmit()" class="mr-1">
+      <span>Cập nhật</span>
+    </button>
+    <button mat-raised-button (click)="closeDialog()">Hủy</button>
+  </div>
+</div>

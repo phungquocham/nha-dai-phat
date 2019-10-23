@@ -1,0 +1,20 @@
+@import '~@angular/material/theming';
+@include mat-core();
+@import 'theme-reset';
+.blue-dark-theme {
+  @import "skins/blue-dark";
+  @include angular-material-theme($blue-dark-theme);
+  @include theme-reset($blue-dark-theme);
+}
+
+.default-theme {
+  @import "skins/default-skin";
+  @include angular-material-theme($default-theme-theme);
+  @include theme-reset($default-theme-theme);
+}
+
+.none-theme {
+  @import "skins/none";
+  @include angular-material-theme($default-theme-theme);
+  @include theme-reset($default-theme-theme);
+}

@@ -1,0 +1,51 @@
+<div class="component-login" fxLayoutAlign="center center">
+  <form [formGroup]="form" fxLayout="column" [ngClass.gt-xs]="'normal'" [ngClass]="'phone'">
+    <mat-card class="p-2">
+      <mat-card-title fxLayoutAlign="center center">
+        <img src="/assets/logo-full.png" alt="Nhà Đại Phát ">
+      </mat-card-title>
+      <mat-card-content fxLayout="column">
+        <mat-form-field class="w-100" appearance="outline">
+          <mat-label *ngIf="form.controls['phone'].hasError('pattern'); else requireLabel">SĐT sai định dạng. (10 số)
+          </mat-label>
+          <ng-template #requireLabel>
+            <mat-label *ngIf="form.controls['phone'].hasError('required') && form.controls['phone'].touched; else normalLabel">
+              Yêu cầu nhập SĐT</mat-label>
+            <ng-template #normalLabel>
+              <mat-label>SĐT</mat-label>
+            </ng-template>
+          </ng-template>
+          <input matInput formControlName="phone" autocomplete="off" maxlength="10">
+        </mat-form-field>
+        <div id="recaptcha-container" style="display: none"></div>
+        <mat-form-field class="w-100" appearance="outline" *ngIf="showElementCodeForm">
+          <mat-label *ngIf="form.controls['verifyCode'].hasError('pattern'); else requireCode">Mã sai định dạng. (6 số)
+          </mat-label>
+          <ng-template #requireCode>
+            <mat-label *ngIf="form.controls['verifyCode'].hasError('required') && form.controls['verifyCode'].touched; else normalCodeLabel">
+              Yêu cầu nhập mã</mat-label>
+            <ng-template #normalCodeLabel>
+              <mat-label>Mã đăng nhập</mat-label>
+            </ng-template>
+          </ng-template>
+          <input matInput autocomplete="off" formControlName="verifyCode" maxlength="6">
+        </mat-form-field>
+        <ng-template [ngIf]="!isError">
+          <button *ngIf="!showElementCodeForm" mat-raised-button color="primary" class="w-100" (click)="onSubmit()" [disabled]="form.controls['phone'].invalid">Lấy mã đăng nhập</button>
+          <button *ngIf="showElementCodeForm" mat-raised-button color="primary" class="w-100" (click)="verifyLoginCode()" [disabled]="form.controls['verifyCode'].invalid">Đăng nhập</button>
+        </ng-template>
+        <ng-template [ngIf]="isError">
+          <div fxLayout="row wrap" fxLayoutGap="1rem">
+            <div fxFlex="calc(50% - 1rem)">
+              <button mat-raised-button color="primary" class="w-100" (click)="verifyLoginCode()" [disabled]="form.controls['verifyCode'].invalid">Đăng nhập</button>
+            </div>
+            <div fxFlex="calc(50% - 1rem)">
+              <button mat-raised-button color="primary" class="w-100" (click)="onSubmit()" [disabled]="form.controls['phone'].invalid">Lấy mã khác</button>
+            </div>
+          </div>
+        </ng-template>
+
+      </mat-card-content>
+    </mat-card>
+  </form>
+</div>

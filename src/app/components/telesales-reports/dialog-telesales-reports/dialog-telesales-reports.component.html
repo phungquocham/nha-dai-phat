@@ -1,0 +1,15 @@
+<div fxLayout="column" class="p-2">
+  <mat-form-field [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="custom-input" (click)="startPicker.open()">
+    <mat-label>Bắt đầu</mat-label>
+    <input matInput [matDatepicker]="startPicker" [(ngModel)]="fromDate">
+    <mat-datepicker #startPicker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field [fxFlex.gt-sm]="16.6666666667" [fxFlex.gt-xs]="50" [fxFlex]="100" appearance="outline" class="custom-input" (click)="endPicker.open()">
+    <mat-label>Kết thúc</mat-label>
+    <input matInput [matDatepicker]="endPicker" [(ngModel)]="toDate">
+    <mat-datepicker #endPicker></mat-datepicker>
+  </mat-form-field>
+  <div>
+    <button mat-raised-button color="primary" (click)="search()" class="mr-1">Tìm</button>
+  </div>
+</div>

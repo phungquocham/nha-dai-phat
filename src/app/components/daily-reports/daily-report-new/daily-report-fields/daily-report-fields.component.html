@@ -1,0 +1,11 @@
+<form [formGroup]="form">
+  <mat-form-field appearance="outline" class="w-100 custom-input">
+    <mat-label *ngIf="form.controls['rating'].hasError('required') && form.controls['rating'].touched; else ratingLabel">
+      {{label}} </mat-label>
+    <ng-template #ratingLabel>
+      <mat-label>{{label}} </mat-label>
+    </ng-template>
+    <input matInput type="number" autocomplete="off" formControlName="rating">
+    <!-- #myInput -->
+  </mat-form-field>
+</form>

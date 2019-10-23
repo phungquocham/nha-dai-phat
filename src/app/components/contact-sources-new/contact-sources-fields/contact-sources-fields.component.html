@@ -1,0 +1,37 @@
+<form [formGroup]="form" class="contact-sources-fields">
+  <div fxLayout="row wrap" class="pl-1">
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="25" fxFlex.gt-xs="25" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['userId'].hasError('required') && form.controls['userId'].touched; else userIdLabel">
+        Sales
+      </mat-label>
+      <ng-template #userIdLabel>
+        <mat-label>Sales</mat-label>
+      </ng-template>
+      <mat-select formControlName="userId">
+        <mat-option *ngFor="let item of usersList" [value]="item.id">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="25" fxFlex.gt-xs="25" [fxFlex]="100">
+      <mat-label *ngIf="form.controls['quantity'].hasError('required') && form.controls['quantity'].touched; else quantityLabel">
+        Số lượng
+      </mat-label>
+      <ng-template #quantityLabel>
+        <mat-label>Số lượng</mat-label>
+      </ng-template>
+      <input matInput type="number" autocomplete="off" formControlName="quantity" (focusin)="onfocus()" (focusout)="focusout()">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="pr-1 custom-input" fxFlex.gt-md="25" fxFlex.gt-xs="25" [fxFlex]="100">
+      <mat-label>Từ - Đến</mat-label>
+      <input matInput type="text" formControlName="fromTo" autocomplete="off" value="{{data.from}} -> {{data.to}}">
+    </mat-form-field>
+
+    <div *ngIf="index > 0" fxFlex.gt-md="25" fxFlex.gt-xs="25" [fxFlex]="100" class="btn-remove" fxLayoutAlgin="start" [ngClass.xs]="{'source-xs' : true}">
+      <mat-icon (click)="onDelete()">clear</mat-icon>
+    </div>
+
+  </div>
+</form>

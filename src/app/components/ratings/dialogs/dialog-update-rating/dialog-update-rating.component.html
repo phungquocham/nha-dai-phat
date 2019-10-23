@@ -1,0 +1,37 @@
+<div class="p-2" fxLayout="column">
+  <form [formGroup]="form">
+    <div fxLayout="column">
+      <mat-form-field class="custom-input" appearance="outline" [ngStyle.gt-sm]="{ 'width': '330px' }" [ngStyle]="{ 'width': '400px' }">
+        <mat-label *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched; else requireName">
+          Yêu cầu nhập tên</mat-label>
+        <ng-template #requireName>
+          <mat-label>Tên</mat-label>
+        </ng-template>
+        <input matInput autocomplete="off" formControlName="name">
+      </mat-form-field>
+
+      <mat-form-field class="custom-input" appearance="outline" [ngStyle.gt-sm]="{ 'width': '330px' }" [ngStyle]="{ 'width': '400px' }">
+        <mat-label *ngIf="form.controls['points'].hasError('pattern'); else requireLabel">Nhập đúng định dạng. Vd: 1.25;
+        </mat-label>
+        <ng-template #requireLabel>
+          <mat-label *ngIf="form.controls['points'].hasError('required') && form.controls['points'].touched; else normalLabel">
+            Yêu cầu nhập điểm</mat-label>
+          <ng-template #normalLabel>
+            <mat-label>Điểm</mat-label>
+          </ng-template>
+        </ng-template>
+        <input matInput autocomplete="off" formControlName="points">
+      </mat-form-field>
+      <div class="pb-2" fxLayoutAlign="center">
+        <span [style.background]="selectedColor" [cpToggle]="true" [cpDialogDisplay]="'inline'" [cpCancelButton]="true" [(colorPicker)]="selectedColor"></span>
+      </div>
+    </div>
+    <div fxLayoutAlign="center">
+      <button mat-raised-button color="primary" class="mr-1" (click)="update()" [disabled]="form.invalid">
+      <span *ngIf="isNewType">Thêm</span>
+      <span *ngIf="!isNewType">Cập nhật</span>
+    </button>
+      <button mat-raised-button (click)="closeDialog()">Hủy</button>
+    </div>
+  </form>
+</div>

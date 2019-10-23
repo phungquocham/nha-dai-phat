@@ -1,0 +1,19 @@
+<div class="dialog-update-name p-1" style="min-width: 250px">
+  <form [formGroup]="form">
+    <mat-form-field class="w-100" appearance="outline">
+      <mat-label *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched; else normalLabel">
+        Yêu cầu nhập tên</mat-label>
+      <ng-template #normalLabel>
+        <mat-label>Tên</mat-label>
+      </ng-template>
+      <input matInput formControlName="name" autocomplete="off">
+    </mat-form-field>
+  </form>
+  <div fxLayoutAlign="center center">
+    <button color="primary" class="ok mr-1" mat-raised-button (click)="update()" [disabled]="form.controls['name'].invalid">
+      <span *ngIf="isNewType">Thêm</span>
+      <span *ngIf="!isNewType">Cập nhật</span>
+    </button>
+    <button color="default" class="cancel" mat-raised-button (click)="cancel()">Hủy</button>
+  </div>
+</div>

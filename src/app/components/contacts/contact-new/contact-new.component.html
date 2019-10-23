@@ -1,0 +1,77 @@
+<div fxLayout="column" class="p-1">
+  <div class="bd-card w-100">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h3 class="pl-1">Sửa khách hàng</h3>
+      <div fxLayout="row wrap" class="pl-1">
+
+        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="50" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <mat-label *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched; else nameLabel">
+            Tên: </mat-label>
+          <ng-template #nameLabel>
+            <mat-label>Tên: </mat-label>
+          </ng-template>
+          <input matInput autocomplete="off" formControlName="name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 pr-1 custom-input" [fxFlex.gt-md]="50" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <mat-label *ngIf="chipList.errorState; else phonesLabel">
+            Số điện thoại không hợp lệ !. </mat-label>
+          <mat-chip-list #chipList>
+            <mat-chip *ngFor="let item of phoneList" [selectable]="true" [removable]="removable" (removed)="removePhone(item)">
+              {{item.name}}
+              <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+            </mat-chip>
+            <input autocomplete="off" formControlName="phones" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addPhone($event)">
+          </mat-chip-list>
+          <ng-template #phonesLabel>
+            <mat-label>Số điện thoại:</mat-label>
+          </ng-template>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 pr-1 custom-input" [fxFlex.gt-md]="50" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <mat-label *ngIf="chipListEmail.errorState; else emailsLabel">
+            Email không hợp lệ !.</mat-label>
+          <mat-chip-list #chipListEmail>
+            <mat-chip *ngFor="let item of emailList" [selectable]="true" [removable]="removableEmail" (removed)="removeEmail(item)">
+              {{item.name}}
+              <mat-icon matChipRemove *ngIf="removableEmail">cancel</mat-icon>
+            </mat-chip>
+            <input autocomplete="off" formControlName="emails" [matChipInputFor]="chipListEmail" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addEmail($event)">
+          </mat-chip-list>
+          <ng-template #emailsLabel>
+            <mat-label>Emails: </mat-label>
+          </ng-template>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 pr-1 custom-input" [fxFlex.gt-md]="50" [fxFlex.gt-xs]="50" [fxFlex]="100">
+          <mat-chip-list #chipListAddress>
+            <mat-chip *ngFor="let item of addressList" [selectable]="true" [removable]="removableAddress" (removed)="removeAddress(item)">
+              {{item.name}}
+              <mat-icon matChipRemove *ngIf="removableAddress">cancel</mat-icon>
+            </mat-chip>
+            <input autocomplete="off" formControlName="address" [matChipInputFor]="chipListAddress" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addAddress($event)">
+          </mat-chip-list>
+          <ng-template>
+            <mat-label>Địa chỉ: </mat-label>
+          </ng-template>
+        </mat-form-field>
+
+<!--        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="50" [fxFlex.gt-xs]="50" [fxFlex]="100">-->
+<!--          <mat-label *ngIf="form.controls['address'].hasError('required') && form.controls['address'].touched; else addressLabel">-->
+<!--            Địa chỉ: </mat-label>-->
+<!--          <ng-template #addressLabel>-->
+<!--            <mat-label>Địa chỉ: </mat-label>-->
+<!--          </ng-template>-->
+<!--          <input matInput autocomplete="off" formControlName="address">-->
+<!--        </mat-form-field>-->
+
+      </div>
+      <div class="px-1 pb-1">
+        <button mat-raised-button color="primary" type="submit" class="mr-1">
+          <span>Cập nhật</span>
+        </button>
+        <button mat-raised-button type="button" (click)="onRedirect()">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>

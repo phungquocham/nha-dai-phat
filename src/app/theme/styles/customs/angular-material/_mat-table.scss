@@ -1,0 +1,136 @@
+@import "../../variables";
+.table-cells-no-padding {
+  .mat-cell,
+  .mat-header-cell {
+    padding: 0 !important;
+  }
+}
+
+.table-cells-padding-1rem {
+  .mat-cell,
+  .mat-header-cell {
+    padding: 1rem !important;
+  }
+}
+
+.table-cells-padding-x-1rem {
+  .mat-cell,
+  .mat-header-cell {
+    padding: 0 1rem !important;
+  }
+}
+
+tr.mat-row:hover:not(.team-row-show) {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  .mat-table-sticky {
+    background-color: #fafafa;
+  }
+}
+
+.custom-mat-table.color-odd {
+  tr.mat-row:nth-child(odd) {
+    background-color: #fafafa;
+  }
+}
+
+.custom-mat-table {
+  width: 100%;
+  overflow: auto;
+  table {
+    width: 100%;
+  }
+}
+
+// app-reports {
+.custom-mat-table.reports {
+  height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px);
+  @media only screen and (min-width: 960px) and (max-width: 1279px) {
+    height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 46px);
+  }
+  @media only screen and (min-width: 600px) and (max-width: 960px) {
+    height: calc(100vh - #{$height-top-bar} - 2rem - 78px - 2px - 46px - 46px);
+  }
+  @media only screen and (max-width: 600px) {
+    height: calc(100vh - #{$height-top-bar} - 2rem - 2px);
+  }
+  overflow: auto;
+  table {
+    .mat-column-name {
+      min-width: 120px;
+    }
+    .mat-column-reportUserName {
+      min-width: 95px;
+      padding: 0 1rem;
+    }
+    .mat-column-goldenHours,
+    .mat-column-pushCount,
+    .mat-column-suggestionCount,
+    .mat-column-emailCount,
+    .mat-column-zaloFlirtingCount,
+    .mat-column-facebookFlirtingCount {
+      min-width: 65px;
+    }
+    .mat-column-selfPouring,
+    .mat-column-regularPouring {
+      min-width: 500px;
+    }
+    .mat-column-totalRatingPoints {
+      min-width: 140px;
+    }
+    @media only screen and (max-width: 480px) {
+      // .mat-column-userName {
+      //   min-width: 40px;
+      // }
+      .mat-column-goldenHours {
+        min-width: 60px;
+      }
+      .mat-column-pushCount,
+      .mat-column-suggestionCount,
+      .mat-column-emailCount,
+      .mat-column-zaloFlirtingCount,
+      .mat-column-facebookFlirtingCount {
+        min-width: 40px;
+      }
+      .mat-column-selfPouring,
+      .mat-column-regularPouring {
+        min-width: 400px;
+      }
+    }
+  }
+  .mat-footer-row {
+    .mat-footer-cell {
+      font-weight: bold;
+    }
+  }
+  .mat-footer-row.total {
+    background-color: goldenrod;
+  }
+  tr.mat-row.team-row-show {
+    background-color: gold;
+    font-weight: 600;
+  }
+  tr.mat-row.is-odd {
+    background-color: #fafafa;
+  }
+  .team-row-hide {
+    display: none;
+  }
+}
+
+// }
+.custom-mat-table.sticky-end-border-left {
+  .mat-table-sticky:last-child {
+    border-left: 1px solid #e0e0e0;
+  }
+}
+
+td.mat-column-star,
+td.mat-column-id {
+  width: 20px;
+  padding-right: 8px;
+}
+
+th.mat-column-position,
+td.mat-column-position {
+  padding-left: 8px;
+}

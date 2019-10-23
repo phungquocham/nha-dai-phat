@@ -1,0 +1,55 @@
+<div fxLayout="column" class="p-2">
+
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="custom-input w-100" (click)="startPicker.open()">
+      <mat-label>Bắt đầu</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="custom-input w-100" (click)="endPicker.open()">
+      <mat-label>Kết thúc</mat-label>
+      <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+      <mat-datepicker #endPicker></mat-datepicker>
+    </mat-form-field>
+  </form>
+  <!-- <mat-form-field appearance="outline" class="custom-input">
+    <mat-label>Nhóm</mat-label>
+    <mat-select multiple name="team" [(ngModel)]="teamsSelected">
+      <mat-option *ngFor="let team of teamsList" [value]="team.id">
+        {{team.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input">
+    <mat-label>Nhân viên</mat-label>
+    <mat-select multiple name="user" [(ngModel)]="usersSelected">
+      <mat-option *ngFor="let user of usersList" [value]="user.id">
+        {{user.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input">
+    <mat-label>Nguồn</mat-label>
+    <mat-select multiple name="source" [(ngModel)]="sourcesColumnsSelected">
+      <mat-option *ngFor="let source of sourcesColumnsList" [value]="source.id">
+        {{source.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="custom-input">
+    <mat-label>Dự án</mat-label>
+    <mat-select multiple name="project" [(ngModel)]="projectsSelected">
+      <mat-option *ngFor="let project of projectsList" [value]="project.id">
+        {{project.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+  <app-custom-select-autocomplete #selectTeamsElement [label]="'Nhóm'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedTeams($event)"></app-custom-select-autocomplete>
+  <app-custom-select-autocomplete #selectUsersElement [label]="'Nhân viên'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedUsers($event)"></app-custom-select-autocomplete>
+  <app-custom-select-autocomplete #selectSourcesElement [label]="'Nguồn'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedSources($event)"></app-custom-select-autocomplete>
+  <app-custom-select-autocomplete #selectProjectsElement [label]="'Dự án'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedProjects($event)"></app-custom-select-autocomplete>
+  <div>
+    <button mat-raised-button color="primary" (click)="getReports()">Báo
+      cáo</button>
+  </div>
+</div>
