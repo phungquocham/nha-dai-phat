@@ -1,5 +1,7 @@
 # NhaDaiPhat
 
+[![Build Status](https://travis-ci.com/phungquocham/nha-dai-phat.svg?branch=master)](https://travis-ci.com/phungquocham/nha-dai-phat)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.12.
 
 ## Development server
