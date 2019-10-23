@@ -35,7 +35,7 @@ import { CustomSelectAutocompleteComponent } from '../../shared/components/mater
   encapsulation: ViewEncapsulation.None
 })
 export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('bottomPaginator', {static: false}) bottomPaginator: MatPaginator;
+  @ViewChild('bottomPaginator', { static: true }) bottomPaginator: MatPaginator;
   ngUnsubscribe = new Subject();
   columns = [];
   filterData = { ...filterData };
@@ -61,9 +61,9 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingResults = true;
   totalCount = 0;
   latestRatings = [];
-  @ViewChild('selectTeams', {static: false}) selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', {static: false}) selectUsers: CustomSelectAutocompleteComponent;
-  @ViewChild('selectSources', {static: false}) selectSources: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeams', { static: false }) selectTeams: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsers', { static: false }) selectUsers: CustomSelectAutocompleteComponent;
+  @ViewChild('selectSources', { static: false }) selectSources: CustomSelectAutocompleteComponent;
 
   constructor(
     private dailyReportService: DailyReportService,
