@@ -12,7 +12,7 @@ export class RouterHoverDirective {
     private renderer: Renderer2
   ) { }
 
-  @HostListener('mouseover', ['$event'])
+  @HostListener('mouseover')
   onMouseOver() {
     const index = this.routersList.findIndex(x => x === 'forms');
     if (index > -1) {
