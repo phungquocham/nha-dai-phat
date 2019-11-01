@@ -5,7 +5,7 @@ cache: yarn
 jobs:
   include:
     - stage: deploy to staging
-      if: tag IS NOT present
+      if: branch = master
       install:
         - yarn install
         - yarn global add @angular/cli
@@ -16,10 +16,10 @@ jobs:
         project: staging
         token:
           secure: $FIREBASE_TOKEN
-      on:
-        branch: master
+        on:
+          branch: master
     - stage: deploy to production
-      if: tag IS present
+      if: tag =~ ^v
       install:
         - yarn install
         - yarn global add @angular/cli
@@ -30,6 +30,5 @@ jobs:
         project: production
         token:
           secure: $FIREBASE_TOKEN
-      on:
-        tags: true
-        all_branches: true
+        on:
+          all_branches: true
