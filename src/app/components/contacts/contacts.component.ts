@@ -49,8 +49,8 @@ import { SNACKBAR } from 'src/app/shared/helpers/snackbar';
 })
 export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('bottomPaginator', {static: false}) bottomPaginator: MatPaginator;
-  @ViewChild('contactsFiltersElement', {static: false}) contactsFiltersElement: ContactsFiltersComponent;
+  @ViewChild('bottomPaginator', { static: false }) bottomPaginator: MatPaginator;
+  @ViewChild('contactsFiltersElement', { static: false }) contactsFiltersElement: ContactsFiltersComponent;
 
   private contactResultsList = [];
   private teamsList = [];
@@ -132,11 +132,11 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   copyMessage(val: string) {
-   UserProfile.copyText({
-     allow: true,
-     value: val
-   });
-   const selBox = document.createElement('textarea');
+    UserProfile.copyText({
+      allow: true,
+      value: val
+    });
+    const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';
     selBox.style.left = '0';
     selBox.style.top = '0';
@@ -158,8 +158,8 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getFirstAndLastName(name: string) {
-   const temp = name.split(' ');
-   return `${temp[0]} ${temp[1]}`;
+    const temp = name.split(' ');
+    return `${temp[0]} ${temp[1]}`;
   }
 
   getList() {
@@ -171,21 +171,6 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.contactsService.getList(this.filterData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(response => {
       console.log(response);
       response.items.forEach(element => {
-        // const phones = element.phones || [],
-        //   emails = element.emails || [],
-        //   addresses = element.addresses || [];
-        // if (phones.length > 0) {
-          // element.phones = phones[0];
-          // element.phonesTooltip = phones.join('\n');
-        // }
-        // if (emails.length > 0) {
-        //   element.emails = emails[0];
-        //   element.emailsTooltip = emails.join('\n');
-        // }
-        // if (addresses.length > 0) {
-        //   element.addresses = addresses[0];
-        //   element.addressesTooltip = addresses.join('\n');
-        // }
         const assignments = [];
         (element.assignments || []).forEach(el => {
           const { contactResultId, contactResultName, contactResultColor } = this.getContactResultInfo(el[3]);
@@ -193,9 +178,9 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
             assignedDate: el[0],
             assignedUserId: el[1],
             assignedUserName: el[2],
-            contactResultId: contactResultId,
+            contactResultId,
             contactResult: contactResultName,
-            contactResultColor: contactResultColor,
+            contactResultColor,
             interestedProjectId: el[4],
             InterestedProjectName: el[5],
             appointmentDate: el[6],
@@ -203,9 +188,10 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
             facebook: el[8],
             zalo: el[9],
             note: el[10],
-            updatedAt: el[11]
+            updatedAt: el[11],
+            tooltip: ''
           };
-          item['tooltip'] = this.createTooltipAssignments(item);
+          item.tooltip = this.createTooltipAssignments(item);
           item.assignedUserName = this.getFirstAndLastName(item.assignedUserName);
           assignments.push(item);
         });
@@ -326,6 +312,9 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
         usersList: this.usersList,
         contactResultsList: this.contactResultsList,
         teamsList: this.teamsList
+      },
+      config: {
+        autoFocus: false
       }
     }).subscribe(res => {
       if (res && res.status === BUTTON.OK) {
@@ -338,7 +327,7 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialog.open({
       component: DialogRecordForSalesComponent,
       data: {
-        contactId: contactId,
+        contactId,
         userInfo: data,
         contactResultsList: this.contactResultsList
       }
@@ -374,18 +363,18 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (ok === CONFIRM.OK) {
         const ids = this.selection.selected.map(i => i.id);
         this.contactsService
-        .deleteMultipleContacts(ids)
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(_ => {
-          this.snackbar.open({ message: 'Xóa thành công', type: SNACKBAR.TYPE.SUCCESS });
-          this.getList();
-        });
+          .deleteMultipleContacts(ids)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe(_ => {
+            this.snackbar.open({ message: 'Xóa thành công', type: SNACKBAR.TYPE.SUCCESS });
+            this.getList();
+          });
       }
     });
   }
 
   exportTable() {
-    this.contactsService.export(<any>this.filterData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
+    this.contactsService.export(this.filterData as any).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
       this.snackbar.open({ message: 'Đã gửi yêu cầu thành công', type: SNACKBAR.TYPE.SUCCESS });
     });
   }

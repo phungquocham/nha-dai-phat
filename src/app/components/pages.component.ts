@@ -35,9 +35,9 @@ import { Utils } from '../shared/helpers/utilities';
 })
 export class PagesComponent implements OnInit, AfterViewInit {
 
-  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
-  @ViewChild('sidenavContent', {static: false}) sidenavContent: ElementRef;
-  @ViewChild('notificationsMenuTrigger', {static: false}) trigger: MatMenuTrigger;
+  @ViewChild('sidenav', { static: false }) sidenav: MatSidenav;
+  @ViewChild('sidenavContent', { static: false }) sidenavContent: ElementRef;
+  @ViewChild('notificationsMenuTrigger', { static: false }) trigger: MatMenuTrigger;
 
 
   private routerLink = '';
@@ -67,6 +67,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
     private db: AngularFirestore,
     private location: Location
   ) {
+    console.log('INIT PAGES COMPONENT');
     this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
       if (res instanceof NavigationEnd) {
         console.log('router change');
@@ -95,7 +96,8 @@ export class PagesComponent implements OnInit, AfterViewInit {
         }
       }
     });
-    this.firebaseRef = db.collection(`${ApiNDP.Users}/${UserProfile.getUserId()}/${ApiNDP.Notifications}`, ref => ref.orderBy('StartedAt', 'desc').limit(10));
+    this.firebaseRef = db
+      .collection(`${ApiNDP.Users}/${UserProfile.getUserId()}/${ApiNDP.Notifications}`, ref => ref.orderBy('StartedAt', 'desc').limit(10));
   }
 
   ngOnInit() {
@@ -164,20 +166,22 @@ export class PagesComponent implements OnInit, AfterViewInit {
   openPage(links: string[]) {
     const founded = links.findIndex(x => x === 'forms');
     if (founded > -1) {
-          links.splice(founded, 1);
+      links.splice(founded, 1);
     }
     this.routerLink = links.join('/');
     console.log(links);
     console.log(this.routerLink);
     if (this.routerLink === Routing.REPORTS) {
-      const date = new Date(), y = date.getFullYear(), m = date.getMonth(),
-          dateStartMonth = new Date(y, m, 1),
-          dateEndMonth = new Date(y, m + 1, 0);
-        const temp = {
-          fromDate: Utils.DateTime.convertDateStringDDMMYYYY(dateStartMonth),
-          toDate: Utils.DateTime.convertDateStringDDMMYYYY(dateEndMonth)
-        };
-        this.router.navigate([Routing.REPORTS], { queryParams: temp });
+      const date = new Date();
+      const y = date.getFullYear();
+      const m = date.getMonth();
+      const dateStartMonth = new Date(y, m, 1);
+      const dateEndMonth = new Date(y, m + 1, 0);
+      const temp = {
+        fromDate: Utils.DateTime.convertDateStringDDMMYYYY(dateStartMonth),
+        toDate: Utils.DateTime.convertDateStringDDMMYYYY(dateEndMonth)
+      };
+      this.router.navigate([Routing.REPORTS], { queryParams: temp });
     } else {
       this.router.navigate([this.routerLink]);
     }
@@ -224,7 +228,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
   handleSearchString(value: string) {
     const path = this.location.path();
     if (path.includes('/contacts')) {
-      this.router.navigate([Routing.CONTACTS], { queryParams: { q: value }});
+      this.router.navigate([Routing.CONTACTS], { queryParams: { q: value } });
     }
   }
 

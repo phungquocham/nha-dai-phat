@@ -87,7 +87,11 @@
                 <tr>
                   <td nowrap>
                     <span *ngFor="let item of element.assignments" class="rating-chip-color pointer" [ngStyle]="{'background': item.contactResultColor}" style="width: auto;" [matTooltip]="item.tooltip" (click)="openDialogRecordForSales(element.id, item)">
-                      {{item.assignedUserName}}: {{item.contactResult}}
+                      <span fxLayout="column" class="assignment-item">
+                        <span>{{item.assignedUserName}}: {{item.contactResult}}</span>
+                    <span>{{ item.assignedDate | dateCustomConvert:'' }}</span>
+                    <span>{{ item.note }}</span>
+                    </span>
                     </span>
                   </td>
                 </tr>

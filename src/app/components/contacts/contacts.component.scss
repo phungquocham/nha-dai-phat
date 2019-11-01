@@ -43,4 +43,13 @@
     bottom: .5rem;
     right: .5rem;
   }
+  .assignment-item {
+    span {
+      font-size: 11px;
+    }
+    span:nth-child(2),
+    span:nth-child(3) {
+      padding-top: .25rem;
+    }
+  }
 }
