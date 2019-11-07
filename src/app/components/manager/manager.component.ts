@@ -36,7 +36,7 @@ import { SNACKBAR } from 'src/app/shared/helpers/snackbar';
 
 export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('paginator', {static: false}) paginator: MatPaginator;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
 
   private modelUserInList = new ModelUserInList();
   private ngUnsubscribe = new Subject();
