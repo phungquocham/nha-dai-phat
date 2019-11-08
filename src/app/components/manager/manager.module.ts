@@ -12,8 +12,8 @@ import { ProjectsService } from 'src/app/shared/services/api/projects.service';
 import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { UsersService } from 'src/app/shared/services/api/users.service';
 import { PipesModule } from 'src/app/shared/pipes/pipes.module';
-import { ReportsService } from 'src/app/shared/services/api/reports.service';
 import { RatingsService } from 'src/app/shared/services/api/ratings.service';
+import { ContactResultsService } from 'src/app/shared/services/api/contact-results.service';
 
 export const routes = [
   {
@@ -38,7 +38,8 @@ export const routes = [
     ProjectsService,
     TeamsService,
     UsersService,
-    RatingsService
+    RatingsService,
+    ContactResultsService
   ]
 })
 export class ManagerModule { }

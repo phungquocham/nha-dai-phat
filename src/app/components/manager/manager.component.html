@@ -77,6 +77,34 @@
         </table>
       </div>
     </mat-tab>
+    <mat-tab label="Kết quả" fxLayout="column">
+      <div fxLayout="row wrap" class="p-1">
+        <div>
+          <button mat-raised-button color="primary" (click)="addContactResult()">Thêm mới</button>
+        </div>
+        <span fxFlex></span>
+        <div>
+          <input class="custom-outline" type="text" placeholder="Tìm kiếm" (keyup)="applyContactResultFilter($event.target.value)" />
+        </div>
+      </div>
+      <div *ngIf="contactResultsListFilter.length > 0">
+        <table mat-table [dataSource]="contactResultsListFilter" class="w-100 table-cells-no-padding">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>
+              <div fxLayout="row wrap" class="px-1">
+                <div fxFlex="24px"></div>
+                <span class="p-1">Tên kết quả</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <app-input-basic class="w-100" [onlyEvent]="true" [item]="element" [type]="TYPE_COMPONENT.SOURCES" [message]="contactResultConfirmMessage" (confirm)="confirmDeleteContactResult($event)" (value)="updateContactResult($event, element)"></app-input-basic>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsContactResult"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsContactResult;"></tr>
+        </table>
+      </div>
+    </mat-tab>
     <mat-tab label="Dự án">
       <div fxLayout="row wrap" class="p-1">
         <div>

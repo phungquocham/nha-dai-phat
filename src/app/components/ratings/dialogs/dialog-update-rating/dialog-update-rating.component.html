@@ -10,7 +10,7 @@
         <input matInput autocomplete="off" formControlName="name">
       </mat-form-field>
 
-      <mat-form-field class="custom-input" appearance="outline" [ngStyle.gt-sm]="{ 'width': '330px' }" [ngStyle]="{ 'width': '400px' }">
+      <mat-form-field *ngIf="!hidePointsField" class="custom-input" appearance="outline" [ngStyle.gt-sm]="{ 'width': '330px' }" [ngStyle]="{ 'width': '400px' }">
         <mat-label *ngIf="form.controls['points'].hasError('pattern'); else requireLabel">Nhập đúng định dạng. Vd: 1.25;
         </mat-label>
         <ng-template #requireLabel>

@@ -1,12 +1,14 @@
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatPaginator, PageEvent } from '@angular/material';
+import { Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 
 
 import { SourcesService } from 'src/app/shared/services/api/sources.service';
 import { ProjectsService } from 'src/app/shared/services/api/projects.service';
 import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { UsersService } from 'src/app/shared/services/api/users.service';
-import { REGEX } from 'src/app/shared/helpers/regex';
 import { ModelUserInList } from 'src/app/shared/models/users.model';
 import { DialogService } from 'src/app/shared/services/others/dialog.service';
 import { DialogConfirmComponent } from 'src/app/shared/components/dialogs/dialog-confirm/dialog-confirm.component';
@@ -15,17 +17,13 @@ import { DialogEditUserComponent } from './dialogs/dialog-edit-user/dialog-edit-
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { DialogUpdateNameComponent } from 'src/app/shared/components/dialogs/dialog-update-name/dialog-update-name.component';
 import { DialogUpdateRatingComponent } from '../ratings/dialogs/dialog-update-rating/dialog-update-rating.component';
-import { MatTableDataSource, MatPaginator, MatSort, PageEvent } from '@angular/material';
-import { Subject } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { takeUntil, debounceTime } from 'rxjs/operators';
 import { Routing } from 'src/app/shared/helpers/routing';
 import { ModelQueryUrl } from 'src/app/shared/models/url-query.model';
-import { ReportsService } from 'src/app/shared/services/api/reports.service';
 import { RatingsService } from 'src/app/shared/services/api/ratings.service';
 import { UserProfile } from 'src/app/shared/models/user.profile.namespace';
 import { SnackbarService } from 'src/app/shared/services/others/snackbar.service';
 import { SNACKBAR } from 'src/app/shared/helpers/snackbar';
+import { ContactResultsService } from 'src/app/shared/services/api/contact-results.service';
 
 @Component({
   selector: 'app-manager',
@@ -54,6 +52,11 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   sourceConfirmMessage = 'Bạn chắc chắn muốn xóa nguồn này?';
   displayedColumnsSource = ['name'];
 
+  private contactResultsList: ModelBasic[] = [];
+  contactResultsListFilter: ModelBasic[] = [];
+  contactResultConfirmMessage = 'Bạn chắc chắn muốn xóa kết quả này?';
+  displayedColumnsContactResult = ['name'];
+
   private projectsList: ModelBasic[] = [];
   projectsListFilter: ModelBasic[] = [];
   projectConfirmMessage = 'Bạn chắc chắn muốn xóa dự án này?';
@@ -76,15 +79,16 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: DialogService,
+    private snackbar: SnackbarService,
     private sourcesService: SourcesService,
     private projectsService: ProjectsService,
     private teamsService: TeamsService,
     private usersService: UsersService,
     private ratingsService: RatingsService,
-    private dialog: DialogService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackbar: SnackbarService
+    private contactResultsService: ContactResultsService
   ) {
   }
 
@@ -98,6 +102,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getProjectsList();
     this.getTeamsList();
     this.getRatingsList();
+    this.getContactResultsList();
   }
 
   ngOnDestroy() {
@@ -175,7 +180,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.query.pageSize = this.pageSize;
       query = this.getQueryUrlForApi(this.query);
     }
-    this.usersService.getList(query).subscribe((res: IResponseUsers) => {
+    this.usersService.getList(query).pipe(takeUntil(this.ngUnsubscribe)).subscribe((res: IResponseUsers) => {
       res.items.forEach((item: ModelUserInList) => {
         item.phone = Utils.ConvertPhoneNumberToZero(item.phone);
       });
@@ -187,7 +192,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getTeamsList() {
-    this.teamsService.getList().subscribe(res => {
+    this.teamsService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
       this.teamsList = res;
       this.teamsListFilter = this.teamsList;
       this.detectChanges();
@@ -195,7 +200,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getSourcesList() {
-    this.sourcesService.getList().subscribe(res => {
+    this.sourcesService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
       this.sourcesList = res;
       this.sourcesListFilter = this.sourcesList;
       this.detectChanges();
@@ -203,10 +208,62 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getProjectsList() {
-    this.projectsService.getList().subscribe(res => {
+    this.projectsService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
       this.projectsList = res;
       this.projectsListFilter = this.projectsList;
       this.detectChanges();
+    });
+  }
+
+  private getContactResultsList() {
+    this.contactResultsService.getListContactResults().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
+      this.contactResultsList = res;
+      this.contactResultsListFilter = this.contactResultsList;
+      this.detectChanges();
+    });
+  }
+
+  addContactResult() {
+    this.dialog.open({
+      component: DialogUpdateRatingComponent,
+      data: {
+        type: TYPE_BASIC.NEW,
+        hide: {
+          points: true
+        }
+      }
+    }).subscribe(res => {
+      if (res && res.status === CONFIRM.OK) {
+        this.contactResultsService.createContactResult(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
+          this.getContactResultsList();
+        });
+      }
+    });
+  }
+
+  updateContactResult(status: string, data: any) {
+    if (status === CONFIRM.OK) {
+      this.dialog.open({
+        component: DialogUpdateRatingComponent,
+        data: {
+          ...data,
+          hide: {
+            points: true
+          }
+        }
+      }).subscribe(res => {
+        if (res && res.status === CONFIRM.OK) {
+          this.contactResultsService.updateContactResult(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
+            this.getContactResultsList();
+          });
+        }
+      });
+    }
+  }
+
+  confirmDeleteContactResult(id: number) {
+    this.contactResultsService.deleteContactResult(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
+      this.getContactResultsList();
     });
   }
 
@@ -214,11 +271,14 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialog.open({
       component: DialogUpdateRatingComponent,
       data: {
-        type: TYPE_BASIC.NEW
+        type: TYPE_BASIC.NEW,
+        hide: {
+          points: true
+        }
       }
     }).subscribe(res => {
       if (res && res.status === CONFIRM.OK) {
-        this.sourcesService.createSource(res.data).subscribe(_ => {
+        this.sourcesService.createSource(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.getSourcesList();
         });
       }
@@ -229,10 +289,15 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (status === CONFIRM.OK) {
       this.dialog.open({
         component: DialogUpdateRatingComponent,
-        data: data
+        data: {
+          ...data,
+          hide: {
+            points: true
+          }
+        }
       }).subscribe(res => {
         if (res && res.status === CONFIRM.OK) {
-          this.sourcesService.updateSource(data.id, res.data).subscribe(_ => {
+          this.sourcesService.updateSource(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
             this.getSourcesList();
           });
         }
@@ -241,7 +306,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmDeleteSource(id: number) {
-    this.sourcesService.deleteSource(id).subscribe(_ => {
+    this.sourcesService.deleteSource(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
       this.getSourcesList();
     });
   }
@@ -254,7 +319,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }).subscribe(res => {
       if (res && res.status === CONFIRM.OK) {
-        this.projectsService.createProject(res.data).subscribe(_ => {
+        this.projectsService.createProject(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.getProjectsList();
         });
       }
@@ -263,14 +328,14 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateProject(data) {
     if (data && data.value && data.value.status === CONFIRM.OK) {
-      this.projectsService.updateProject(data.id, data.value.data).subscribe(_ => {
+      this.projectsService.updateProject(data.id, data.value.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
         this.getProjectsList();
       });
     }
   }
 
   confirmDeleteProject(id: number) {
-    this.projectsService.deleteProject(id).subscribe(_ => {
+    this.projectsService.deleteProject(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
       this.getProjectsList();
     });
   }
@@ -283,7 +348,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }).subscribe(res => {
       if (res && res.status === CONFIRM.OK) {
-        this.teamsService.createTeam(res.data).subscribe(_ => {
+        this.teamsService.createTeam(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.getTeamsList();
         });
       }
@@ -292,14 +357,14 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateTeam(data) {
     if (data && data.value && data.value.status === CONFIRM.OK) {
-      this.teamsService.updateTeam(data.id, data.value.data).subscribe(_ => {
+      this.teamsService.updateTeam(data.id, data.value.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
         this.getTeamsList();
       });
     }
   }
 
   confirmDeleteTeam(id: number) {
-    this.teamsService.deleteTeam(id).subscribe(_ => {
+    this.teamsService.deleteTeam(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
       this.getTeamsList();
     });
   }
@@ -312,7 +377,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }).subscribe(res => {
       if (res) {
-        this.usersService.createUser(res).subscribe(_ => {
+        this.usersService.createUser(res).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.snackbar.open({ message: 'Thêm thành công', type: SNACKBAR.TYPE.SUCCESS });
           this.getUsersList();
         });
@@ -328,7 +393,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }).subscribe(ok => {
       if (ok === CONFIRM.OK) {
-        this.usersService.deleteUser(id).subscribe(_ => {
+        this.usersService.deleteUser(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.snackbar.open({ message: 'Xoá thành công', type: SNACKBAR.TYPE.SUCCESS });
           this.getUsersList();
         });
@@ -339,10 +404,10 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   editUser(data: any) {
     this.dialog.open({
       component: DialogEditUserComponent,
-      data: data
+      data
     }).subscribe(res => {
       if (res && res.id) {
-        this.usersService.updateUser(res.id, res.data).subscribe(_ => {
+        this.usersService.updateUser(res.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.snackbar.open({ message: 'Cập nhật thành công', type: SNACKBAR.TYPE.SUCCESS });
           this.getUsersList();
         });
@@ -358,6 +423,11 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sourcesListFilter = this.sourcesList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
   }
 
+  applyContactResultFilter(value: string) {
+    this.contactResultsListFilter = this.contactResultsList
+    .filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+  }
+
   applyProjectFilter(value: string) {
     this.projectsListFilter = this.projectsList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
   }
@@ -369,10 +439,10 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   openDialogUpdateRating(data: any) {
     this.dialog.open({
       component: DialogUpdateRatingComponent,
-      data: data
+      data
     }).subscribe(res => {
       if (res && res.status === CONFIRM.OK) {
-        this.ratingsService.updateRating(data.id, res.data).subscribe(_ => {
+        this.ratingsService.updateRating(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
           this.snackbar.open({ message: 'Cập nhật thành công!', type: SNACKBAR.TYPE.SUCCESS });
           this.getRatingsList();
         });
@@ -406,7 +476,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.navigate([Routing.MANAGER]);
       return;
     }
-    this.router.navigate([Routing.MANAGER], { queryParams: { 'display': name } });
+    this.router.navigate([Routing.MANAGER], { queryParams: { display: name } });
     // [`${Utils.getProjectRouter(`${Routing.SETTING_USERS}`)}`],
     // { queryParams: { [this.TAB.KEY.DISPLAY]: this.TAB.NAME.PERMISSION_LEVELS } }
   }
@@ -424,7 +494,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getQueryUrlForApi(query: ModelQueryUrl): string {
     return Utils.encodeQueryUrl({
-      query: query
+      query
     });
   }
 
@@ -432,7 +502,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     const obj = {};
     obj['display'] = 'users';
     const result = Utils.encodeQueryUrl({
-      query: query,
+      query,
       exceptKeys: ['pageSize'],
       exceptStrings: ['page=1']
     }, true);

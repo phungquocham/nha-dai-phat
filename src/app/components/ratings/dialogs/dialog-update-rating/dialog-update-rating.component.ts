@@ -14,6 +14,7 @@ export class DialogUpdateRatingComponent implements OnInit {
   selectedColor = '#3fb551';
   isNewType = false;
   form: FormGroup;
+  hidePointsField = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -36,6 +37,7 @@ export class DialogUpdateRatingComponent implements OnInit {
       if (this.data.type === TYPE_BASIC.NEW) {
         this.isNewType = true;
       }
+      this.hidePointsField = (this.data.hide && this.data.hide.points) || false;
     }
   }
 

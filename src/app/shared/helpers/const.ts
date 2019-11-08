@@ -46,7 +46,8 @@ export const HTTP_HEADER = {
 };
 
 export const TYPE_COMPONENT = {
-  SOURCES: 'SOURCES'
+  SOURCES: 'SOURCES',
+  CONTACT_RESULTS: 'CONTACT_RESULTS'
 };
 
 export const TYPE_BASIC = {
