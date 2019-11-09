@@ -139,14 +139,17 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
         case 'sources':
           this.tabIndex = 1;
           break;
-        case 'projects':
+        case 'contact-results':
           this.tabIndex = 2;
           break;
-        case 'teams':
+        case 'projects':
           this.tabIndex = 3;
           break;
-        case 'users':
+        case 'teams':
           this.tabIndex = 4;
+          break;
+        case 'users':
+          this.tabIndex = 5;
           break;
         default:
           this.tabIndex = 0;
@@ -425,7 +428,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   applyContactResultFilter(value: string) {
     this.contactResultsListFilter = this.contactResultsList
-    .filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+      .filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
   }
 
   applyProjectFilter(value: string) {
@@ -460,12 +463,15 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.routeToTab('sources');
         break;
       case 2:
-        this.routeToTab('projects');
+        this.routeToTab('contact-results');
         break;
       case 3:
-        this.routeToTab('teams');
+        this.routeToTab('projects');
         break;
       case 4:
+        this.routeToTab('teams');
+        break;
+      case 5:
         this.routeToTab('users');
         break;
     }
