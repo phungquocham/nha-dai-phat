@@ -12,10 +12,8 @@ jobs:
       script: ng build --configuration=staging
       deploy:
         skip_cleanup: true
-        provider: firebase
-        project: staging
-        token:
-          secure: $FIREBASE_TOKEN
+        provider: script
+        script: bash deploy.sh staging $FIREBASE_TOKEN
         on:
           branch: master
     - stage: deploy to production
@@ -26,9 +24,7 @@ jobs:
       script: ng build --configuration=production
       deploy:
         skip_cleanup: true
-        provider: firebase
-        project: production
-        token:
-          secure: $FIREBASE_TOKEN
+        provider: script
+        script: bash deploy.sh production $FIREBASE_TOKEN
         on:
           all_branches: true
