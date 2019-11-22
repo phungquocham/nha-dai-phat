@@ -1,6 +1,6 @@
 {
   "projects": {
-    "production": "nha-dai-phat",
-    "staging": "nhadaiphat-dev"
+    "development": "nhadaiphat-dev",
+    "production": "nhadaiphat-prod"
   }
 }

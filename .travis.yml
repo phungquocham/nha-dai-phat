@@ -4,16 +4,16 @@ node_js:
 cache: yarn
 jobs:
   include:
-    - stage: deploy to staging
+    - stage: deploy to development
       if: branch = master
       install:
         - yarn install
         - yarn global add @angular/cli
-      script: ng build --configuration=staging
+      script: ng build --configuration=development
       deploy:
         skip_cleanup: true
         provider: script
-        script: bash deploy.sh staging $FIREBASE_TOKEN
+        script: bash deploy.sh development $FIREBASE_TOKEN
         on:
           branch: master
     - stage: deploy to production
