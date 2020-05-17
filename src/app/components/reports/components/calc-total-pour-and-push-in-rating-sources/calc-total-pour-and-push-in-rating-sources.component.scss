@@ -1,0 +1,16 @@
+.cal-total-pour-and-push-in-rating-sources {
+  .default-padding-left {
+    padding-left: 234px !important;
+    &.source-total {
+      padding-left: 397px !important;
+    }
+  }
+  .rating-color {
+    max-height: 23px;
+  }
+  .pour-and-push-total {
+    height: 32px;
+    align-items: center;
+    background-color: goldenrod;
+  }
+}

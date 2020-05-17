@@ -347,7 +347,7 @@ export class ReportsService {
       });
       return {
         reportsData: reportsGrouped,
-        totalRatingResourcesByColumn: totalRatingResourcesByColumn
+        totalRatingResourcesByColumn
       };
     }));
   }

@@ -138,11 +138,6 @@
           </th>
           <td mat-cell *matCellDef="let element">
             <span fxLayoutAlign="center">{{ element.goldenHours }}</span>
-            <!-- <div>
-              <app-calc-total-pour-and-push-in-rating-sources
-                [ratingSources]="element.ratingSources"
-              ></app-calc-total-pour-and-push-in-rating-sources>
-            </div> -->
           </td>
           <td mat-footer-cell *matFooterCellDef>
             <span fxLayoutAlign="center">{{ totalGoldenHours }}</span>
@@ -491,11 +486,6 @@
             <span fxLayoutAlign="center" class="pr-1">{{
               element.flirtingCount
             }}</span>
-            <!-- <div>
-              <app-calc-total-pour-and-push-in-rating-sources
-                [ratingSources]="element.ratingSources"
-              ></app-calc-total-pour-and-push-in-rating-sources>
-            </div> -->
           </td>
           <td mat-footer-cell *matFooterCellDef>
             <span fxLayoutAlign="center" class="pr-1">{{
@@ -582,11 +572,16 @@
                 </div>
               </div>
             </div>
-            <!-- <div>
+            <div *ngIf="source.showColumn">
               <app-calc-total-pour-and-push-in-rating-sources
-                [ratingSources]="element.ratingSources"
+                [sourceId]="source.id"
+                [reportUserId]="element.reportUserId"
+                [ratingSources]="element.ratingSources[source.id]"
+                [mappingSources]="mappingSources"
+                [mappingProjects]="mappingProjects"
+                [mappingRatings]="mappingRatings"
               ></app-calc-total-pour-and-push-in-rating-sources>
-            </div> -->
+            </div>
           </td>
           <td
             mat-footer-cell

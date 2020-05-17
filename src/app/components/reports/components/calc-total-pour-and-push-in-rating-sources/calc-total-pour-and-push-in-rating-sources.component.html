@@ -1,1 +1,25 @@
-<p>calc-total-pour-and-push-in-rating-sources works!</p>
+<div class="cal-total-pour-and-push-in-rating-sources">
+  <div
+    class="p-0-5 default-padding-left"
+    fxLayout="row"
+    [ngClass]="{ 'source-total': sourceId === 0 }"
+  >
+    <div fxLayout="row wrap" class="pour-and-push-total">
+      <div
+        fxLayout="row wrap"
+        class="rating-color"
+        *ngFor="let ratingIdWithDash of ratingIdsWithTypeThree"
+        fxLayoutAlign="center center"
+        [ngStyle]="{
+          background: getBackgroundColor(ratingIdWithDash)
+        }"
+        [matTooltip]="getTooltipInfo(mappingData[ratingIdWithDash])"
+      >
+        <span class="white-space-nowrap">
+          {{ getRatingName(ratingIdWithDash) }}:
+          {{ getValueTotal(mappingData[ratingIdWithDash]) }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
