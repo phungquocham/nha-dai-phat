@@ -94,8 +94,8 @@ export class ReportsResolver implements Resolve<any> {
       // });
       return {
         reportsData: reportsData,
-        // sourcesList: sourcesList,
         tableColumns: tableColumns,
+        // sourcesList: sourcesList,
         // teamsList: teamsList,
         // usersList: usersList
       };

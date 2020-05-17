@@ -174,6 +174,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.detechChanges();
       this.subscribePageLoading();
       this.subscribeQueryParams();
+      console.log('!!!!!!!!!!!!!', this.sourcesList)
     });
   }
 
