@@ -1,55 +1,147 @@
 <div [ngClass.gt-sm]="'p-1'">
-  <div class="bd-card" fxLayout="column" style="position: relative">
-    <div *ngIf="isLoading" class="table-loading-container" fxLayoutAlign="center center">
+  <div class="bd-card" fxLayout="column" style="position: relative;">
+    <div
+      *ngIf="isLoading"
+      class="table-loading-container"
+      fxLayoutAlign="center center"
+    >
       <mat-spinner></mat-spinner>
     </div>
-    <button [fxHide.gt-xs]="true" mat-mini-fab color="primary" class="search-mini" (click)="openDialogSelectReports()"><mat-icon>search</mat-icon></button>
+    <button
+      [fxHide.gt-xs]="true"
+      mat-mini-fab
+      color="primary"
+      class="search-mini"
+      (click)="openDialogSelectReports()"
+    >
+      <mat-icon>search</mat-icon>
+    </button>
     <div class="p-1" fxLayout="row" [fxHide.lt-sm]="true">
       <div fxLayout="row wrap" fxFlex>
-        <mat-form-field appearance="outline" class="pr-1 custom-input wrapper-no-padding-bottom" (click)="startPicker.open()" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          (click)="startPicker.open()"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
           <mat-label>Bắt đầu</mat-label>
-          <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate">
+          <input
+            matInput
+            [matDatepicker]="startPicker"
+            [(ngModel)]="startDate"
+          />
           <mat-datepicker #startPicker></mat-datepicker>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="pr-1 custom-input wrapper-no-padding-bottom" (click)="endPicker.open()" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          (click)="endPicker.open()"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
           <mat-label>Kết thúc</mat-label>
-          <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate">
+          <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" />
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
-        <div class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
-          <app-custom-select-autocomplete #selectTeamsElement [label]="'Nhóm'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedTeams($event)"></app-custom-select-autocomplete>
+        <div
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
+          <app-custom-select-autocomplete
+            #selectTeamsElement
+            [label]="'Nhóm'"
+            [keyName]="'name'"
+            [keyValue]="'id'"
+            (emitValue)="getSelectedTeams($event)"
+          ></app-custom-select-autocomplete>
         </div>
-        <div class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
-          <app-custom-select-autocomplete #selectUsersElement [label]="'Nhân viên'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedUsers($event)"></app-custom-select-autocomplete>
+        <div
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
+          <app-custom-select-autocomplete
+            #selectUsersElement
+            [label]="'Nhân viên'"
+            [keyName]="'name'"
+            [keyValue]="'id'"
+            (emitValue)="getSelectedUsers($event)"
+          ></app-custom-select-autocomplete>
         </div>
-        <div class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
-          <app-custom-select-autocomplete #selectSourcesElement [label]="'Nguồn'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedSources($event)"></app-custom-select-autocomplete>
+        <div
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
+          <app-custom-select-autocomplete
+            #selectSourcesElement
+            [label]="'Nguồn'"
+            [keyName]="'name'"
+            [keyValue]="'id'"
+            (emitValue)="getSelectedSources($event)"
+          ></app-custom-select-autocomplete>
         </div>
-        <div class="pr-1 custom-input wrapper-no-padding-bottom" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-sm]="30" [fxFlex.gt-xs]="50">
-          <app-custom-select-autocomplete #selectProjectsElement [label]="'Dự án'" [keyName]="'name'" [keyValue]="'id'" (emitValue)="getSelectedProjects($event)"></app-custom-select-autocomplete>
+        <div
+          class="pr-1 custom-input wrapper-no-padding-bottom"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-sm]="30"
+          [fxFlex.gt-xs]="50"
+        >
+          <app-custom-select-autocomplete
+            #selectProjectsElement
+            [label]="'Dự án'"
+            [keyName]="'name'"
+            [keyValue]="'id'"
+            (emitValue)="getSelectedProjects($event)"
+          ></app-custom-select-autocomplete>
         </div>
       </div>
       <div fxFlex="82.75px">
-        <button mat-raised-button color="primary" (click)="clickReportButton()" style="top: 4px;">Báo
-          cáo</button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="clickReportButton()"
+          style="top: 4px;"
+        >
+          Báo cáo
+        </button>
       </div>
     </div>
     <div class="custom-mat-table reports">
-      <table mat-table [dataSource]="reportsData" [ngClass]="{'hide': isLoading}">
-
+      <table
+        mat-table
+        [dataSource]="reportsData"
+        [ngClass]="{ hide: isLoading }"
+      >
         <ng-container matColumnDef="reportUserName" sticky>
-          <th mat-header-cell *matHeaderCellDef class="bd-right"> <span>TÊN</span></th>
-          <td mat-cell *matCellDef="let element"><span [matTooltip]="element.reportUserNameTooltip">{{ element.reportUserName }}</span>
+          <th mat-header-cell *matHeaderCellDef class="bd-right">
+            <span>TÊN</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span [matTooltip]="element.reportUserNameTooltip">{{
+              element.reportUserName
+            }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> TỔNG </td>
+          <td mat-footer-cell *matFooterCellDef>TỔNG</td>
         </ng-container>
 
         <ng-container matColumnDef="goldenHours">
-          <th mat-header-cell *matHeaderCellDef class="bd-right"> <span fxLayoutAlign="center">GIỜ VÀNG</span> </th>
-          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{ element.goldenHours }}</span>
+          <th mat-header-cell *matHeaderCellDef class="bd-right">
+            <span fxLayoutAlign="center">GIỜ VÀNG</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span fxLayoutAlign="center">{{ element.goldenHours }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> <span fxLayoutAlign="center">{{ totalGoldenHours }}</span> </td>
-
+          <td mat-footer-cell *matFooterCellDef>
+            <span fxLayoutAlign="center">{{ totalGoldenHours }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="regularPouring">
@@ -57,55 +149,148 @@
             <div fxLayout="column">
               <div fxLayoutAlign="center" class="py-0-5">ĐỔ ĐỀU ĐẶN</div>
               <div fxLayout="row wrap">
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KLL</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KBM</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KNC</div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KLL
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KBM
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KNC
+                </div>
                 <div fxFlex="14.2857143" class="px-1 text-align-center">CM</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">2 câu</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">> 2 câu</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">Tổng</div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  2 câu
+                </div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  > 2 câu
+                </div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  Tổng
+                </div>
               </div>
             </div>
           </th>
           <td mat-cell *matCellDef="let element">
             <div fxLayout="column">
               <div fxLayout="row wrap">
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.uncontactable }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.notPickUp }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.noNeed }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.hangUp }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.twoSentences }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.moreThanTwoSentences }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.regularPouring.total }}</div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.uncontactable }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.notPickUp }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.noNeed }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.hangUp }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.twoSentences }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.moreThanTwoSentences }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.regularPouring.total }}
+                </div>
               </div>
             </div>
           </td>
           <td mat-footer-cell *matFooterCellDef>
             <div fxLayout="row wrap">
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalRegularPouringUncontactable }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalRegularPouringNotPickUp }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringUncontactable }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalRegularPouringNoNeed }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringNotPickUp }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalRegularPouringHangUp }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringNoNeed }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalRegularPouringTwoSentences }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalRegularPouringMoreThanTwoSentences }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalAllRegularPouring }} </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringHangUp }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringTwoSentences }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalRegularPouringMoreThanTwoSentences }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalAllRegularPouring }}
+              </div>
             </div>
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="selfPouring">
@@ -113,131 +298,383 @@
             <div fxLayout="column">
               <div fxLayoutAlign="center" class="py-0-5">TỰ ĐỔ</div>
               <div fxLayout="row wrap">
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KLL</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KBM</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">KNC</div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KLL
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KBM
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  KNC
+                </div>
                 <div fxFlex="14.2857143" class="px-1 text-align-center">CM</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">2 câu</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">> 2 câu</div>
-                <div fxFlex="14.2857143" class="px-1 text-align-center">Tổng</div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  2 câu
+                </div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  > 2 câu
+                </div>
+                <div fxFlex="14.2857143" class="px-1 text-align-center">
+                  Tổng
+                </div>
               </div>
             </div>
           </th>
           <td mat-cell *matCellDef="let element">
             <div fxLayout="column">
               <div fxLayout="row wrap">
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.selfPouring.uncontactable }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.selfPouring.notPickUp }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ element.selfPouring.noNeed }}
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.uncontactable }}
                 </div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ element.selfPouring.hangUp }}
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.notPickUp }}
                 </div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.selfPouring.twoSentences }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.selfPouring.moreThanTwoSentences }}</div>
-                <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                  {{ element.selfPouring.total }}</div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.noNeed }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.hangUp }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.twoSentences }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.moreThanTwoSentences }}
+                </div>
+                <div
+                  fxFlex="14.2857143"
+                  fxLayoutAlign="center center"
+                  class="px-1"
+                >
+                  {{ element.selfPouring.total }}
+                </div>
               </div>
             </div>
           </td>
           <td mat-footer-cell *matFooterCellDef>
             <div fxLayout="row wrap">
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalSelfPouringUncontactable }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringUncontactable }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalSelfPouringNotPickUp }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringNotPickUp }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalSelfPouringNoNeed }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalSelfPouringHangUp }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">{{ totalSelfPouringTwoSentences }}
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringNoNeed }}
               </div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalSelfPouringMoreThanTwoSentences }}</div>
-              <div fxFlex="14.2857143" fxLayoutAlign="center center" class="px-1">
-                {{ totalAllSelfPouring }}</div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringHangUp }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringTwoSentences }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalSelfPouringMoreThanTwoSentences }}
+              </div>
+              <div
+                fxFlex="14.2857143"
+                fxLayoutAlign="center center"
+                class="px-1"
+              >
+                {{ totalAllSelfPouring }}
+              </div>
             </div>
           </td>
-
         </ng-container>
 
         <ng-container matColumnDef="pushCount">
-          <th mat-header-cell *matHeaderCellDef> <span fxLayoutAlign="center">ĐẨY</span> </th>
-          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{ element.pushCount }}</span>
+          <th mat-header-cell *matHeaderCellDef>
+            <span fxLayoutAlign="center">ĐẨY</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span fxLayoutAlign="center">{{ element.pushCount }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> <span fxLayoutAlign="center">{{ totalPushCount }}</span> </td>
-
+          <td mat-footer-cell *matFooterCellDef>
+            <span fxLayoutAlign="center">{{ totalPushCount }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="suggestionCount">
-          <th mat-header-cell *matHeaderCellDef> <span fxLayoutAlign="center">GỢI MỞ</span> </th>
-          <td mat-cell *matCellDef="let element"> <span fxLayoutAlign="center">{{ element.suggestionCount }}</span>
+          <th mat-header-cell *matHeaderCellDef>
+            <span fxLayoutAlign="center">GỢI MỞ</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span fxLayoutAlign="center">{{ element.suggestionCount }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> <span fxLayoutAlign="center">{{ totalSuggesstionCount }}</span> </td>
-
+          <td mat-footer-cell *matFooterCellDef>
+            <span fxLayoutAlign="center">{{ totalSuggesstionCount }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="emailCount">
-          <th mat-header-cell *matHeaderCellDef> <span fxLayoutAlign="center">EMAIL</span> </th>
-          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center">{{ element.emailCount }}</span>
+          <th mat-header-cell *matHeaderCellDef>
+            <span fxLayoutAlign="center">EMAIL</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span fxLayoutAlign="center">{{ element.emailCount }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> <span fxLayoutAlign="center">{{ totalEmailCount }}</span> </td>
-
+          <td mat-footer-cell *matFooterCellDef>
+            <span fxLayoutAlign="center">{{ totalEmailCount }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="flirtingCount">
-          <th mat-header-cell *matHeaderCellDef> <span fxLayoutAlign="center" class="pr-1">THÍNH</span> </th>
-          <td mat-cell *matCellDef="let element"><span fxLayoutAlign="center" class="pr-1">{{ element.flirtingCount }}</span>
+          <th mat-header-cell *matHeaderCellDef>
+            <span fxLayoutAlign="center" class="pr-1">THÍNH</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span fxLayoutAlign="center" class="pr-1">{{
+              element.flirtingCount
+            }}</span>
           </td>
-          <td mat-footer-cell *matFooterCellDef> <span fxLayoutAlign="center" class="pr-1">{{ totalFlirtingCount }}</span> </td>
-
-        </ng-container>
-
-        <ng-container *ngFor="let source of sourcesList" [matColumnDef]="source.column">
-          <th mat-header-cell *matHeaderCellDef [ngClass]="{'hide': !source.showColumn}" [style.border-color]="source.color" style="border-bottom: 3px solid;">
-            <span fxLayoutAlign="center center" *ngIf="source.showColumn">{{ (source.id === 0) ? '' : 'Nguồn' }} {{source.name}}</span></th>
-          <td mat-cell *matCellDef="let element" [ngClass]="{'hide': !source.showColumn}">
-            <div fxLayoutAlign="center center" class="px-24p py-0" *ngIf="source.showColumn">
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row" *ngIf="source.id === 0" fxLayoutAlign="center center">
-                <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ element.totalRatingPoints | number: '1.0-2' }}
-                </div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of element.ratingSources[source.id]?.pour" [matTooltip]="item.tooltip" [ngStyle]="{'background': item.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item.name }}: {{ item.total}}</span></div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of element.ratingSources[source.id]?.push" [matTooltip]="item.tooltip" [ngStyle]="{'background': item.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item.name }}: {{ item.total }}</span></div>
-              </div>
-              <div class="p-0-5" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of element.ratingSources[source.id]?.others" [matTooltip]="item.tooltip" [ngStyle]="{'background': item.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item.name }}: {{ item.total}}</span></div>
-              </div>
-            </div>
-          </td>
-          <td mat-footer-cell *matFooterCellDef [ngClass]="{'hide': !source.showColumn}">
-            <div fxLayoutAlign="center center" class="px-24p py-0" *ngIf="source.showColumn">
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row" *ngIf="source.id === 0" fxLayoutAlign="center center">
-                <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ totalRatingPointsByColumn | number: '1.0-2' }}
-                </div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of totalRatingSourcesByColumn[source.id]?.pour" [matTooltip]="item.tooltip" [ngStyle]="{'background': item?.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item?.name }}: {{ item?.total }}</span></div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of totalRatingSourcesByColumn[source.id]?.push" [matTooltip]="item.tooltip" [ngStyle]="{'background': item?.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item?.name }}: {{ item?.total }}</span></div>
-              </div>
-              <div class="p-0-5" fxLayout="row">
-                <div fxLayout="row wrap" class="rating-color" *ngFor="let item of totalRatingSourcesByColumn[source.id]?.others" [matTooltip]="item.tooltip" [ngStyle]="{'background': item?.color}" fxLayoutAlign="center center"><span class="white-space-nowrap">{{ item?.name }}: {{ item?.total}}</span></div>
-              </div>
-            </div>
+          <td mat-footer-cell *matFooterCellDef>
+            <span fxLayoutAlign="center" class="pr-1">{{
+              totalFlirtingCount
+            }}</span>
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumnsReport; sticky: true" [ngClass]="{'hide': isLoading}"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumnsReport;" [ngClass]="{'team-row-show': (showTeamRows && row.isTeamRow), 'team-row-hide': (!showTeamRows && row.isTeamRow), 'is-odd': row.isOddRow }"></tr>
-        <tr mat-footer-row *matFooterRowDef="displayedColumnsReport; sticky: true" class="total" [ngClass]="{'hide': isLoading}"></tr>
+        <ng-container
+          *ngFor="let source of sourcesList"
+          [matColumnDef]="source.column"
+        >
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            [ngClass]="{ hide: !source.showColumn }"
+            [style.border-color]="source.color"
+            style="border-bottom: 3px solid;"
+          >
+            <span fxLayoutAlign="center center" *ngIf="source.showColumn"
+              >{{ source.id === 0 ? "" : "Nguồn" }} {{ source.name }}</span
+            >
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [ngClass]="{ hide: !source.showColumn }"
+          >
+            <div
+              fxLayoutAlign="center center"
+              class="px-24p py-0"
+              *ngIf="source.showColumn"
+            >
+              <div
+                class="p-0-5 br-bottom-1p-solid-red"
+                fxLayout="row"
+                *ngIf="source.id === 0"
+                fxLayoutAlign="center center"
+              >
+                <div class="total-rating-points" fxLayoutAlign="center center">
+                  {{ element.totalRatingPoints | number: "1.0-2" }}
+                </div>
+              </div>
+              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="let item of element.ratingSources[source.id]?.pour"
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item.name }}: {{ item.total }}</span
+                  >
+                </div>
+              </div>
+              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="let item of element.ratingSources[source.id]?.push"
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item.name }}: {{ item.total }}</span
+                  >
+                </div>
+              </div>
+              <div class="p-0-5" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="let item of element.ratingSources[source.id]?.others"
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item.name }}: {{ item.total }}</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div *ngIf="source.showColumn">
+              <app-calc-total-pour-and-push-in-rating-sources
+                [sourceId]="source.id"
+                [reportUserId]="element.reportUserId"
+                [ratingSources]="element.ratingSources[source.id]"
+                [mappingSources]="mappingSources"
+                [mappingProjects]="mappingProjects"
+                [mappingRatings]="mappingRatings"
+              ></app-calc-total-pour-and-push-in-rating-sources>
+            </div>
+          </td>
+          <td
+            mat-footer-cell
+            *matFooterCellDef
+            [ngClass]="{ hide: !source.showColumn }"
+          >
+            <div
+              fxLayoutAlign="center center"
+              class="px-24p py-0"
+              *ngIf="source.showColumn"
+            >
+              <div
+                class="p-0-5 br-bottom-1p-solid-red"
+                fxLayout="row"
+                *ngIf="source.id === 0"
+                fxLayoutAlign="center center"
+              >
+                <div class="total-rating-points" fxLayoutAlign="center center">
+                  {{ totalRatingPointsByColumn | number: "1.0-2" }}
+                </div>
+              </div>
+              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="
+                    let item of totalRatingSourcesByColumn[source.id]?.pour
+                  "
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item?.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item?.name }}: {{ item?.total }}</span
+                  >
+                </div>
+              </div>
+              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="
+                    let item of totalRatingSourcesByColumn[source.id]?.push
+                  "
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item?.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item?.name }}: {{ item?.total }}</span
+                  >
+                </div>
+              </div>
+              <div class="p-0-5" fxLayout="row">
+                <div
+                  fxLayout="row wrap"
+                  class="rating-color"
+                  *ngFor="
+                    let item of totalRatingSourcesByColumn[source.id]?.others
+                  "
+                  [matTooltip]="item.tooltip"
+                  [ngStyle]="{ background: item?.color }"
+                  fxLayoutAlign="center center"
+                >
+                  <span class="white-space-nowrap"
+                    >{{ item?.name }}: {{ item?.total }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumnsReport; sticky: true"
+          [ngClass]="{ hide: isLoading }"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumnsReport"
+          [ngClass]="{
+            'team-row-show': showTeamRows && row.isTeamRow,
+            'team-row-hide': !showTeamRows && row.isTeamRow,
+            'is-odd': row.isOddRow
+          }"
+        ></tr>
+        <tr
+          mat-footer-row
+          *matFooterRowDef="displayedColumnsReport; sticky: true"
+          class="total"
+          [ngClass]="{ hide: isLoading }"
+        ></tr>
       </table>
     </div>
   </div>

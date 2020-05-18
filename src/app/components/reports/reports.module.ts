@@ -4,8 +4,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-
-
 import { ReportsComponent } from './reports.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ReportsService } from 'src/app/shared/services/api/reports.service';
@@ -15,23 +13,35 @@ import { RatingsService } from 'src/app/shared/services/api/ratings.service';
 import { ReportsResolver } from './reports.resolver';
 import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { UsersService } from 'src/app/shared/services/api/users.service';
-import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
-import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import {
+  MAT_DATE_LOCALE,
+  DateAdapter,
+  MAT_DATE_FORMATS,
+} from '@angular/material';
+import {
+  MomentDateAdapter,
+  MAT_MOMENT_DATE_FORMATS,
+} from '@angular/material-moment-adapter';
 import {
   CustomSelectAutocompleteModule
 } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.module';
+import { CalcTotalPourAndPushInRatingSourcesComponent } from './components/calc-total-pour-and-push-in-rating-sources/calc-total-pour-and-push-in-rating-sources.component';
+
 export const routes = [
   {
     path: '',
     // resolve: {
     //   resolverData: ReportsResolver
     // },
-    component: ReportsComponent
-  }
+    component: ReportsComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [ReportsComponent],
+  declarations: [
+    ReportsComponent,
+    CalcTotalPourAndPushInRatingSourcesComponent,
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -39,7 +49,7 @@ export const routes = [
     FormsModule,
     ReactiveFormsModule,
     ScrollingModule,
-    CustomSelectAutocompleteModule
+    CustomSelectAutocompleteModule,
   ],
   providers: [
     ReportsService,
@@ -50,8 +60,12 @@ export const routes = [
     TeamsService,
     UsersService,
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE],
+    },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-  ]
+  ],
 })
-export class ReportsModule { }
+export class ReportsModule {}
