@@ -1,10 +1,10 @@
-import { Component, OnInit, Input } from "@angular/core";
-import * as _ from "lodash";
+import { Component, OnInit, Input } from '@angular/core';
+import * as _ from 'lodash';
 
 @Component({
-  selector: "app-calc-total-pour-and-push-in-rating-sources",
-  templateUrl: "./calc-total-pour-and-push-in-rating-sources.component.html",
-  styleUrls: ["./calc-total-pour-and-push-in-rating-sources.component.scss"],
+  selector: 'app-calc-total-pour-and-push-in-rating-sources',
+  templateUrl: './calc-total-pour-and-push-in-rating-sources.component.html',
+  styleUrls: ['./calc-total-pour-and-push-in-rating-sources.component.scss'],
 })
 export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   @Input() ratingSources = {}; // 8 types
@@ -57,7 +57,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   }
 
   removeDashFromId(id: string) {
-    return +id.replace("_", "");
+    return +id.replace('_', '');
   }
 
   getValueTotal(array: any[]) {
@@ -76,20 +76,20 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
           return `${this.mappingProjects[item[0]].name}: ${item[1]}`;
         }
       })
-      .join("\n");
+      .join('\n');
   }
 
   getBackgroundColor(ratingIdWithDash: string) {
     return (
       this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].color ||
-      "unset"
+      'unset'
     );
   }
 
   getRatingName(ratingIdWithDash: string) {
     return (
       this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].name ||
-      "unknow"
+      'unknow'
     );
   }
 
