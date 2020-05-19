@@ -12,11 +12,11 @@ const TYPES = {
   styleUrls: ['./calc-total-pour-and-push-in-rating-sources.component.scss'],
 })
 export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
-  @Input() ratingSources = {}; // 8 types
+  @Input() pour = {}; // 8 types
+  @Input() push = {};
   @Input() mappingSources = {};
   @Input() mappingProjects = {};
   @Input() mappingRatings = {};
-  @Input() reportUserId = 0;
   @Input() sourceId = 0;
 
   ratingIdsWithTypeThree = [];
@@ -27,23 +27,25 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    console.log(this.mappingRatings);
-    this.mappingPour = _.cloneDeep(this.ratingSources[1]);
+    this.mappingPour = _.cloneDeep(this.pour);
     this.mappingData = _.mergeWith(
-      this.ratingSources[1],
-      this.ratingSources[2],
+      this.pour,
+      this.push,
       this.handleWhenMergePourAndPush
     );
     this.ratingIdsWithTypeThree = [];
-    Object.keys(this.mappingPour).forEach((ratingIdWithDash) => {
-      if (
-        this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
-          1 ||
-        this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types === 3
-      ) {
-        this.ratingIdsWithTypeThree.push(ratingIdWithDash);
-      }
-    });
+    if (this.mappingPour) {
+      Object.keys(this.mappingPour).forEach((ratingIdWithDash) => {
+        if (
+          this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
+            1 ||
+          this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
+            3
+        ) {
+          this.ratingIdsWithTypeThree.push(ratingIdWithDash);
+        }
+      });
+    }
     this.ratingIdsWithTypeThree = _.uniq(this.ratingIdsWithTypeThree);
   }
 

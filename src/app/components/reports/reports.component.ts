@@ -7,73 +7,74 @@ import {
   OnDestroy,
   Inject,
   ViewChild,
-} from "@angular/core";
-import { DialogService } from "src/app/shared/services/others/dialog.service";
-import { ReportsService } from "src/app/shared/services/api/reports.service";
-import { forkJoin, Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
-import { SourcesService } from "src/app/shared/services/api/sources.service";
-import { ProjectsService } from "src/app/shared/services/api/projects.service";
-import { RatingsService } from "src/app/shared/services/api/ratings.service";
-import { ActivatedRoute, Router } from "@angular/router";
-import { Utils } from "src/app/shared/helpers/utilities";
-import { TeamsService } from "src/app/shared/services/api/teams.service";
-import { UsersService } from "src/app/shared/services/api/users.service";
-import { Routing } from "src/app/shared/helpers/routing";
-import { PageLoadingService } from "src/app/shared/services/others/page-loading.service";
-import { isString, isNumber } from "util";
+} from '@angular/core';
+import { DialogService } from 'src/app/shared/services/others/dialog.service';
+import { ReportsService } from 'src/app/shared/services/api/reports.service';
+import { forkJoin, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { SourcesService } from 'src/app/shared/services/api/sources.service';
+import { ProjectsService } from 'src/app/shared/services/api/projects.service';
+import { RatingsService } from 'src/app/shared/services/api/ratings.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Utils } from 'src/app/shared/helpers/utilities';
+import { TeamsService } from 'src/app/shared/services/api/teams.service';
+import { UsersService } from 'src/app/shared/services/api/users.service';
+import { Routing } from 'src/app/shared/helpers/routing';
+import { PageLoadingService } from 'src/app/shared/services/others/page-loading.service';
+import { isString, isNumber } from 'util';
 import {
   IReportQueryParams,
   IReportResponse,
   ModelReportRatingHandle,
   ModelReportResponseInRow,
   ReportQueryParams,
-} from "./reports.model";
-import { DialogReportsSelectOptionsComponent } from "./dialogs/dialog-reports-select-options/dialog-reports-select-options.component";
-import { CustomSelectAutocompleteComponent } from "src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component";
+} from './reports.model';
+import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
+import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
+import { Ptor } from 'protractor';
 @Component({
-  selector: "app-reports",
-  templateUrl: "./reports.component.html",
-  styleUrls: ["./reports.component.scss"],
+  selector: 'app-reports',
+  templateUrl: './reports.component.html',
+  styleUrls: ['./reports.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   static BUFFER_SIZE = 3;
 
-  @ViewChild("selectUsersElement", { static: false })
+  @ViewChild('selectUsersElement', { static: false })
   selectUsersElement: CustomSelectAutocompleteComponent;
-  @ViewChild("selectTeamsElement", { static: false })
+  @ViewChild('selectTeamsElement', { static: false })
   selectTeamsElement: CustomSelectAutocompleteComponent;
-  @ViewChild("selectSourcesElement", { static: false })
+  @ViewChild('selectSourcesElement', { static: false })
   selectSourcesElement: CustomSelectAutocompleteComponent;
-  @ViewChild("selectProjectsElement", { static: false })
+  @ViewChild('selectProjectsElement', { static: false })
   selectProjectsElement: CustomSelectAutocompleteComponent;
 
   private ngUnsubscribe = new Subject();
   private reportsTableMap = new Map();
   private sourcesColumnsInTableMap = new Map();
   private TOTAL = {
-    GOLDEN_HOURS: "totalGoldenHours",
+    GOLDEN_HOURS: 'totalGoldenHours',
     SELF_POURING: {
-      UNCONTACTABLE: "total_self_uncontactable",
-      NOT_PICK_UP: "total_self_notPickUp",
-      NO_NEED: "total_self_noNeed",
-      HANG_UP: "total_self_hangUp",
-      TWO_SENTENCES: "total_self_twoSentences",
-      MORE_THAN_TWO_SENTENCES: "total_self_moreThanTwoSentences",
+      UNCONTACTABLE: 'total_self_uncontactable',
+      NOT_PICK_UP: 'total_self_notPickUp',
+      NO_NEED: 'total_self_noNeed',
+      HANG_UP: 'total_self_hangUp',
+      TWO_SENTENCES: 'total_self_twoSentences',
+      MORE_THAN_TWO_SENTENCES: 'total_self_moreThanTwoSentences',
     },
     REGULAR_POURING: {
-      UNCONTACTABLE: "total_regular_uncontactable",
-      NOT_PICK_UP: "total_regular_notPickUp",
-      NO_NEED: "total_regular_noNeed",
-      HANG_UP: "total_regular_hangUp",
-      TWO_SENTENCES: "total_regular_twoSentences",
-      MORE_THAN_TWO_SENTENCES: "total_regular_moreThanTwoSentences",
+      UNCONTACTABLE: 'total_regular_uncontactable',
+      NOT_PICK_UP: 'total_regular_notPickUp',
+      NO_NEED: 'total_regular_noNeed',
+      HANG_UP: 'total_regular_hangUp',
+      TWO_SENTENCES: 'total_regular_twoSentences',
+      MORE_THAN_TWO_SENTENCES: 'total_regular_moreThanTwoSentences',
     },
-    PUSH_COUNT: "total_pushCount",
-    SUGGESSTION_COUNT: "total_suggesstionCount",
-    EMAIL_COUNT: "total_emailCount",
-    FLIRTING_COUNT: "total_flirtingCount",
+    PUSH_COUNT: 'total_pushCount',
+    SUGGESSTION_COUNT: 'total_suggesstionCount',
+    EMAIL_COUNT: 'total_emailCount',
+    FLIRTING_COUNT: 'total_flirtingCount',
   };
 
   showTeamRows = false;
@@ -82,7 +83,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   sourcesList = [];
   sourcesColumnsList = [];
   sourcesSelected = [];
-  projectsTooltip = "";
+  projectsTooltip = '';
   startDate;
   endDate;
   teamsList = [];
@@ -156,25 +157,25 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
         const keys = [
-          "reportUserName",
-          "goldenHours",
-          "regularPouring",
-          "selfPouring",
-          "pushCount",
-          "suggestionCount",
-          "emailCount",
-          "flirtingCount",
+          'reportUserName',
+          'goldenHours',
+          'regularPouring',
+          'selfPouring',
+          'pushCount',
+          'suggestionCount',
+          'emailCount',
+          'flirtingCount',
           // 'totalSources'
         ];
-        keys.push("column0");
+        keys.push('column0');
         this.sourcesList.push({
           id: 0,
-          name: "TỔNG NGUỒN",
-          column: "column0",
-          color: "goldenrod",
+          name: 'TỔNG NGUỒN',
+          column: 'column0',
+          color: 'goldenrod',
         });
         res[0].forEach((item, index) => {
-          item.column = "column" + (index + 1);
+          item.column = 'column' + (index + 1);
           keys.push(item.column);
           this.sourcesList.push(item);
         });
@@ -199,11 +200,11 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.detechChanges();
         this.subscribePageLoading();
         this.subscribeQueryParams();
-        console.log("***************************");
+        console.log('***************************');
         this.mappingSources = this.mappingObjectFromList(this.sourcesList);
         this.mappingProjects = this.mappingObjectFromList(this.projectsList);
         this.mappingRatings = this.mappingObjectFromList(this.ratingsList);
-        console.log("***************************");
+        console.log('***************************');
       });
   }
 
@@ -249,10 +250,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.routeWithQueryParams({
             fromDate: res.startDate,
             toDate: res.endDate,
-            projects: Utils.joinArray(res.projectsSelected, ","),
-            teams: Utils.joinArray(res.teamsSelected, ","),
-            users: Utils.joinArray(res.usersSelected, ","),
-            sources: Utils.joinArray(res.sourcesColumnsSelected, ","),
+            projects: Utils.joinArray(res.projectsSelected, ','),
+            teams: Utils.joinArray(res.teamsSelected, ','),
+            users: Utils.joinArray(res.usersSelected, ','),
+            sources: Utils.joinArray(res.sourcesColumnsSelected, ','),
           });
         }
       });
@@ -282,7 +283,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (queryParams.projects) {
         this.projectsSelected = queryParams.projects
-          .split(",")
+          .split(',')
           .map((i) => parseInt(i, 10));
         this.selectProjectsElement.setSelectedDataBaseOnValue(
           this.projectsSelected
@@ -290,7 +291,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (queryParams.teams) {
         this.teamsSelected = queryParams.teams
-          .split(",")
+          .split(',')
           .map((i) => parseInt(i, 10));
         this.selectTeamsElement.setSelectedDataBaseOnValue(this.teamsSelected);
         this.showTeamRows = true;
@@ -299,13 +300,13 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (queryParams.users) {
         this.usersSelected = queryParams.users
-          .split(",")
+          .split(',')
           .map((i) => parseInt(i, 10));
         this.selectUsersElement.setSelectedDataBaseOnValue(this.usersSelected);
       }
       if (queryParams.sources) {
         this.sourcesSelected = queryParams.sources
-          .split(",")
+          .split(',')
           .map((i) => parseInt(i, 10));
         this.selectSourcesElement.setSelectedDataBaseOnValue(
           this.sourcesSelected
@@ -347,9 +348,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       // });
       Object.keys(data.ratingSourcessByTeam).forEach((sourceId) => {
         const item = data.ratingSourcessByTeam[sourceId];
-        item["pour"] = [];
-        item["push"] = [];
-        item["others"] = [];
+        item['pour'] = [];
+        item['push'] = [];
+        item['others'] = [];
         data.pourKeys.forEach((ratingId) => {
           const rating = new ModelReportRatingHandle(),
             { id, name, color } = this.getRatingFromList(ratingId),
@@ -361,7 +362,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           rating.color = color;
           rating.tooltip = tooltip;
           rating.total = total;
-          item["pour"].push(rating);
+          item['pour'].push(rating);
         });
         data.pushKeys.forEach((ratingId) => {
           const rating = new ModelReportRatingHandle(),
@@ -374,7 +375,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           rating.color = color;
           rating.tooltip = tooltip;
           rating.total = total;
-          item["push"].push(rating);
+          item['push'].push(rating);
         });
         data.othersKeys.forEach((ratingId) => {
           const rating = new ModelReportRatingHandle(),
@@ -387,7 +388,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           rating.color = color;
           rating.tooltip = tooltip;
           rating.total = total;
-          item["others"].push(rating);
+          item['others'].push(rating);
         });
       });
     }
@@ -518,7 +519,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
                   report.reportUserId,
                   source.id,
                   pourObj,
-                  "pour"
+                  'pour'
                 ),
                 {
                   data: pushHandledData,
@@ -527,7 +528,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
                   report.reportUserId,
                   source.id,
                   pushObj,
-                  "push"
+                  'push'
                 ),
                 {
                   data: othersHandledData,
@@ -536,16 +537,16 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
                   report.reportUserId,
                   source.id,
                   othersObj,
-                  "others"
+                  'others'
                 );
 
               // report.ratingSources[source.id]['pour'] = this.handleRatingGroups(report.reportUserId, source.id, pourObj, 'pour');
               // report.ratingSources[source.id]['push'] = this.handleRatingGroups(report.reportUserId, source.id, pushObj, 'push');
               // report.ratingSources[source.id]['others'] = this.handleRatingGroups(report.reportUserId, source.id, othersObj, 'others');
 
-              report.ratingSources[source.id]["pour"] = pourHandledData;
-              report.ratingSources[source.id]["push"] = pushHandledData;
-              report.ratingSources[source.id]["others"] = othersHandledData;
+              report.ratingSources[source.id]['pour'] = pourHandledData;
+              report.ratingSources[source.id]['push'] = pushHandledData;
+              report.ratingSources[source.id]['others'] = othersHandledData;
               if (isCalculateRatingPoints) {
                 report.totalRatingPoints =
                   pourRatingPoints + pushRatingPoints + othersRatingPoints;
@@ -724,7 +725,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       result.push(rating);
       totalRatingPoints += rating.totalRatingPoints;
       let temp = 0;
-      let key = "";
+      let key = '';
       let tempList = [];
       if (isString(reportId)) {
         key = `report_${reportId}_${type}_${rating.id}`;
@@ -735,9 +736,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sourcesColumnsInTableMap.get(key) &&
         this.sourcesColumnsInTableMap.get(key)[type]
       ) {
-        temp = this.sourcesColumnsInTableMap.get(key)[type]["total"];
+        temp = this.sourcesColumnsInTableMap.get(key)[type]['total'];
         tempList =
-          this.sourcesColumnsInTableMap.get(key)[type]["tooltipsList"] || [];
+          this.sourcesColumnsInTableMap.get(key)[type]['tooltipsList'] || [];
       }
       const tempData = {
         tooltip: tooltip,
@@ -753,17 +754,17 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
             tempList.push(item);
           });
         }
-        tempData["tooltipsList"] = tempList;
+        tempData['tooltipsList'] = tempList;
       }
-      if (type === "pour") {
+      if (type === 'pour') {
         this.sourcesColumnsInTableMap.set(key, {
           pour: tempData,
         });
-      } else if (type === "push") {
+      } else if (type === 'push') {
         this.sourcesColumnsInTableMap.set(key, {
           push: tempData,
         });
-      } else if (type === "others") {
+      } else if (type === 'others') {
         this.sourcesColumnsInTableMap.set(key, {
           others: tempData,
         });
@@ -777,14 +778,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getRatingFromList(id: any) {
-    const founded = this.ratingsList.find((item) => id === "_" + item.id);
+    const founded = this.ratingsList.find((item) => id === '_' + item.id);
     if (founded) {
       return founded;
     }
     return {
       id: 0,
-      name: "",
-      color: "",
+      name: '',
+      color: '',
     };
   }
 
@@ -809,7 +810,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     return {
-      tooltip: result.join("\n"),
+      tooltip: result.join('\n'),
       total: total,
     };
   }
@@ -825,10 +826,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.routeWithQueryParams({
         fromDate: Utils.DateTime.convertDateStringDDMMYYYY(this.startDate),
         toDate: Utils.DateTime.convertDateStringDDMMYYYY(this.endDate),
-        projects: Utils.joinArray(this.projectsSelected, ","),
-        teams: Utils.joinArray(this.teamsSelected, ","),
-        users: Utils.joinArray(this.usersSelected, ","),
-        sources: Utils.joinArray(this.sourcesSelected, ","),
+        projects: Utils.joinArray(this.projectsSelected, ','),
+        teams: Utils.joinArray(this.teamsSelected, ','),
+        users: Utils.joinArray(this.usersSelected, ','),
+        sources: Utils.joinArray(this.sourcesSelected, ','),
       });
     }, 50);
   }
@@ -838,11 +839,20 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([Routing.REPORTS], { queryParams: queryParams });
   }
 
-  mappingObjectFromList(list: any[], key = "id") {
+  mappingObjectFromList(list: any[], key = 'id') {
     const obj = {};
     list.forEach((item) => {
       obj[item[key]] = item;
     });
     return obj;
+  }
+
+  calculateTotalPourAndPush(sourceId, pourId, pourTotal) {
+    const push: any[] = this.totalRatingSourcesByColumn[sourceId].push;
+    const pushFounded = push.find((item) => item.id === pourId);
+    if (pushFounded) {
+      return `- ${pourTotal + pushFounded.total}`;
+    }
+    return '';
   }
 }
