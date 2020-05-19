@@ -506,7 +506,7 @@
             style="border-bottom: 3px solid;"
           >
             <span fxLayoutAlign="center center" *ngIf="source.showColumn"
-              >{{ source.id === 0 ? "" : "Nguồn" }} {{ source.name }}</span
+              >{{ source.id === 0 ? '' : 'Nguồn' }} {{ source.name }}</span
             >
           </th>
           <td
@@ -526,11 +526,19 @@
                 fxLayoutAlign="center center"
               >
                 <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ element.totalRatingPoints | number: "1.0-2" }}
+                  {{ element.totalRatingPoints | number: '1.0-2' }}
                 </div>
               </div>
               <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div
+                <app-calc-total-pour-and-push-in-rating-sources
+                  [sourceId]="source.id"
+                  [reportUserId]="element.reportUserId"
+                  [ratingSources]="element.ratingSources[source.id]"
+                  [mappingSources]="mappingSources"
+                  [mappingProjects]="mappingProjects"
+                  [mappingRatings]="mappingRatings"
+                ></app-calc-total-pour-and-push-in-rating-sources>
+                <!-- <div
                   fxLayout="row wrap"
                   class="rating-color"
                   *ngFor="let item of element.ratingSources[source.id]?.pour"
@@ -541,7 +549,7 @@
                   <span class="white-space-nowrap"
                     >{{ item.name }}: {{ item.total }}</span
                   >
-                </div>
+                </div> -->
               </div>
               <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
                 <div
@@ -572,7 +580,7 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="source.showColumn">
+            <!-- <div *ngIf="source.showColumn">
               <app-calc-total-pour-and-push-in-rating-sources
                 [sourceId]="source.id"
                 [reportUserId]="element.reportUserId"
@@ -581,7 +589,7 @@
                 [mappingProjects]="mappingProjects"
                 [mappingRatings]="mappingRatings"
               ></app-calc-total-pour-and-push-in-rating-sources>
-            </div>
+            </div> -->
           </td>
           <td
             mat-footer-cell
@@ -600,7 +608,7 @@
                 fxLayoutAlign="center center"
               >
                 <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ totalRatingPointsByColumn | number: "1.0-2" }}
+                  {{ totalRatingPointsByColumn | number: '1.0-2' }}
                 </div>
               </div>
               <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">

@@ -1,6 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as _ from 'lodash';
 
+const TYPES = {
+  ONE: 1,
+  THREE: 3,
+};
+
 @Component({
   selector: 'app-calc-total-pour-and-push-in-rating-sources',
   templateUrl: './calc-total-pour-and-push-in-rating-sources.component.html',
@@ -16,18 +21,24 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
 
   ratingIdsWithTypeThree = [];
   mappingData = {};
+  mappingPour = {};
+  TYPES = TYPES;
 
   constructor() {}
 
   ngOnInit() {
+    console.log(this.mappingRatings);
+    this.mappingPour = _.cloneDeep(this.ratingSources[1]);
     this.mappingData = _.mergeWith(
       this.ratingSources[1],
       this.ratingSources[2],
       this.handleWhenMergePourAndPush
     );
     this.ratingIdsWithTypeThree = [];
-    Object.keys(this.mappingData).forEach((ratingIdWithDash) => {
+    Object.keys(this.mappingPour).forEach((ratingIdWithDash) => {
       if (
+        this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
+          1 ||
         this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types === 3
       ) {
         this.ratingIdsWithTypeThree.push(ratingIdWithDash);

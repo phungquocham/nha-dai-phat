@@ -1,6 +1,6 @@
 <div class="cal-total-pour-and-push-in-rating-sources">
   <div
-    class="p-0-5 default-padding-left"
+    class="container"
     fxLayout="row"
     [ngClass]="{ 'source-total': sourceId === 0 }"
   >
@@ -13,11 +13,27 @@
         [ngStyle]="{
           background: getBackgroundColor(ratingIdWithDash)
         }"
-        [matTooltip]="getTooltipInfo(mappingData[ratingIdWithDash])"
+        [matTooltip]="getTooltipInfo(mappingPour[ratingIdWithDash])"
       >
         <span class="white-space-nowrap">
           {{ getRatingName(ratingIdWithDash) }}:
-          {{ getValueTotal(mappingData[ratingIdWithDash]) }}
+          <span
+            *ngIf="
+              mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
+              TYPES.ONE
+            "
+          >
+            {{ getValueTotal(mappingPour[ratingIdWithDash]) }}
+          </span>
+          <span
+            *ngIf="
+              mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
+              TYPES.THREE
+            "
+          >
+            {{ getValueTotal(mappingPour[ratingIdWithDash]) }} -
+            {{ getValueTotal(mappingData[ratingIdWithDash]) }}
+          </span>
         </span>
       </div>
     </div>
