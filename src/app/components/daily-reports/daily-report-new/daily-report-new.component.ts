@@ -161,7 +161,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
         source.ratingSources = [
           { id: 1, name: 'Đổ', subTab: [{ uid: uuid() }] },
           { id: 2, name: 'Đẩy', subTab: [{ uid: uuid() }] },
-          { id: 3, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
+          { id: 8, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
           { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] },
         ];
         source.expanded = false;
@@ -223,6 +223,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
           if (filter) {
             const pourings = filter.ratingItems.filter((p) => p.type === 1);
             const pushings = filter.ratingItems.filter((p) => p.type === 2);
+            const hints = filter.ratingItems.filter((p) => p.type === 8);
             const others = filter.ratingItems.filter((p) => p.type === 4);
             source.ratingSources = [
               {
@@ -236,9 +237,9 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
                 subTab: this.createComponent(pushings, filter.sourceId, 2),
               },
               {
-                id: 3,
+                id: 8,
                 name: 'Gợi mở',
-                subTab: this.createComponent(pushings, filter.sourceId, 3),
+                subTab: this.createComponent(hints, filter.sourceId, 8),
               },
               {
                 id: 4,
@@ -250,7 +251,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
             source.ratingSources = [
               { id: 1, name: 'Đổ', subTab: [{ uid: uuid() }] },
               { id: 2, name: 'Đẩy', subTab: [{ uid: uuid() }] },
-              { id: 3, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
+              { id: 8, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
               { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] },
             ];
           }
