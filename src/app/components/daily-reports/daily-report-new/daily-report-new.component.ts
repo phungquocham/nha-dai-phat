@@ -1,4 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, QueryList, ViewChildren, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  QueryList,
+  ViewChildren,
+  OnDestroy,
+} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { DailyReportModel } from '../daily-reports.model';
 import { DailyReportService } from '../../../shared/services/api/daily-reports.service';
@@ -24,8 +32,10 @@ import { UsersService } from 'src/app/shared/services/api/users.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DailyReportNewComponent implements OnInit, OnDestroy {
-  @ViewChildren('dailyReportSourceComponent') dailyReportSourceComponent: QueryList<DailyReportSourceComponent>;
-  @ViewChildren('dailyReportFieldsComponent') dailyReportFieldsComponent: QueryList<DailyReportFieldsComponent>;
+  @ViewChildren('dailyReportSourceComponent')
+  dailyReportSourceComponent: QueryList<DailyReportSourceComponent>;
+  @ViewChildren('dailyReportFieldsComponent')
+  dailyReportFieldsComponent: QueryList<DailyReportFieldsComponent>;
   form: FormGroup;
   isNewType = true;
   dailyReportModel = new DailyReportModel();
@@ -37,6 +47,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
   ratingPourings = [];
   ratingPushings = [];
   ratingOthers = [];
+  ratingHints = [];
   dataProjects = [];
   reportDate = '';
   reportId: any;
@@ -54,13 +65,28 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     private snackbar: SnackbarService,
     private activatedRoute: ActivatedRoute,
     private dialog: DialogService,
-    private usersService: UsersService,
+    private usersService: UsersService
   ) {
-    const requiredPattern = [Validators.required, Validators.min(0), Validators.pattern(numericNumberReg)];
-    const noRequiredPattern = [Validators.required, Validators.min(0), Validators.pattern(numericNumberReg)];
+    const requiredPattern = [
+      Validators.required,
+      Validators.min(0),
+      Validators.pattern(numericNumberReg),
+    ];
+    const noRequiredPattern = [
+      Validators.required,
+      Validators.min(0),
+      Validators.pattern(numericNumberReg),
+    ];
     this.form = this.fb.group({
-      goldenHours: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(8),
-      Validators.pattern(numericNumberReg)])],
+      goldenHours: [
+        0,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(8),
+          Validators.pattern(numericNumberReg),
+        ]),
+      ],
       uncontactable: [0, Validators.compose(requiredPattern)],
       notPickUp: [0, Validators.compose(requiredPattern)],
       noNeed: [0, Validators.compose(requiredPattern)],
@@ -77,7 +103,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
       suggestionCount: [0, Validators.compose(noRequiredPattern)],
       emailCount: [0, Validators.compose(noRequiredPattern)],
       zaloFlirtingCount: [0, Validators.compose(noRequiredPattern)],
-      facebookFlirtingCount: [0, Validators.compose(noRequiredPattern)]
+      facebookFlirtingCount: [0, Validators.compose(noRequiredPattern)],
     });
     this.activatedRoute.queryParams.subscribe((query: Params) => {
       this.reportUserId = query.reportUserId ? Number(query.reportUserId) : 0;
@@ -109,27 +135,34 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     return forkJoin(
       this.dailyReportService.getRatingName().pipe(first()),
       this.dailyReportService.getSourceName().pipe(first())
-    ).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      this.ratingPourings = response[0].pourings;
-      this.ratingPushings = response[0].pushings;
-      this.ratingOthers = response[0].others;
-      this.ratingTotalSources = response[0].total;
-      this.templateSources = response[1];
-      this.setLatestRatings();
-      this.renderTemplate();
-      this.ref.markForCheck();
-    });
+    )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        this.ratingPourings = response[0].pourings;
+        this.ratingPushings = response[0].pushings;
+        this.ratingOthers = response[0].others;
+        this.ratingTotalSources = response[0].total;
+        this.ratingHints = this.ratingTotalSources.filter(
+          // tslint:disable-next-line:no-bitwise
+          (item) => (item.types & 8) !== 0
+        );
+        this.templateSources = response[1];
+        this.setLatestRatings();
+        this.renderTemplate();
+        this.ref.markForCheck();
+      });
   }
 
   renderTemplate() {
     if (this.reportId > 0) {
       this.getId(this.reportId);
     } else {
-      this.templateSources.forEach(source => {
+      this.templateSources.forEach((source) => {
         source.ratingSources = [
           { id: 1, name: 'Đổ', subTab: [{ uid: uuid() }] },
           { id: 2, name: 'Đẩy', subTab: [{ uid: uuid() }] },
-          { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] }
+          { id: 3, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
+          { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] },
         ];
         source.expanded = false;
         source.selectedIndex = 0;
@@ -138,66 +171,99 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
   }
 
   getProjects() {
-    this.dailyReportService.getProjectName().pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      this.dataProjects = response;
-      this.ref.markForCheck();
-    });
+    this.dailyReportService
+      .getProjectName()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        this.dataProjects = response;
+        this.ref.markForCheck();
+      });
   }
 
   getUsers() {
-    this.usersService.getUserName(1).pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.usersList = res;
-      this.ref.markForCheck();
-    });
+    this.usersService
+      .getUserName(1)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.usersList = res;
+        this.ref.markForCheck();
+      });
   }
 
   getId(id: any) {
-    this.dailyReportService.getId(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      this.form.controls.goldenHours.setValue(response.goldenHours);
-      this.form.controls.pushCount.setValue(response.pushCount);
-      this.form.controls.suggestionCount.setValue(response.suggestionCount);
-      this.form.controls.emailCount.setValue(response.emailCount);
-      this.form.controls.zaloFlirtingCount.setValue(response.zaloFlirtingCount);
-      this.form.controls.facebookFlirtingCount.setValue(response.facebookFlirtingCount);
-      //
-      this.reportDate = Utils.transform(response.reportDate);
-      this.reportUserName = response.reportUserName;
-      //
-      this.setEditRatingFields(response.latestRatings);
-      Object.keys(response.regularPouring).forEach(key => {
-        this.form.controls[key].setValue(response.regularPouring[key]);
+    this.dailyReportService
+      .getId(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        this.form.controls.goldenHours.setValue(response.goldenHours);
+        this.form.controls.pushCount.setValue(response.pushCount);
+        this.form.controls.suggestionCount.setValue(response.suggestionCount);
+        this.form.controls.emailCount.setValue(response.emailCount);
+        this.form.controls.zaloFlirtingCount.setValue(
+          response.zaloFlirtingCount
+        );
+        this.form.controls.facebookFlirtingCount.setValue(
+          response.facebookFlirtingCount
+        );
+        //
+        this.reportDate = Utils.transform(response.reportDate);
+        this.reportUserName = response.reportUserName;
+        //
+        this.setEditRatingFields(response.latestRatings);
+        Object.keys(response.regularPouring).forEach((key) => {
+          this.form.controls[key].setValue(response.regularPouring[key]);
+        });
+        Object.keys(response.selfPouring).forEach((key) => {
+          this.form.controls[`self_${key}`].setValue(response.selfPouring[key]);
+        });
+        this.templateSources.forEach((source) => {
+          const filter = response.ratingSources.find(
+            (item) => item.sourceId === source.id
+          );
+          if (filter) {
+            const pourings = filter.ratingItems.filter((p) => p.type === 1);
+            const pushings = filter.ratingItems.filter((p) => p.type === 2);
+            const others = filter.ratingItems.filter((p) => p.type === 4);
+            source.ratingSources = [
+              {
+                id: 1,
+                name: 'Đổ',
+                subTab: this.createComponent(pourings, filter.sourceId, 1),
+              },
+              {
+                id: 2,
+                name: 'Đẩy',
+                subTab: this.createComponent(pushings, filter.sourceId, 2),
+              },
+              {
+                id: 3,
+                name: 'Gợi mở',
+                subTab: this.createComponent(pushings, filter.sourceId, 3),
+              },
+              {
+                id: 4,
+                name: 'Khác',
+                subTab: this.createComponent(others, filter.sourceId, 4),
+              },
+            ];
+          } else {
+            source.ratingSources = [
+              { id: 1, name: 'Đổ', subTab: [{ uid: uuid() }] },
+              { id: 2, name: 'Đẩy', subTab: [{ uid: uuid() }] },
+              { id: 3, name: 'Gợi mở', subTab: [{ uid: uuid() }] },
+              { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] },
+            ];
+          }
+          source.expanded = false;
+          source.selectedIndex = 0;
+        });
       });
-      Object.keys(response.selfPouring).forEach(key => {
-        this.form.controls[`self_${key}`].setValue(response.selfPouring[key]);
-      });
-      this.templateSources.forEach(source => {
-        const filter = response.ratingSources.find(item => item.sourceId === source.id);
-        if (filter) {
-          const pourings = filter.ratingItems.filter(p => p.type === 1);
-          const pushings = filter.ratingItems.filter(p => p.type === 2);
-          const others = filter.ratingItems.filter(p => p.type === 4);
-          source.ratingSources = [
-            { id: 1, name: 'Đổ', subTab: this.createComponent(pourings, filter.sourceId, 1) },
-            { id: 2, name: 'Đẩy', subTab: this.createComponent(pushings, filter.sourceId, 2) },
-            { id: 4, name: 'Khác', subTab: this.createComponent(others, filter.sourceId, 4) }
-          ];
-        } else {
-          source.ratingSources = [
-            { id: 1, name: 'Đổ', subTab: [{ uid: uuid() }] },
-            { id: 2, name: 'Đẩy', subTab: [{ uid: uuid() }] },
-            { id: 4, name: 'Khác', subTab: [{ uid: uuid() }] }
-          ];
-        }
-        source.expanded = false;
-        source.selectedIndex = 0;
-      });
-    });
   }
 
   setEditRatingFields(ratings: {}) {
     if (ratings) {
-      Object.keys(ratings).forEach(r => {
-        const fil = this.ratingTotalSources.find(s => s.id === Number(r));
+      Object.keys(ratings).forEach((r) => {
+        const fil = this.ratingTotalSources.find((s) => s.id === Number(r));
         if (fil) {
           fil['value'] = ratings[r];
         }
@@ -217,7 +283,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     if (!component || component.length === 0) {
       tab.push({ uid: uuid() });
     } else {
-      component.forEach(item => {
+      component.forEach((item) => {
         item.sourceId = sourceId;
         item.tabId = tabId;
         tab.push({ uid: uuid(), setValue: item });
@@ -226,22 +292,38 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     return tab;
   }
 
-  onEventSource(event: any, sourceId: any, tabId: any, index: number, uid: any) {
+  onEventSource(
+    event: any,
+    sourceId: any,
+    tabId: any,
+    index: number,
+    uid: any
+  ) {
     if (event.add) {
-      const filter = this.templateSources.find(item => item.id === sourceId).ratingSources.find(item => item.id === tabId);
+      const filter = this.templateSources
+        .find((item) => item.id === sourceId)
+        .ratingSources.find((item) => item.id === tabId);
       if (filter.subTab.length - 1 === index) {
         filter.subTab.push({ uid: uuid() });
       }
     } else if (event.delete) {
-      const filter = this.templateSources.find(item => item.id === sourceId).ratingSources.find(item => item.id === tabId);
+      const filter = this.templateSources
+        .find((item) => item.id === sourceId)
+        .ratingSources.find((item) => item.id === tabId);
       if (filter.subTab.length > 1) {
-        filter.subTab = filter.subTab.filter(x => x.uid !== event.uid);
-        const data = this.dailyReportModel.ratingSources.find(item => item.sourceId === sourceId);
+        filter.subTab = filter.subTab.filter((x) => x.uid !== event.uid);
+        const data = this.dailyReportModel.ratingSources.find(
+          (item) => item.sourceId === sourceId
+        );
         if (data) {
-          data.ratingItems = data.ratingItems.filter(item => item.uid !== uid);
+          data.ratingItems = data.ratingItems.filter(
+            (item) => item.uid !== uid
+          );
         }
       } else if (filter.subTab.length - 1 === index) {
-        const data = this.dailyReportModel.ratingSources.find(item => item.sourceId === sourceId);
+        const data = this.dailyReportModel.ratingSources.find(
+          (item) => item.sourceId === sourceId
+        );
         if (data) {
           data.ratingItems = [];
         }
@@ -249,7 +331,9 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
         filter.subTab.push({ uid: uuid() });
       }
     } else {
-      const data = this.dailyReportModel.ratingSources.find(item => item.sourceId === sourceId);
+      const data = this.dailyReportModel.ratingSources.find(
+        (item) => item.sourceId === sourceId
+      );
       if (!data) {
         const source = new DailyReportModel().ratingSources[0];
         source.sourceId = sourceId;
@@ -257,10 +341,10 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
         source.ratingItems.push(event);
         this.dailyReportModel.ratingSources.push(source);
       } else {
-        const items = data.ratingItems.find(item => item.uid === uid);
+        const items = data.ratingItems.find((item) => item.uid === uid);
         event.type = tabId;
         if (items) {
-          Object.keys(event).forEach(key => {
+          Object.keys(event).forEach((key) => {
             items[key] = event[key];
           });
         } else {
@@ -274,7 +358,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     let fag = true;
     const selectedError = [];
 
-    this.dailyReportSourceComponent.forEach(component => {
+    this.dailyReportSourceComponent.forEach((component) => {
       const error = component.isValidForm();
       if (!error.fag) {
         selectedError.push(error);
@@ -283,7 +367,7 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.dailyReportFieldsComponent.forEach(component => {
+    this.dailyReportFieldsComponent.forEach((component) => {
       if (!component.isValidForm()) {
         console.log('invalid');
         fag = false;
@@ -293,15 +377,24 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     this.openTabError(selectedError);
 
     if (this.form.valid && fag) {
-      Object.keys(this.dailyReportModel.regularPouring).forEach(key => {
-        this.dailyReportModel.regularPouring[key] = Number(this.form.controls[key].value);
+      Object.keys(this.dailyReportModel.regularPouring).forEach((key) => {
+        this.dailyReportModel.regularPouring[key] = Number(
+          this.form.controls[key].value
+        );
       });
-      Object.keys(this.dailyReportModel.selfPouring).forEach(key => {
-        this.dailyReportModel.selfPouring[key] = Number(this.form.controls[`self_${key}`].value);
+      Object.keys(this.dailyReportModel.selfPouring).forEach((key) => {
+        this.dailyReportModel.selfPouring[key] = Number(
+          this.form.controls[`self_${key}`].value
+        );
       });
-      Object.keys(this.dailyReportModel).forEach(key => {
-        if (key !== 'regularPouring' && key !== 'selfPouring' && key !== 'ratingSources'
-          && key !== 'latestRatings' && key !== 'reportUserId') {
+      Object.keys(this.dailyReportModel).forEach((key) => {
+        if (
+          key !== 'regularPouring' &&
+          key !== 'selfPouring' &&
+          key !== 'ratingSources' &&
+          key !== 'latestRatings' &&
+          key !== 'reportUserId'
+        ) {
           this.dailyReportModel[key] = Number(this.form.controls[key].value);
         }
       });
@@ -319,7 +412,9 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
     const errorLength = selectedError.length - 1;
     for (let i = errorLength; i >= 0; i--) {
       const error = selectedError[i];
-      const itemSource = this.templateSources.find(x => x.id === error.sourceId);
+      const itemSource = this.templateSources.find(
+        (x) => x.id === error.sourceId
+      );
       if (itemSource) {
         itemSource.expanded = true;
         if (error.tabId === 4) {
@@ -338,11 +433,11 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
 
   deleteUid() {
     const itemsDelete = [];
-    this.dailyReportModel.ratingSources.forEach(source => {
+    this.dailyReportModel.ratingSources.forEach((source) => {
       if (source.ratingItems.length === 0) {
         itemsDelete.push(source.sourceId);
       }
-      source.ratingItems.forEach(item => {
+      source.ratingItems.forEach((item) => {
         delete item['uid'];
         if (source.sourceId !== 1) {
           delete item['userId'];
@@ -352,8 +447,10 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
         }
       });
     });
-    itemsDelete.forEach(id => {
-      this.dailyReportModel.ratingSources = this.dailyReportModel.ratingSources.filter(x => x.sourceId !== id);
+    itemsDelete.forEach((id) => {
+      this.dailyReportModel.ratingSources = this.dailyReportModel.ratingSources.filter(
+        (x) => x.sourceId !== id
+      );
     });
   }
 
@@ -366,10 +463,15 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
   }
 
   update() {
-    this.dailyReportService.update(this.reportId, this.dailyReportModel).subscribe(() => {
-      this.snackbar.open({ message: 'Cập nhật thành công!', type: 'SUCCESS' });
-      this.router.navigateByUrl(Routing.DAILYREPORTS);
-    });
+    this.dailyReportService
+      .update(this.reportId, this.dailyReportModel)
+      .subscribe(() => {
+        this.snackbar.open({
+          message: 'Cập nhật thành công!',
+          type: 'SUCCESS',
+        });
+        this.router.navigateByUrl(Routing.DAILYREPORTS);
+      });
   }
 
   onCancel() {
@@ -377,44 +479,53 @@ export class DailyReportNewComponent implements OnInit, OnDestroy {
   }
 
   getReportDate() {
-    if (UserProfile.getRole() === ('Administrator' || 'Manager') && Number(this.reportUserId) === 0) {
+    if (
+      UserProfile.getRole() === ('Administrator' || 'Manager') &&
+      Number(this.reportUserId) === 0
+    ) {
       this.openDialogUser();
     } else {
-      this.dailyReportService.getReportDate(this.reportUserId).subscribe((response: any) => {
-        this.reportDate = Utils.transform(response.reportDate);
-        if (response.reportUserName) {
-          this.reportUserName = response.reportUserName;
-        }
-        if (response.reportDate === 0) {
-          this.router.navigateByUrl(Routing.DAILYREPORTS);
-        }
-        this.latestRatings = response.latestRatings;
-        this.setLatestRatings();
-        this.ref.markForCheck();
-      });
+      this.dailyReportService
+        .getReportDate(this.reportUserId)
+        .subscribe((response: any) => {
+          this.reportDate = Utils.transform(response.reportDate);
+          if (response.reportUserName) {
+            this.reportUserName = response.reportUserName;
+          }
+          if (response.reportDate === 0) {
+            this.router.navigateByUrl(Routing.DAILYREPORTS);
+          }
+          this.latestRatings = response.latestRatings;
+          this.setLatestRatings();
+          this.ref.markForCheck();
+        });
     }
   }
 
   setLatestRatings() {
     if (this.ratingTotalSources.length > 0 && this.latestRatings) {
-      this.ratingTotalSources.forEach(s => {
+      this.ratingTotalSources.forEach((s) => {
         const filter = this.latestRatings[s.id];
-        filter ? s.value = Number(filter) : s.value = 0;
+        filter ? (s.value = Number(filter)) : (s.value = 0);
       });
     }
   }
 
   openDialogUser = () => {
-    this.dialog.open({
-      component: DialogUserComponent
-    }).subscribe(res => {
-      if (res && res.userId) {
-        this.router.navigate([`${Routing.DAILYREPORTS}/${Routing.NEW}`], { queryParams: { reportUserId: res.userId } });
-      } else {
-        this.router.navigateByUrl(Routing.DAILYREPORTS);
-      }
-    });
-  }
+    this.dialog
+      .open({
+        component: DialogUserComponent,
+      })
+      .subscribe((res) => {
+        if (res && res.userId) {
+          this.router.navigate([`${Routing.DAILYREPORTS}/${Routing.NEW}`], {
+            queryParams: { reportUserId: res.userId },
+          });
+        } else {
+          this.router.navigateByUrl(Routing.DAILYREPORTS);
+        }
+      });
+  };
 
   opened(item) {
     item.expanded = true;

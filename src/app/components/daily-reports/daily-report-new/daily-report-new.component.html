@@ -1,216 +1,596 @@
 <div fxLayout="column" class="p-1">
   <div class="bd-card w-100">
     <form [formGroup]="form">
-      <h3 class="pl-1">Ghi nhận {{reportDate ? reportDate : '' }} {{reportUserName ? ' - ' + reportUserName : ''}}</h3>
+      <h3 class="pl-1">
+        Ghi nhận {{ reportDate ? reportDate : '' }}
+        {{ reportUserName ? ' - ' + reportUserName : '' }}
+      </h3>
       <div fxLayout="row wrap" class="pl-1">
         <div fxFlex="100">
           <h5>Ghi nhận công việc sales</h5>
         </div>
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['goldenHours'].hasError('required') && form.controls['goldenHours'].touched; else goldenHoursLabel">
-            Giờ vàng *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['goldenHours'].hasError('required') &&
+                form.controls['goldenHours'].touched;
+              else goldenHoursLabel
+            "
+          >
+            Giờ vàng *</mat-label
+          >
           <ng-template #goldenHoursLabel>
             <mat-label>Giờ vàng *</mat-label>
           </ng-template>
-          <input matInput autocomplete="off" type="number" formControlName="goldenHours">
+          <input
+            matInput
+            autocomplete="off"
+            type="number"
+            formControlName="goldenHours"
+          />
         </mat-form-field>
 
         <div fxFlex="100">
           <h5 class="mt-0">Đổ đều đặn</h5>
         </div>
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['uncontactable'].hasError('required') && form.controls['uncontactable'].touched; else uncontactableLabel">
-            Không liên lạc được *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['uncontactable'].hasError('required') &&
+                form.controls['uncontactable'].touched;
+              else uncontactableLabel
+            "
+          >
+            Không liên lạc được *</mat-label
+          >
           <ng-template #uncontactableLabel>
             <mat-label>Không liên lạc được *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="uncontactable">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="uncontactable"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['notPickUp'].hasError('required') && form.controls['notPickUp'].touched; else notPickUpLabel">
-            Không bắt máy *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['notPickUp'].hasError('required') &&
+                form.controls['notPickUp'].touched;
+              else notPickUpLabel
+            "
+          >
+            Không bắt máy *</mat-label
+          >
           <ng-template #notPickUpLabel>
             <mat-label>Không bắt máy *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="notPickUp">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="notPickUp"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['noNeed'].hasError('required') && form.controls['noNeed'].touched; else noNeedLabel">
-            Không nhu cầu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['noNeed'].hasError('required') &&
+                form.controls['noNeed'].touched;
+              else noNeedLabel
+            "
+          >
+            Không nhu cầu *</mat-label
+          >
           <ng-template #noNeedLabel>
             <mat-label>Không nhu cầu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="noNeed">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="noNeed"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['hangUp'].hasError('required') && form.controls['hangUp'].touched; else hangUpLabel">
-            Khách hàng cúp máy *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['hangUp'].hasError('required') &&
+                form.controls['hangUp'].touched;
+              else hangUpLabel
+            "
+          >
+            Khách hàng cúp máy *</mat-label
+          >
           <ng-template #hangUpLabel>
             <mat-label>Khách hàng cúp máy *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="hangUp">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="hangUp"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['twoSentences'].hasError('required') && form.controls['twoSentences'].touched; else twoSentencesLabel">
-            Khách hàng nói 2 câu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['twoSentences'].hasError('required') &&
+                form.controls['twoSentences'].touched;
+              else twoSentencesLabel
+            "
+          >
+            Khách hàng nói 2 câu *</mat-label
+          >
           <ng-template #twoSentencesLabel>
             <mat-label>Khách hàng nói 2 câu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="twoSentences">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="twoSentences"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['moreThanTwoSentences'].hasError('required') && form.controls['moreThanTwoSentences'].touched; else moreThanTwoSentencesLabel">
-            Khách hàng nói trên 2 câu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['moreThanTwoSentences'].hasError('required') &&
+                form.controls['moreThanTwoSentences'].touched;
+              else moreThanTwoSentencesLabel
+            "
+          >
+            Khách hàng nói trên 2 câu *</mat-label
+          >
           <ng-template #moreThanTwoSentencesLabel>
             <mat-label>Khách hàng nói trên 2 câu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="moreThanTwoSentences">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="moreThanTwoSentences"
+          />
         </mat-form-field>
 
         <div fxFlex="100">
           <h5 class="mt-0">Tự đổ</h5>
         </div>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_uncontactable'].hasError('required') && form.controls['self_uncontactable'].touched; else self_uncontactableLabel">
-            Không liên lạc được *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_uncontactable'].hasError('required') &&
+                form.controls['self_uncontactable'].touched;
+              else self_uncontactableLabel
+            "
+          >
+            Không liên lạc được *</mat-label
+          >
           <ng-template #self_uncontactableLabel>
             <mat-label>Không liên lạc được *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_uncontactable">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_uncontactable"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_notPickUp'].hasError('required') && form.controls['self_notPickUp'].touched; else self_notPickUpLabel">
-            Không bắt máy *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_notPickUp'].hasError('required') &&
+                form.controls['self_notPickUp'].touched;
+              else self_notPickUpLabel
+            "
+          >
+            Không bắt máy *</mat-label
+          >
           <ng-template #self_notPickUpLabel>
             <mat-label>Không bắt máy *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_notPickUp">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_notPickUp"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_noNeed'].hasError('required') && form.controls['self_noNeed'].touched; else self_noNeedLabel">
-            Không nhu cầu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_noNeed'].hasError('required') &&
+                form.controls['self_noNeed'].touched;
+              else self_noNeedLabel
+            "
+          >
+            Không nhu cầu *</mat-label
+          >
           <ng-template #self_noNeedLabel>
             <mat-label>Không nhu cầu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_noNeed">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_noNeed"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_hangUp'].hasError('required') && form.controls['self_hangUp'].touched; else self_hangUpLabel">
-            Khách hàng cúp máy *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_hangUp'].hasError('required') &&
+                form.controls['self_hangUp'].touched;
+              else self_hangUpLabel
+            "
+          >
+            Khách hàng cúp máy *</mat-label
+          >
           <ng-template #self_hangUpLabel>
             <mat-label>Khách hàng cúp máy *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_hangUp">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_hangUp"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_twoSentences'].hasError('required') && form.controls['self_twoSentences'].touched; else self_twoSentencesLabel">
-            Khách hàng nói 2 câu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_twoSentences'].hasError('required') &&
+                form.controls['self_twoSentences'].touched;
+              else self_twoSentencesLabel
+            "
+          >
+            Khách hàng nói 2 câu *</mat-label
+          >
           <ng-template #self_twoSentencesLabel>
             <mat-label>Khách hàng nói 2 câu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_twoSentences">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_twoSentences"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['self_moreThanTwoSentences'].hasError('required') && form.controls['self_moreThanTwoSentences'].touched; else self_moreThanTwoSentencesLabel">
-            Khách hàng nói trên 2 câu *</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['self_moreThanTwoSentences'].hasError('required') &&
+                form.controls['self_moreThanTwoSentences'].touched;
+              else self_moreThanTwoSentencesLabel
+            "
+          >
+            Khách hàng nói trên 2 câu *</mat-label
+          >
           <ng-template #self_moreThanTwoSentencesLabel>
             <mat-label>Khách hàng nói trên 2 câu *</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="self_moreThanTwoSentences">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="self_moreThanTwoSentences"
+          />
         </mat-form-field>
 
         <div fxFlex="100">
           <h5 class="mt-0">Vận hành</h5>
         </div>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['pushCount'].hasError('required') && form.controls['pushCount'].touched; else pushCountLabel">
-            Đẩy</mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['pushCount'].hasError('required') &&
+                form.controls['pushCount'].touched;
+              else pushCountLabel
+            "
+          >
+            Đẩy</mat-label
+          >
           <ng-template #pushCountLabel>
             <mat-label>Đẩy</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="pushCount">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="pushCount"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['suggestionCount'].hasError('required') && form.controls['suggestionCount'].touched; else suggestionCountLabel">
-            Gợi mở </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['suggestionCount'].hasError('required') &&
+                form.controls['suggestionCount'].touched;
+              else suggestionCountLabel
+            "
+          >
+            Gợi mở
+          </mat-label>
           <ng-template #suggestionCountLabel>
             <mat-label>Gợi mở</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="suggestionCount">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="suggestionCount"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['emailCount'].hasError('required') && form.controls['emailCount'].touched; else emailCountLabel">
-            Vận hành phiểu Mail </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['emailCount'].hasError('required') &&
+                form.controls['emailCount'].touched;
+              else emailCountLabel
+            "
+          >
+            Vận hành phiểu Mail
+          </mat-label>
           <ng-template #emailCountLabel>
             <mat-label>Vận hành phiểu Mail</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="emailCount">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="emailCount"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['zaloFlirtingCount'].hasError('required') && form.controls['zaloFlirtingCount'].touched; else zaloFlirtingCountLabel">
-            Vận hành phiểu thả thính Zalo </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['zaloFlirtingCount'].hasError('required') &&
+                form.controls['zaloFlirtingCount'].touched;
+              else zaloFlirtingCountLabel
+            "
+          >
+            Vận hành phiểu thả thính Zalo
+          </mat-label>
           <ng-template #zaloFlirtingCountLabel>
             <mat-label>Vận hành phiểu thả thính Zalo</mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="zaloFlirtingCount">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="zaloFlirtingCount"
+          />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="pr-1 custom-input" [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100">
-          <mat-label *ngIf="form.controls['facebookFlirtingCount'].hasError('required') && form.controls['facebookFlirtingCount'].touched; else facebookFlirtingCountLabel">
-            Vận hành phiểu thả thính FB </mat-label>
+        <mat-form-field
+          appearance="outline"
+          class="pr-1 custom-input"
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+        >
+          <mat-label
+            *ngIf="
+              form.controls['facebookFlirtingCount'].hasError('required') &&
+                form.controls['facebookFlirtingCount'].touched;
+              else facebookFlirtingCountLabel
+            "
+          >
+            Vận hành phiểu thả thính FB
+          </mat-label>
           <ng-template #facebookFlirtingCountLabel>
             <mat-label>Vận hành phiểu thả thính FB </mat-label>
           </ng-template>
-          <input matInput type="number" autocomplete="off" formControlName="facebookFlirtingCount">
+          <input
+            matInput
+            type="number"
+            autocomplete="off"
+            formControlName="facebookFlirtingCount"
+          />
         </mat-form-field>
 
         <div fxFlex="100">
           <h5 class="mt-0">Ghi nhận phiểu</h5>
         </div>
 
-        <app-daily-report-fields [fxFlex.gt-md]="16.6666666667" [fxFlex.gt-xs]="33.3333333333" [fxFlex]="100" [value]="item.value" class="pr-1" [id]="item.id" [label]="item.name" *ngFor="let item of ratingTotalSources; let i = index;" (output)="onEventChangeFields($event)" #dailyReportFieldsComponent></app-daily-report-fields>
+        <app-daily-report-fields
+          [fxFlex.gt-md]="16.6666666667"
+          [fxFlex.gt-xs]="33.3333333333"
+          [fxFlex]="100"
+          [value]="item.value"
+          class="pr-1"
+          [id]="item.id"
+          [label]="item.name"
+          *ngFor="let item of ratingTotalSources; let i = index"
+          (output)="onEventChangeFields($event)"
+          #dailyReportFieldsComponent
+        ></app-daily-report-fields>
 
         <div fxFlex="100">
           <h5 class="mt-0">Ghi nhận khách hàng</h5>
         </div>
 
-        <mat-accordion class="w-100 pb-1 pr-1 mat-expansion-panel-content__font-unset" [multi]="true">
-          <mat-expansion-panel *ngFor="let item of templateSources" [expanded]="item.expanded" (opened)="opened(item)" (closed)="closed(item)" class="no-box-shadow custom-mat-expansion-panel bb-1">
+        <mat-accordion
+          class="w-100 pb-1 pr-1 mat-expansion-panel-content__font-unset"
+          [multi]="true"
+        >
+          <mat-expansion-panel
+            *ngFor="let item of templateSources"
+            [expanded]="item.expanded"
+            (opened)="opened(item)"
+            (closed)="closed(item)"
+            class="no-box-shadow custom-mat-expansion-panel bb-1"
+          >
             <mat-expansion-panel-header>
               <mat-panel-title class="text-ellipsis-100">
-                <p>{{item.name}}</p>
+                <p>{{ item.name }}</p>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div fxLayout="row wrap">
-              <mat-tab-group [selectedIndex]="item.selectedIndex" (selectedTabChange)="onTabChanged($event, item)" class="bd-card w-100">
-                <mat-tab [label]="tab.name" fxLayout="column" *ngFor="let tab of item.ratingSources">
-                  <div *ngFor="let sub of tab.subTab; let i = index;">
-                    <app-daily-report-source [sourceId]="item.id" [setValue]="sub.setValue" [uid]="sub.uid" [tabId]="tab.id" [usersList]="usersList" [dataProjects]="dataProjects" [dataRating]="tab.id === 1 ? ratingPourings : tab.id === 2 ? ratingPushings: ratingOthers" (output)="onEventSource($event, item.id, tab.id, i, sub.uid)" #dailyReportSourceComponent></app-daily-report-source>
+              <mat-tab-group
+                [selectedIndex]="item.selectedIndex"
+                (selectedTabChange)="onTabChanged($event, item)"
+                class="bd-card w-100"
+              >
+                <mat-tab
+                  [label]="tab.name"
+                  fxLayout="column"
+                  *ngFor="let tab of item.ratingSources"
+                >
+                  <div *ngFor="let sub of tab.subTab; let i = index">
+                    <app-daily-report-source
+                      [sourceId]="item.id"
+                      [setValue]="sub.setValue"
+                      [uid]="sub.uid"
+                      [tabId]="tab.id"
+                      [usersList]="usersList"
+                      [dataProjects]="dataProjects"
+                      [dataRating]="
+                        tab.id === 1
+                          ? ratingPourings
+                          : tab.id === 2
+                          ? ratingPushings
+                          : tab.id === 3
+                          ? ratingHints
+                          : ratingOthers
+                      "
+                      (output)="
+                        onEventSource($event, item.id, tab.id, i, sub.uid)
+                      "
+                      #dailyReportSourceComponent
+                    ></app-daily-report-source>
                   </div>
                 </mat-tab>
               </mat-tab-group>
             </div>
           </mat-expansion-panel>
         </mat-accordion>
-
       </div>
       <div class="px-1 pb-1">
-        <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" class="mr-1">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          (click)="onSubmit()"
+          class="mr-1"
+        >
           <span *ngIf="isNewType">Thêm</span>
           <span *ngIf="!isNewType">Cập nhật</span>
         </button>

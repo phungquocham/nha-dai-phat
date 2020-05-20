@@ -19,16 +19,14 @@
 export const environment = {
   production: false,
   FIREBASE: {
-    // apiKey: 'AIzaSyD2kTWAgvh13Kx7oOsocZDQe5VGXejZ4Q0',
-    apiKey: 'AIzaSyBgPW41JiJ5UJYQ0NM7SnxjJIBl_k0j8DQ',
-    authDomain: 'https://nhadaiphat.net',
-    databaseURL: 'https://nha-dai-phat.firebaseapp.com',
-    projectId: 'nha-dai-phat',
-    storageBucket: 'nha-dai-phat.appspot.com'
+    apiKey: 'AIzaSyBebx1WLevPWD-1vaQLetIrNo7la6clTr4',
+    authDomain: 'https://dev.nhadaiphat.net',
+    databaseURL: 'https://nhadaiphat-dev.firebaseapp.com',
+    projectId: 'nhadaiphat-dev',
+    storageBucket: 'nhadaiphat-dev.appspot.com',
   },
-  API_DOMAIN: 'https://api.nhadaiphat.net'
+  API_DOMAIN: 'https://api.dev.nhadaiphat.net',
 };
-
 
 /*
  * For easier debugging in development mode, you can import the following file
