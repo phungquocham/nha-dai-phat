@@ -6,12 +6,17 @@ import {
   ChangeDetectorRef,
   AfterViewInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { DailyReportService } from '../../shared/services/api/daily-reports.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Routing } from '../../shared/helpers/routing';
-import { displayedColumns, filterData, setDate, splitNames } from './daily-reports.model';
+import {
+  displayedColumns,
+  filterData,
+  setDate,
+  splitNames,
+} from './daily-reports.model';
 import { QueryEvents } from '../../shared/helpers/query-url';
 import { Utils } from '../../shared/helpers/utilities';
 import { UserProfile } from '../../shared/models/user.profile.namespace';
@@ -32,7 +37,7 @@ import { CustomSelectAutocompleteComponent } from '../../shared/components/mater
   templateUrl: './daily-reports.component.html',
   styleUrls: ['./daily-reports.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bottomPaginator', { static: true }) bottomPaginator: MatPaginator;
@@ -45,6 +50,7 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   //
   ratingPourings = [];
   ratingPushings = [];
+  ratingHints = [];
   ratingOthers = [];
   dataProject = [];
   //
@@ -61,9 +67,12 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingResults = true;
   totalCount = 0;
   latestRatings = [];
-  @ViewChild('selectTeams', { static: false }) selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', { static: false }) selectUsers: CustomSelectAutocompleteComponent;
-  @ViewChild('selectSources', { static: false }) selectSources: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeams', { static: false })
+  selectTeams: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsers', { static: false })
+  selectUsers: CustomSelectAutocompleteComponent;
+  @ViewChild('selectSources', { static: false })
+  selectSources: CustomSelectAutocompleteComponent;
 
   constructor(
     private dailyReportService: DailyReportService,
@@ -74,8 +83,7 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private teamService: TeamsService,
     private usersService: UsersService,
     private dialog: DialogService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.reloadPage();
@@ -101,28 +109,37 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.dailyReportService.getRatingName().pipe(first()),
       this.dailyReportService.getProjectName().pipe(first()),
       this.activatedRoute.queryParams.pipe(first())
-    ).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      this.sourcesList = response[0];
-      this.sourcesSelected = (response[3].sources || '').split(',').map(i => Number(i)).filter(i => i > 0);
-      this.setSource();
-      //
-      this.createTemplateSource(response[0]);
-      this.createColumns();
-      //
-      this.ratingPourings = response[1].pourings;
-      this.ratingPushings = response[1].pushings;
-      this.ratingOthers = response[1].others;
-      this.latestRatings = response[1].total;
-      //
-      this.dataProject = response[2];
-      this.renderRatingSources();
-    });
+    )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        this.sourcesList = response[0];
+        this.sourcesSelected = (response[3].sources || '')
+          .split(',')
+          .map((i) => Number(i))
+          .filter((i) => i > 0);
+        this.setSource();
+        //
+        this.createTemplateSource(response[0]);
+        this.createColumns();
+        //
+        this.ratingPourings = response[1].pourings;
+        this.ratingPushings = response[1].pushings;
+        this.ratingOthers = response[1].others;
+        this.latestRatings = response[1].total;
+        this.ratingHints = this.latestRatings.filter(
+          // tslint:disable-next-line:no-bitwise
+          (item) => (item.types & 8) !== 0
+        );
+        //
+        this.dataProject = response[2];
+        this.renderRatingSources();
+      });
   }
 
   createTemplateSource(arr: any[]) {
     this.templateSources = [];
-    this.sourcesSelected.filter(x => {
-      const filter = arr.find(s => s.id === x);
+    this.sourcesSelected.filter((x) => {
+      const filter = arr.find((s) => s.id === x);
       if (filter) {
         this.templateSources.push(filter);
       }
@@ -132,14 +149,16 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   createColumns() {
     const tempColumn = [];
     this.templateSources.forEach((element, index) => {
-      const column = { column: 'column' + element.id, index: (12 + index) };
-      const filter = tempColumn.find(c => c.column === column.column);
+      const column = { column: 'column' + element.id, index: 12 + index };
+      const filter = tempColumn.find((c) => c.column === column.column);
       if (!filter) {
         tempColumn.push(column);
       }
     });
-    this.columns = Utils.sortIndex(displayedColumns.concat(tempColumn)).map(item => item.column);
-    this.templateSources.forEach(element => {
+    this.columns = Utils.sortIndex(displayedColumns.concat(tempColumn)).map(
+      (item) => item.column
+    );
+    this.templateSources.forEach((element) => {
       element['column'] = 'column' + element.id;
     });
   }
@@ -156,27 +175,45 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filterData.toDate = toDateString;
     //
     if (params.teams) {
-      this.teamSelected = (params.teams || '').split(',').map(i => Number(i)).filter(i => i > 0);
+      this.teamSelected = (params.teams || '')
+        .split(',')
+        .map((i) => Number(i))
+        .filter((i) => i > 0);
     } else {
       this.teamSelected = [];
     }
-    this.filterData.teams = this.teamSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.teams = this.teamSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.setGroup();
     //
     if (params.users) {
-      this.usersSelected = (params.users || '').split(',').map(i => Number(i)).filter(i => i > 0);
+      this.usersSelected = (params.users || '')
+        .split(',')
+        .map((i) => Number(i))
+        .filter((i) => i > 0);
     } else {
       this.usersSelected = [];
     }
-    this.filterData.users = this.usersSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.users = this.usersSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.setTeam();
     //
     if (params.sources) {
-      this.sourcesSelected = (params.sources || '').split(',').map(i => Number(i)).filter(i => i > 0);
+      this.sourcesSelected = (params.sources || '')
+        .split(',')
+        .map((i) => Number(i))
+        .filter((i) => i > 0);
     } else {
       this.sourcesSelected = [];
     }
-    this.filterData.sources = this.sourcesSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.sources = this.sourcesSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.setSource();
   }
 
@@ -185,10 +222,13 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getGroup() {
-    this.teamService.getTeamName().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.teamList = res || [];
-      this.setGroup();
-    });
+    this.teamService
+      .getTeamName()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.teamList = res || [];
+        this.setGroup();
+      });
   }
 
   setGroup() {
@@ -199,11 +239,14 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getTeam() {
-    this.usersService.getUserName().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.usersList = res;
-      this.selectUsers.setData(this.usersList);
-      this.selectUsers.setSelectedDataBaseOnValue(this.usersSelected);
-    });
+    this.usersService
+      .getUserName()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.usersList = res;
+        this.selectUsers.setData(this.usersList);
+        this.selectUsers.setSelectedDataBaseOnValue(this.usersSelected);
+      });
   }
 
   setTeam() {
@@ -241,7 +284,11 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setPaging(event, router = null) {
-    const item = new PagingEvents().init(event, router, this.filterData.pageSize);
+    const item = new PagingEvents().init(
+      event,
+      router,
+      this.filterData.pageSize
+    );
     this.filterData.page = item.page;
     this.filterData.pageSize = item.pageSize;
     this.bottomPaginator.pageSize = item.pageSize;
@@ -249,7 +296,9 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   routeRedirect() {
-    this.router.navigateByUrl(`${Routing.DAILYREPORTS}${Utils.encodeQueryData(this.filterData)}`);
+    this.router.navigateByUrl(
+      `${Routing.DAILYREPORTS}${Utils.encodeQueryData(this.filterData)}`
+    );
   }
 
   getList() {
@@ -257,23 +306,29 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoadingResults = true;
     this.isLoading = true;
 
-    this.dailyReportService.getList(this.filterData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(response => {
-      response.items.forEach(element => {
-        element.reportDate = Utils.transform(element.reportDate);
-        element.reportUserNameTooltip = element.reportUserName;
-        element.reportUserName = splitNames(element.reportUserName);
-        if ((Utils.getTimestamp() - element.createdAt) > 86400 && this.permission === 'Sales') {
-          element.createdAt = false;
-        } else {
-          element.createdAt = true;
-        }
+    this.dailyReportService
+      .getList(this.filterData)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response) => {
+        response.items.forEach((element) => {
+          element.reportDate = Utils.transform(element.reportDate);
+          element.reportUserNameTooltip = element.reportUserName;
+          element.reportUserName = splitNames(element.reportUserName);
+          if (
+            Utils.getTimestamp() - element.createdAt > 86400 &&
+            this.permission === 'Sales'
+          ) {
+            element.createdAt = false;
+          } else {
+            element.createdAt = true;
+          }
+        });
+        this.dataSource = response.items;
+        this.totalCount = response.totalCount;
+        this.isLoadingResults = false;
+        this.isLoading = false;
+        this.renderRatingSources();
       });
-      this.dataSource = response.items;
-      this.totalCount = response.totalCount;
-      this.isLoadingResults = false;
-      this.isLoading = false;
-      this.renderRatingSources();
-    });
   }
 
   onAddDailyReport() {
@@ -285,17 +340,25 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getReportDate(reportUserId = 0) {
-    this.dailyReportService.getReportDate(reportUserId).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      if (Number(response.reportDate) === 0) {
-        this.snackbar.open({ message: 'Không thêm được ghi nhận', type: 'SUCCESS' });
-      } else {
-        if (reportUserId) {
-          this.router.navigateByUrl(`${Routing.DAILYREPORTS}/${Routing.NEW}?reportUserId=${reportUserId}`);
+    this.dailyReportService
+      .getReportDate(reportUserId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        if (Number(response.reportDate) === 0) {
+          this.snackbar.open({
+            message: 'Không thêm được ghi nhận',
+            type: 'SUCCESS',
+          });
         } else {
-          this.router.navigateByUrl(`${Routing.DAILYREPORTS}/${Routing.NEW}`);
+          if (reportUserId) {
+            this.router.navigateByUrl(
+              `${Routing.DAILYREPORTS}/${Routing.NEW}?reportUserId=${reportUserId}`
+            );
+          } else {
+            this.router.navigateByUrl(`${Routing.DAILYREPORTS}/${Routing.NEW}`);
+          }
         }
-      }
-    });
+      });
   }
 
   onEdit(id: any) {
@@ -306,38 +369,59 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filterData.page = 1;
     this.filterData.fromDate = Utils.convertDateString(this.fromDate);
     this.filterData.toDate = Utils.convertDateString(this.toDate);
-    this.filterData.teams = this.teamSelected.map(i => Number(i)).filter(i => i).join(',');
-    this.filterData.users = this.usersSelected.map(i => Number(i)).filter(i => i).join(',');
-    this.filterData.sources = this.sourcesSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.teams = this.teamSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
+    this.filterData.users = this.usersSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
+    this.filterData.sources = this.sourcesSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.routeRedirect();
   }
 
   renderRatingSources() {
     if (this.dataSource.length > 0 && this.latestRatings.length > 0) {
-
-      this.dataSource.map(items => {
-
-        this.templateSources.map(source => {
-
+      this.dataSource.map((items) => {
+        this.templateSources.map((source) => {
           const ratings = {
             ratingPourings: [],
             ratingPushings: [],
-            ratingOthers: []
+            ratingHints: [],
+            ratingOthers: [],
           };
           const itemSource = items.ratingSources[source.id];
 
           if (itemSource) {
             const itemPourings = itemSource['1'];
             const itemPushings = itemSource['2'];
+            const itemHints = itemSource['8'];
             const itemOthers = itemSource['4'];
 
-            ratings.ratingPourings = this.createRating(this.ratingPourings, itemPourings);
-            ratings.ratingPushings = this.createRating(this.ratingPushings, itemPushings);
-            ratings.ratingOthers = this.createRating(this.ratingOthers, itemOthers);
-
+            ratings.ratingPourings = this.createRating(
+              this.ratingPourings,
+              itemPourings
+            );
+            ratings.ratingPushings = this.createRating(
+              this.ratingPushings,
+              itemPushings
+            );
+            ratings.ratingHints = this.createRating(
+              this.ratingHints,
+              itemHints
+            );
+            ratings.ratingOthers = this.createRating(
+              this.ratingOthers,
+              itemOthers
+            );
           } else {
             ratings.ratingPourings = this.ratingPourings;
             ratings.ratingPushings = this.ratingPushings;
+            ratings.ratingHints = this.ratingHints;
             ratings.ratingOthers = this.ratingOthers;
           }
 
@@ -346,12 +430,12 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         //
         const resuts = [];
-        this.latestRatings.forEach(e => {
+        this.latestRatings.forEach((e) => {
           const value = items.latestRatings[e.id];
           const temp = {
             name: e.name,
             value: value ? value : 0,
-            color: e.color
+            color: e.color,
           };
           resuts.push(temp);
         });
@@ -364,11 +448,16 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createRating(ratingSources: any[], ratingData: any) {
     const ratings = [];
-    ratingSources.map(x => {
+    ratingSources.map((x) => {
       const filter = ratingData[x.id];
       if (filter) {
         const { value, tooltip } = this.sum(filter);
-        ratings.push({ name: x.name, value: value, color: x.color, tooltip: tooltip });
+        ratings.push({
+          name: x.name,
+          value: value,
+          color: x.color,
+          tooltip: tooltip,
+        });
       } else {
         ratings.push({ name: x.name, value: 0, color: x.color, tooltip: '' });
       }
@@ -379,47 +468,51 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   sum = (arr: []) => {
     let sum = 0;
     const tooltip = [];
-    arr.map(x => {
-      const name = this.dataProject.find(p => p.id === x[0]);
+    arr.map((x) => {
+      const name = this.dataProject.find((p) => p.id === x[0]);
       if (name) {
         tooltip.push(name.name + ': ' + x[1]);
       }
       sum = sum + x[1];
     });
     return { value: sum, tooltip: tooltip.join('\n') };
-  }
+  };
 
   openDialogUser = () => {
-    this.dialog.open({
-      component: DialogUserComponent
-    }).subscribe(res => {
-      if (res && res.userId) {
-        this.getReportDate(res.userId);
-      }
-    });
-  }
+    this.dialog
+      .open({
+        component: DialogUserComponent,
+      })
+      .subscribe((res) => {
+        if (res && res.userId) {
+          this.getReportDate(res.userId);
+        }
+      });
+  };
 
   openDialogReportSearch() {
-    this.dialog.open({
-      component: DialogReportsSearchComponent,
-      config: { width: '80vw', height: 'calc(100% - 2em)', autoFocus: false },
-      data: {
-        teamList: this.teamList,
-        usersList: this.usersList,
-        sourcesList: this.sourcesList,
-        fromDate: this.fromDate,
-        toDate: this.toDate,
-        teamSelected: this.teamSelected,
-        usersSelected: this.usersSelected,
-        sourcesSelected: this.sourcesSelected
-      }
-    }).subscribe(res => {
-      if (res && res.search) {
-        this.filterData = { ...res.search };
-        this.filterData.page = 1;
-        this.routeRedirect();
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogReportsSearchComponent,
+        config: { width: '80vw', height: 'calc(100% - 2em)', autoFocus: false },
+        data: {
+          teamList: this.teamList,
+          usersList: this.usersList,
+          sourcesList: this.sourcesList,
+          fromDate: this.fromDate,
+          toDate: this.toDate,
+          teamSelected: this.teamSelected,
+          usersSelected: this.usersSelected,
+          sourcesSelected: this.sourcesSelected,
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.search) {
+          this.filterData = { ...res.search };
+          this.filterData.page = 1;
+          this.routeRedirect();
+        }
+      });
   }
   getSelectedTeams(selected) {
     this.teamSelected = selected;
