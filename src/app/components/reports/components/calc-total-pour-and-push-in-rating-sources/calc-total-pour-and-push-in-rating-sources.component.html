@@ -17,23 +17,24 @@
       >
         <span class="white-space-nowrap">
           {{ getRatingName(ratingIdWithDash) }}:
+
           <span
             *ngIf="
               mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
-              TYPES.ONE
-            "
-          >
-            {{ getValueTotal(mappingPour[ratingIdWithDash]) }}
-          </span>
-          <span
-            *ngIf="
-              mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
-              TYPES.THREE
+                TYPES.THREE;
+              else otherRatings
             "
           >
             {{ getValueTotal(mappingPour[ratingIdWithDash]) }} -
             {{ getValueTotal(mappingData[ratingIdWithDash]) }}
           </span>
+
+          <ng-template #otherRatings>
+            <span></span>
+              {{ getValueTotal(mappingPour[ratingIdWithDash]) }}
+            </span>
+          </ng-template>
+
         </span>
       </div>
     </div>
