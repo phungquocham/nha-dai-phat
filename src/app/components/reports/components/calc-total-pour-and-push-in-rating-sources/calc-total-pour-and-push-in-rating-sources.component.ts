@@ -19,7 +19,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   @Input() mappingRatings = {};
   @Input() sourceId = 0;
 
-  ratingIdsWithTypeThree = [];
+  ratingIds = [];
   mappingData = {};
   mappingPour = {};
   TYPES = TYPES;
@@ -33,20 +33,21 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
       this.push,
       this.handleWhenMergePourAndPush
     );
-    this.ratingIdsWithTypeThree = [];
+    this.ratingIds = [];
+
     if (this.mappingPour) {
       Object.keys(this.mappingPour).forEach((ratingIdWithDash) => {
-        if (
-          this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
-            1 ||
-          this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
-            3
-        ) {
-          this.ratingIdsWithTypeThree.push(ratingIdWithDash);
-        }
+        // if (
+        //   this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
+        //     1 ||
+        //   this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
+        //     3
+        // ) {
+        this.ratingIds.push(ratingIdWithDash);
+        // }
       });
     }
-    this.ratingIdsWithTypeThree = _.uniq(this.ratingIdsWithTypeThree);
+    this.ratingIds = _.uniq(this.ratingIds);
   }
 
   handleWhenMergePourAndPush(pourArr: any[], pushArr: any[]) {
