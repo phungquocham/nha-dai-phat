@@ -17,7 +17,6 @@
       >
         <span class="white-space-nowrap">
           {{ getRatingName(ratingIdWithDash) }}:
-
           <span
             *ngIf="
               mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
@@ -30,11 +29,10 @@
           </span>
 
           <ng-template #otherRatings>
-            <span></span>
+            <span>
               {{ getValueTotal(mappingPour[ratingIdWithDash]) }}
             </span>
           </ng-template>
-
         </span>
       </div>
     </div>
