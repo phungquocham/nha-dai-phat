@@ -1,5 +1,13 @@
-import { Component, OnInit, Inject, ViewChild, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { filterData } from '../../daily-reports.model';
 import { UserProfile } from 'src/app/shared/models/user.profile.namespace';
@@ -9,7 +17,7 @@ import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/mat
   selector: 'app-dialog-reports-search',
   templateUrl: './dialog-reports-search.component.html',
   styleUrls: ['./dialog-reports-search.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogReportsSearchComponent implements OnInit, AfterViewInit {
   fromDate = new Date();
@@ -22,18 +30,16 @@ export class DialogReportsSearchComponent implements OnInit, AfterViewInit {
   sourcesSelected = [];
   sourcesList = [];
   permission = UserProfile.getRole();
-  @ViewChild('selectTeams', {static: false}) selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', {static: false}) selectUsers: CustomSelectAutocompleteComponent;
-  @ViewChild('selectSources', {static: false}) selectSources: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeams') selectTeams: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsers') selectUsers: CustomSelectAutocompleteComponent;
+  @ViewChild('selectSources') selectSources: CustomSelectAutocompleteComponent;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<DialogReportsSearchComponent>,
     private ref: ChangeDetectorRef
-  ) {
-  }
-  ngOnInit() {
-  }
+  ) {}
+  ngOnInit() {}
 
   ngAfterViewInit() {
     if (this.data) {
@@ -61,11 +67,20 @@ export class DialogReportsSearchComponent implements OnInit, AfterViewInit {
   search() {
     this.filterData.fromDate = Utils.convertDateString(this.fromDate);
     this.filterData.toDate = Utils.convertDateString(this.toDate);
-    this.filterData.teams = this.teamSelected.map(i => Number(i)).filter(i => i).join(',');
-    this.filterData.users = this.usersSelected.map(i => Number(i)).filter(i => i).join(',');
-    this.filterData.sources = this.sourcesSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.teams = this.teamSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
+    this.filterData.users = this.usersSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
+    this.filterData.sources = this.sourcesSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.closeDialog({
-      search: this.filterData
+      search: this.filterData,
     });
   }
 

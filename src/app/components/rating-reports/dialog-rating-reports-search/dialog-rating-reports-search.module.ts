@@ -3,8 +3,15 @@ import { CommonModule } from '@angular/common';
 import { DialogRatingReportsSearchComponent } from './dialog-rating-reports-search.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
-import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import {
+  MAT_DATE_LOCALE,
+  DateAdapter,
+  MAT_DATE_FORMATS,
+} from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter,
+} from '@angular/material-moment-adapter';
 import { CustomSelectAutocompleteModule } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.module';
 
 @NgModule({
@@ -14,14 +21,18 @@ import { CustomSelectAutocompleteModule } from 'src/app/shared/components/materi
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    CustomSelectAutocompleteModule
+    CustomSelectAutocompleteModule,
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' },
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE],
+    },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
   ],
   entryComponents: [DialogRatingReportsSearchComponent],
-  exports: [DialogRatingReportsSearchComponent]
+  exports: [DialogRatingReportsSearchComponent],
 })
-export class DialogRatingReportsSearchModule { }
+export class DialogRatingReportsSearchModule {}

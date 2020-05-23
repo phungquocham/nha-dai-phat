@@ -27,9 +27,9 @@ export class ContactNewComponent implements OnInit, OnDestroy {
   phoneList: IChip[] = [];
   emailList: IChip[] = [];
   addressList: IChip[] = [];
-  @ViewChild('chipList', {static: false}) chipList;
-  @ViewChild('chipListEmail', {static: false}) chipListEmail;
-  @ViewChild('chipListAddress', {static: false}) chipListAddress;
+  @ViewChild('chipList') chipList;
+  @ViewChild('chipListEmail') chipListEmail;
+  @ViewChild('chipListAddress') chipListAddress;
 
   constructor(
       private fb: FormBuilder,

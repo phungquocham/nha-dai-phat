@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CONFIRM, TYPE_BASIC } from 'src/app/shared/helpers/const';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { REGEX } from 'src/app/shared/helpers/regex';
@@ -7,10 +7,9 @@ import { REGEX } from 'src/app/shared/helpers/regex';
 @Component({
   selector: 'app-dialog-update-rating',
   templateUrl: './dialog-update-rating.component.html',
-  styleUrls: ['./dialog-update-rating.component.css']
+  styleUrls: ['./dialog-update-rating.component.css'],
 })
 export class DialogUpdateRatingComponent implements OnInit {
-
   selectedColor = '#3fb551';
   isNewType = false;
   form: FormGroup;
@@ -19,13 +18,19 @@ export class DialogUpdateRatingComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<DialogUpdateRatingComponent>,
-    private fb: FormBuilder,
+    private fb: FormBuilder
   ) {
     this.form = this.fb.group({
-      'name': [null, Validators.compose([Validators.required])],
-      'points': [null, Validators.compose([Validators.required, Validators.pattern(REGEX.NUMBER_TYPE_FLOOR_POSITIVE)])]
+      name: [null, Validators.compose([Validators.required])],
+      points: [
+        null,
+        Validators.compose([
+          Validators.required,
+          Validators.pattern(REGEX.NUMBER_TYPE_FLOOR_POSITIVE),
+        ]),
+      ],
     });
-   }
+  }
 
   ngOnInit() {
     if (this.data) {
@@ -49,15 +54,14 @@ export class DialogUpdateRatingComponent implements OnInit {
   }
 
   update() {
-    const {name, points} = this.form.value;
+    const { name, points } = this.form.value;
     this.closeDialog({
       status: CONFIRM.OK,
       data: {
         color: this.selectedColor,
         name: name,
-        points: points
-      }
+        points: points,
+      },
     });
   }
-
 }

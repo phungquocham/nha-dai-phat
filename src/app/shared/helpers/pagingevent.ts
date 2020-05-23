@@ -1,9 +1,9 @@
-import { PageEvent } from '@angular/material';
+import { PageEvent } from '@angular/material/paginator';
 
 export class PagingEvents {
   static sort = {
     sort: '',
-    direction: ''
+    direction: '',
   };
   init(event?: PageEvent, router = null, pageSize?) {
     if (router !== null) {
@@ -16,7 +16,7 @@ export class PagingEvents {
     return {
       page: event.pageIndex + 1,
       pageIndex: event.pageIndex,
-      pageSize: event.pageSize
+      pageSize: event.pageSize,
     };
   }
   private checkPage(event?: PageEvent, pageSize?) {
@@ -24,7 +24,7 @@ export class PagingEvents {
       return {
         page: 1,
         pageIndex: 0,
-        pageSize: event.pageSize
+        pageSize: event.pageSize,
       };
     } else {
       return this.page(event);

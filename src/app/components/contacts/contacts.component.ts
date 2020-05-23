@@ -6,14 +6,12 @@ import {
   ChangeDetectorRef,
   AfterViewInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { PageEvent, MatPaginator } from '@angular/material';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { FormControl } from '@angular/forms';
 import { forkJoin, Subject } from 'rxjs';
-
-
 
 import { Routing } from '../../shared/helpers/routing';
 import { displayedColumns, filterData, ratings } from './contacts.model';
@@ -45,19 +43,19 @@ import { SNACKBAR } from 'src/app/shared/helpers/snackbar';
   styleUrls: ['./contacts.component.scss'],
   providers: [ContactsService, ContactSourceService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  @ViewChild('bottomPaginator', { static: false }) bottomPaginator: MatPaginator;
-  @ViewChild('contactsFiltersElement', { static: false }) contactsFiltersElement: ContactsFiltersComponent;
+  @ViewChild('bottomPaginator') bottomPaginator: MatPaginator;
+  @ViewChild('contactsFiltersElement')
+  contactsFiltersElement: ContactsFiltersComponent;
 
   private contactResultsList = [];
   private teamsList = [];
   private usersList = [];
   private contactSourcesList = [];
   ngUnsubscribe = new Subject();
-  columns = [...displayedColumns].map(x => x.column);
+  columns = [...displayedColumns].map((x) => x.column);
   filterData = { ...filterData };
   isLoading = false;
   isLoadingResults = true;
@@ -83,11 +81,9 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     private contactResultsService: ContactResultsService,
     private teamsService: TeamsService,
     private snackbar: SnackbarService
-  ) {
-  }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     forkJoin(
@@ -95,29 +91,45 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.usersService.getUserNamesList(),
       this.contactResultsService.getListContactResultNames(),
       this.teamsService.getTeamName()
-    ).pipe(takeUntil(this.ngUnsubscribe)).subscribe((res: any) => {
-      this.contactSourcesList = res[0];
-      this.usersList = res[1];
-      this.contactResultsList = res[2];
-      this.teamsList = res[3];
-      this.contactsFiltersElement.setContactSourcesList(this.contactSourcesList);
-      this.contactsFiltersElement.setUsersList(this.usersList);
-      this.contactsFiltersElement.setContactResultsList(this.contactResultsList);
-      this.contactsFiltersElement.setTeamsList(this.teamsList);
-      this.reloadPage();
-      this.getInit();
-    });
+    )
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res: any) => {
+        this.contactSourcesList = res[0];
+        this.usersList = res[1];
+        this.contactResultsList = res[2];
+        this.teamsList = res[3];
+        this.contactsFiltersElement.setContactSourcesList(
+          this.contactSourcesList
+        );
+        this.contactsFiltersElement.setUsersList(this.usersList);
+        this.contactsFiltersElement.setContactResultsList(
+          this.contactResultsList
+        );
+        this.contactsFiltersElement.setTeamsList(this.teamsList);
+        this.reloadPage();
+        this.getInit();
+      });
   }
 
   reloadPage = () => {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       this.initialFilter();
       this.filterData = QueryEvents.setQuery(this.filterData, params);
-      this.contactsFiltersElement.setSelectedContacts(this.filterData.contactSourceIds);
-      this.contactsFiltersElement.setFromAssignedDate(this.filterData.fromAssignedDate);
-      this.contactsFiltersElement.setToAssignedDate(this.filterData.toAssignedDate);
-      this.contactsFiltersElement.setSelectedUsers(this.filterData.assignedUserIds);
-      this.contactsFiltersElement.setContactResultIds(this.filterData.contactResultIds);
+      this.contactsFiltersElement.setSelectedContacts(
+        this.filterData.contactSourceIds
+      );
+      this.contactsFiltersElement.setFromAssignedDate(
+        this.filterData.fromAssignedDate
+      );
+      this.contactsFiltersElement.setToAssignedDate(
+        this.filterData.toAssignedDate
+      );
+      this.contactsFiltersElement.setSelectedUsers(
+        this.filterData.assignedUserIds
+      );
+      this.contactsFiltersElement.setContactResultIds(
+        this.filterData.contactResultIds
+      );
       this.contactsFiltersElement.setMinMatches(+this.filterData.minMatches);
       const event = new PageEvent();
       event.pageIndex = this.filterData.page - 1;
@@ -125,7 +137,7 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setPaging(event, 'reload');
       this.getList();
     });
-  }
+  };
 
   initialFilter() {
     this.filterData = { ...filterData };
@@ -134,7 +146,7 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   copyMessage(val: string) {
     UserProfile.copyText({
       allow: true,
-      value: val
+      value: val,
     });
     const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';
@@ -150,7 +162,11 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setPaging(event, router = null) {
-    const item = new PagingEvents().init(event, router, this.filterData.pageSize);
+    const item = new PagingEvents().init(
+      event,
+      router,
+      this.filterData.pageSize
+    );
     this.filterData.page = item.page;
     this.filterData.pageSize = item.pageSize;
     this.bottomPaginator.pageSize = item.pageSize;
@@ -168,57 +184,66 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoadingResults = true;
     this.isLoading = true;
     this.ref.markForCheck();
-    this.contactsService.getList(this.filterData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(response => {
-      console.log(response);
-      response.items.forEach(element => {
-        const assignments = [];
-        (element.assignments || []).forEach(el => {
-          const { contactResultId, contactResultName, contactResultColor } = this.getContactResultInfo(el[3]);
-          const item = {
-            assignedDate: el[0],
-            assignedUserId: el[1],
-            assignedUserName: el[2],
-            contactResultId,
-            contactResult: contactResultName,
-            contactResultColor,
-            interestedProjectId: el[4],
-            InterestedProjectName: el[5],
-            appointmentDate: el[6],
-            email: el[7],
-            facebook: el[8],
-            zalo: el[9],
-            note: el[10],
-            updatedAt: el[11],
-            tooltip: ''
-          };
-          item.tooltip = this.createTooltipAssignments(item);
-          item.assignedUserName = this.getFirstAndLastName(item.assignedUserName);
-          assignments.push(item);
+    this.contactsService
+      .getList(this.filterData)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response) => {
+        console.log(response);
+        response.items.forEach((element) => {
+          const assignments = [];
+          (element.assignments || []).forEach((el) => {
+            const {
+              contactResultId,
+              contactResultName,
+              contactResultColor,
+            } = this.getContactResultInfo(el[3]);
+            const item = {
+              assignedDate: el[0],
+              assignedUserId: el[1],
+              assignedUserName: el[2],
+              contactResultId,
+              contactResult: contactResultName,
+              contactResultColor,
+              interestedProjectId: el[4],
+              InterestedProjectName: el[5],
+              appointmentDate: el[6],
+              email: el[7],
+              facebook: el[8],
+              zalo: el[9],
+              note: el[10],
+              updatedAt: el[11],
+              tooltip: '',
+            };
+            item.tooltip = this.createTooltipAssignments(item);
+            item.assignedUserName = this.getFirstAndLastName(
+              item.assignedUserName
+            );
+            assignments.push(item);
+          });
+          element.assignments = [];
+          element.assignments = assignments;
         });
-        element.assignments = [];
-        element.assignments = assignments;
+        this.dataSource = response.items;
+        this.totalCount = response.totalCount;
+        this.isLoadingResults = false;
+        this.isLoading = false;
+        this.ref.markForCheck();
       });
-      this.dataSource = response.items;
-      this.totalCount = response.totalCount;
-      this.isLoadingResults = false;
-      this.isLoading = false;
-      this.ref.markForCheck();
-    });
   }
 
   getContactResultInfo(id: number): any {
-    const founded = this.contactResultsList.find(item => item.id === id);
+    const founded = this.contactResultsList.find((item) => item.id === id);
     if (founded) {
       return {
         contactResultId: founded.id,
         contactResultName: founded.name,
-        contactResultColor: founded.color
+        contactResultColor: founded.color,
       };
     }
     return {
       contactResultId: -1,
       contactResultName: undefined,
-      contactResultColor: ''
+      contactResultColor: '',
     };
   }
 
@@ -254,7 +279,7 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
       item.push(`Ghi chú : ${data.note}`);
     }
     return item.join('\n');
-  }
+  };
 
   onPagingEvent(event?: PageEvent) {
     this.setPaging(event);
@@ -262,15 +287,16 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   routeRedirect() {
-    this.router.navigateByUrl(`${Routing.CONTACTS}${Utils.encodeQueryData(this.filterData)}`);
+    this.router.navigateByUrl(
+      `${Routing.CONTACTS}${Utils.encodeQueryData(this.filterData)}`
+    );
   }
 
   getInit = () => {
-    return forkJoin(
-    ).pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
-
-    });
-  }
+    return forkJoin()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {});
+  };
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
@@ -281,61 +307,62 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (id) {
       this.router.navigate([`${Routing.CONTACTS}/${id}`]);
     } else {
-      this.dialog.open({
-        component: DialogImportComponent
-      }).subscribe(res => {
-        if (res) {
-
-        }
-      });
+      this.dialog
+        .open({
+          component: DialogImportComponent,
+        })
+        .subscribe((res) => {
+          if (res) {
+          }
+        });
     }
   }
 
-  search = () => {
-
-  }
+  search = () => {};
 
   openDialogUser = () => {
-    this.dialog.open({
-
-    }).subscribe(res => {
+    this.dialog.open({}).subscribe((res) => {
       if (res && res.userId) {
       }
     });
-  }
+  };
 
   openDialogContactsFilters() {
-    this.dialog.open({
-      component: DialogContactsFiltersComponent,
-      data: {
-        contactSourcesList: this.contactSourcesList,
-        usersList: this.usersList,
-        contactResultsList: this.contactResultsList,
-        teamsList: this.teamsList
-      },
-      config: {
-        autoFocus: false
-      }
-    }).subscribe(res => {
-      if (res && res.status === BUTTON.OK) {
-        this.router.navigate([Routing.CONTACTS], { queryParams: res.query });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogContactsFiltersComponent,
+        data: {
+          contactSourcesList: this.contactSourcesList,
+          usersList: this.usersList,
+          contactResultsList: this.contactResultsList,
+          teamsList: this.teamsList,
+        },
+        config: {
+          autoFocus: false,
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.status === BUTTON.OK) {
+          this.router.navigate([Routing.CONTACTS], { queryParams: res.query });
+        }
+      });
   }
 
   openDialogRecordForSales(contactId: number, data: any) {
-    this.dialog.open({
-      component: DialogRecordForSalesComponent,
-      data: {
-        contactId,
-        userInfo: data,
-        contactResultsList: this.contactResultsList
-      }
-    }).subscribe(res => {
-      if (res === BUTTON.OK) {
-        this.getList();
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogRecordForSalesComponent,
+        data: {
+          contactId,
+          userInfo: data,
+          contactResultsList: this.contactResultsList,
+        },
+      })
+      .subscribe((res) => {
+        if (res === BUTTON.OK) {
+          this.getList();
+        }
+      });
   }
 
   isAllSelected() {
@@ -344,9 +371,9 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
     return numSelected === numRows;
   }
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.forEach(row => this.selection.select(row));
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.dataSource.forEach((row) => this.selection.select(row));
   }
 
   clearSelection() {
@@ -354,29 +381,39 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmDelete() {
-    this.dialog.open({
-      component: DialogConfirmComponent,
-      data: {
-        message: 'Bạn chắc chắn muốn xóa khách hàng đã chọn?'
-      }
-    }).subscribe(ok => {
-      if (ok === CONFIRM.OK) {
-        const ids = this.selection.selected.map(i => i.id);
-        this.contactsService
-          .deleteMultipleContacts(ids)
-          .pipe(takeUntil(this.ngUnsubscribe))
-          .subscribe(_ => {
-            this.snackbar.open({ message: 'Xóa thành công', type: SNACKBAR.TYPE.SUCCESS });
-            this.getList();
-          });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogConfirmComponent,
+        data: {
+          message: 'Bạn chắc chắn muốn xóa khách hàng đã chọn?',
+        },
+      })
+      .subscribe((ok) => {
+        if (ok === CONFIRM.OK) {
+          const ids = this.selection.selected.map((i) => i.id);
+          this.contactsService
+            .deleteMultipleContacts(ids)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.snackbar.open({
+                message: 'Xóa thành công',
+                type: SNACKBAR.TYPE.SUCCESS,
+              });
+              this.getList();
+            });
+        }
+      });
   }
 
   exportTable() {
-    this.contactsService.export(this.filterData as any).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.snackbar.open({ message: 'Đã gửi yêu cầu thành công', type: SNACKBAR.TYPE.SUCCESS });
-    });
+    this.contactsService
+      .export(this.filterData as any)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.snackbar.open({
+          message: 'Đã gửi yêu cầu thành công',
+          type: SNACKBAR.TYPE.SUCCESS,
+        });
+      });
   }
-
 }

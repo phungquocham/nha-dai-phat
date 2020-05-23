@@ -22,10 +22,10 @@ export class ContactsFiltersComponent implements OnInit, AfterViewInit {
 
   @Input() autoHideOnPhone = true;
 
-  @ViewChild('selectContactsElement', {static: false}) selectContactsElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsersElement', {static: false}) selectUsersElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectTeamsElement', {static: false}) selectTeamsElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectContactResultsElement', {static: false}) selectContactResultsElement: CustomSelectAutocompleteComponent;
+  @ViewChild('selectContactsElement') selectContactsElement: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsersElement') selectUsersElement: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeamsElement') selectTeamsElement: CustomSelectAutocompleteComponent;
+  @ViewChild('selectContactResultsElement') selectContactResultsElement: CustomSelectAutocompleteComponent;
 
   private contactSourcesSelected = [];
   private usersSelected = [];

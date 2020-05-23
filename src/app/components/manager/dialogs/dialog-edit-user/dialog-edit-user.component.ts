@@ -1,8 +1,11 @@
 import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { REGEX } from 'src/app/shared/helpers/regex';
-import { ModelUserCreate, ModelUserInList } from 'src/app/shared/models/users.model';
+import {
+  ModelUserCreate,
+  ModelUserInList,
+} from 'src/app/shared/models/users.model';
 import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { ROLE } from 'src/app/shared/helpers/const';
 import { Utils } from 'src/app/shared/helpers/utilities';
@@ -10,22 +13,16 @@ import { Utils } from 'src/app/shared/helpers/utilities';
 @Component({
   selector: 'app-dialog-edit-user',
   templateUrl: './dialog-edit-user.component.html',
-  styleUrls: ['./dialog-edit-user.component.css']
+  styleUrls: ['./dialog-edit-user.component.css'],
 })
 export class DialogEditUserComponent implements OnInit {
-
   private userId = 0;
 
   form: FormGroup;
   teamsList = [];
   isNewType = false;
   ROLE = ROLE;
-  rolesList = [
-    ROLE.ADMINISTRATOR,
-    ROLE.MANAGER,
-    ROLE.SALES,
-    ROLE.GUEST
-  ];
+  rolesList = [ROLE.ADMINISTRATOR, ROLE.MANAGER, ROLE.SALES, ROLE.GUEST];
   joinedDate = new Date();
 
   constructor(
@@ -36,18 +33,30 @@ export class DialogEditUserComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
-      'firstName': [null, Validators.compose([Validators.required])],
-      'lastName': [null, Validators.compose([Validators.required])],
-      'phone': [null, Validators.compose([Validators.required, Validators.pattern(REGEX.PHONE)])],
-      'email': [null, Validators.compose([Validators.required, Validators.pattern(REGEX.EMAIL)])],
-      'role': [ROLE.GUEST, Validators.compose([Validators.required])],
-      'teamId': [null],
-      'joinedDate': [new Date(), Validators.required]
+      firstName: [null, Validators.compose([Validators.required])],
+      lastName: [null, Validators.compose([Validators.required])],
+      phone: [
+        null,
+        Validators.compose([
+          Validators.required,
+          Validators.pattern(REGEX.PHONE),
+        ]),
+      ],
+      email: [
+        null,
+        Validators.compose([
+          Validators.required,
+          Validators.pattern(REGEX.EMAIL),
+        ]),
+      ],
+      role: [ROLE.GUEST, Validators.compose([Validators.required])],
+      teamId: [null],
+      joinedDate: [new Date(), Validators.required],
     });
   }
 
   ngOnInit() {
-    this.form.get('role').valueChanges.subscribe(name => {
+    this.form.get('role').valueChanges.subscribe((name) => {
       if (name === ROLE.SALES) {
         if (!this.form.value['teamId']) {
           this.form.controls['teamId'].setValue(this.teamsList[0].id);
@@ -80,7 +89,7 @@ export class DialogEditUserComponent implements OnInit {
   }
 
   private getTeamsList() {
-    this.teamsService.getList().subscribe(res => {
+    this.teamsService.getList().subscribe((res) => {
       this.teamsList = res;
       this.detectChanges();
       this.getDataToForm();
@@ -105,13 +114,19 @@ export class DialogEditUserComponent implements OnInit {
   }
 
   updateUser() {
-    this.form.controls['joinedDate'].setValue(Utils.DateTime.convertDateStringDDMMYYYY(this.form.controls['joinedDate'].value));
-    const formatedPhone = Utils.ConvertPhoneNumberWithVietNamePhoneCode(this.form.controls['phone'].value);
+    this.form.controls['joinedDate'].setValue(
+      Utils.DateTime.convertDateStringDDMMYYYY(
+        this.form.controls['joinedDate'].value
+      )
+    );
+    const formatedPhone = Utils.ConvertPhoneNumberWithVietNamePhoneCode(
+      this.form.controls['phone'].value
+    );
     const data = {
       firstName: this.form.value['firstName'],
       lastName: this.form.value['lastName'],
       phone: formatedPhone,
-      email: this.form.value['email']
+      email: this.form.value['email'],
     };
     if (this.data.role === ROLE.ADMINISTRATOR) {
       data['role'] = ROLE.ADMINISTRATOR;

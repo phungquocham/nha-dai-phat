@@ -15,74 +15,74 @@ const routes: Routes = [
     children: [
       {
         path: ``,
-        loadChildren: './components/dashboard/dashboard.module#DashboardModule',
+        loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule),
         data: { preload: true }
       },
       {
         path: Routing.MANAGER,
-        loadChildren: './components/manager/manager.module#ManagerModule',
+        loadChildren: () => import('./components/manager/manager.module').then(m => m.ManagerModule),
       },
       {
         path: Routing.DAILYREPORTS,
-        loadChildren: './components/daily-reports/daily-reports.module#DailyReportsModule',
+        loadChildren: () => import('./components/daily-reports/daily-reports.module').then(m => m.DailyReportsModule),
       },
       {
         path: Routing.REPORTS,
-        loadChildren: './components/reports/reports.module#ReportsModule',
+        loadChildren: () => import('./components/reports/reports.module').then(m => m.ReportsModule),
       },
       {
         path: Routing.DAILYREPORTS,
-        loadChildren: './components/daily-reports/daily-reports.module#DailyReportsModule'
+        loadChildren: () => import('./components/daily-reports/daily-reports.module').then(m => m.DailyReportsModule)
       },
       {
         path: Routing.DAILYREPORTS + '/new',
-        loadChildren: './components/daily-reports/daily-report-new/daily-report-new.module#DailyReportNewModule'
+        loadChildren: () => import('./components/daily-reports/daily-report-new/daily-report-new.module').then(m => m.DailyReportNewModule)
       },
       {
         path: Routing.DAILYREPORTS + '/:id',
-        loadChildren: './components/daily-reports/daily-report-new/daily-report-new.module#DailyReportNewModule'
+        loadChildren: () => import('./components/daily-reports/daily-report-new/daily-report-new.module').then(m => m.DailyReportNewModule)
       },
       {
         path: Routing.RATING_REPORTS,
-        loadChildren: './components/rating-reports/rating-reports.module#RatingReportsModule'
+        loadChildren: () => import('./components/rating-reports/rating-reports.module').then(m => m.RatingReportsModule)
       },
       {
         path: Routing.CONTACTS,
-        loadChildren: './components/contacts/contacts.module#ContactsModule'
+        loadChildren: () => import('./components/contacts/contacts.module').then(m => m.ContactsModule)
       },
       {
         path: `${Routing.CONTACTS}/${Routing.NEW}`,
-        loadChildren: './components/contacts/contact-new/contact-new.module#ContactNewModule'
+        loadChildren: () => import('./components/contacts/contact-new/contact-new.module').then(m => m.ContactNewModule)
       },
       {
         path: `${Routing.CONTACTS}/:id`,
-        loadChildren: './components/contacts/contact-new/contact-new.module#ContactNewModule'
+        loadChildren: () => import('./components/contacts/contact-new/contact-new.module').then(m => m.ContactNewModule)
       },
       {
         path: Routing.TELESALES_REPORTS,
-        loadChildren: './components/telesales-reports/telesales-reports.module#TelesalesReportsModule'
+        loadChildren: () => import('./components/telesales-reports/telesales-reports.module').then(m => m.TelesalesReportsModule)
       },
       {
         path: Routing.CONTACT_SOURCES,
-        loadChildren: './components/contact-sources/contact-sources.module#ContactSourcesModule'
+        loadChildren: () => import('./components/contact-sources/contact-sources.module').then(m => m.ContactSourcesModule)
       },
       {
         path: Routing.CONTACT_SOURCES + '/:id',
-        loadChildren: './components/contact-sources-detail/contact-sources-detail.module#ContactSourcesDetailModule'
+        loadChildren: () => import('./components/contact-sources-detail/contact-sources-detail.module').then(m => m.ContactSourcesDetailModule)
       },
       {
         path: `${Routing.CONTACT_SOURCES}/:id/assignments`,
-        loadChildren: './components/contact-sources-new/contact-sources-new.module#ContactSourcesNewModule'
+        loadChildren: () => import('./components/contact-sources-new/contact-sources-new.module').then(m => m.ContactSourcesNewModule)
       },
       {
         path: `${Routing.CONTACT_SOURCES}/:id/assignments/:assignedDate`,
-        loadChildren: './components/contact-sources-new/contact-sources-new.module#ContactSourcesNewModule'
+        loadChildren: () => import('./components/contact-sources-new/contact-sources-new.module').then(m => m.ContactSourcesNewModule)
       },
     ]
   },
   {
     path: Routing.LOG_IN,
-    loadChildren: './components/login/login.module#LoginModule'
+    loadChildren: () => import('./components/login/login.module').then(m => m.LoginModule)
   },
   {
     path: '**',

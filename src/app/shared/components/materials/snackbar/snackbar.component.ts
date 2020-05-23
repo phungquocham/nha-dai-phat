@@ -1,14 +1,12 @@
 import { Component, OnInit, ElementRef, Inject } from '@angular/core';
-import { MAT_SNACK_BAR_DATA } from '@angular/material';
+import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-snackbar',
   templateUrl: './snackbar.component.html',
-  styleUrls: ['./snackbar.component.scss']
+  styleUrls: ['./snackbar.component.scss'],
 })
-
 export class SnackbarComponent implements OnInit {
-
   message: string;
   type: string;
   data: any;
@@ -16,7 +14,7 @@ export class SnackbarComponent implements OnInit {
   constructor(
     @Inject(MAT_SNACK_BAR_DATA) private dataFromService: SnackBarData,
     private elementRef: ElementRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.message = this.dataFromService.message || '';
@@ -55,11 +53,10 @@ interface SnackBarData {
   data: any;
 }
 
- const SNACKBAR = {
+const SNACKBAR = {
   TYPE: {
     SUCCESS: 'SUCCESS',
     ERROR: 'ERROR',
-    INFO: 'INFO'
-  }
+    INFO: 'INFO',
+  },
 };
-

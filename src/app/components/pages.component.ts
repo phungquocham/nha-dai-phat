@@ -6,15 +6,22 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { MatSidenav, MatMenuTrigger } from '@angular/material';
-import { AngularFirestoreCollection, AngularFirestore } from '@angular/fire/firestore';
+import { MatSidenav } from '@angular/material/sidenav';
+import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  AngularFirestoreCollection,
+  AngularFirestore,
+} from '@angular/fire/firestore';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
-
+import {
+  takeUntil,
+  map,
+  debounceTime,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 
 import { AuthenticationService } from '../shared/services/others/authentication.service';
 import { Routing } from '../shared/helpers/routing';
@@ -25,26 +32,23 @@ import { ApiNDP } from '../shared/helpers/api';
 import { Location } from '@angular/common';
 import { Utils } from '../shared/helpers/utilities';
 
-
 @Component({
   selector: 'app-pages',
   templateUrl: './pages.component.html',
   styleUrls: ['./pages.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagesComponent implements OnInit, AfterViewInit {
-
-  @ViewChild('sidenav', { static: false }) sidenav: MatSidenav;
-  @ViewChild('sidenavContent', { static: false }) sidenavContent: ElementRef;
-  @ViewChild('notificationsMenuTrigger', { static: false }) trigger: MatMenuTrigger;
-
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('sidenavContent') sidenavContent: ElementRef;
+  @ViewChild('notificationsMenuTrigger') trigger: MatMenuTrigger;
 
   private routerLink = '';
   private ngUnsubscribe = new Subject();
   private loadFirstTime = true;
 
-  isAdmin = (UserProfile.getRole() === ROLE.ADMINISTRATOR) ? true : false;
+  isAdmin = UserProfile.getRole() === ROLE.ADMINISTRATOR ? true : false;
   menuList = MenuSidenav.GetMenus();
   sidenavIsPinned = false;
   title = '';
@@ -68,7 +72,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
     private location: Location
   ) {
     console.log('INIT PAGES COMPONENT');
-    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       if (res instanceof NavigationEnd) {
         console.log('router change');
         this.showSearchInput = false;
@@ -96,33 +100,37 @@ export class PagesComponent implements OnInit, AfterViewInit {
         }
       }
     });
-    this.firebaseRef = db
-      .collection(`${ApiNDP.Users}/${UserProfile.getUserId()}/${ApiNDP.Notifications}`, ref => ref.orderBy('StartedAt', 'desc').limit(10));
+    this.firebaseRef = db.collection(
+      `${ApiNDP.Users}/${UserProfile.getUserId()}/${ApiNDP.Notifications}`,
+      (ref) => ref.orderBy('StartedAt', 'desc').limit(10)
+    );
   }
 
   ngOnInit() {
     this.setSearchChange();
-    this.notificationsList = this.firebaseRef.valueChanges().pipe(map(res => {
-      let count = 0;
-      res.forEach((item: NotificationModel) => {
-        item.seeDetail = false;
-        if (item.CompletedAt === 0) {
-          count += 1;
+    this.notificationsList = this.firebaseRef.valueChanges().pipe(
+      map((res) => {
+        let count = 0;
+        res.forEach((item: NotificationModel) => {
+          item.seeDetail = false;
+          if (item.CompletedAt === 0) {
+            count += 1;
+          }
+        });
+        if (count > 0) {
+          this.isProgressing = true;
+        } else {
+          this.isProgressing = false;
         }
-      });
-      if (count > 0) {
-        this.isProgressing = true;
-      } else {
-        this.isProgressing = false;
-      }
-      if (this.loadFirstTime) {
-        this.loadFirstTime = false;
-      } else {
-        // this.trigger.openMenu();
-        this.isNewNotification = true;
-      }
-      return res;
-    }));
+        if (this.loadFirstTime) {
+          this.loadFirstTime = false;
+        } else {
+          // this.trigger.openMenu();
+          this.isNewNotification = true;
+        }
+        return res;
+      })
+    );
   }
 
   ngAfterViewInit() {
@@ -154,7 +162,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   signOut() {
-    this.auth.signOut().then(_ => {
+    this.auth.signOut().then((_) => {
       this.router.navigate([Routing.LOG_IN]);
     });
   }
@@ -164,7 +172,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   openPage(links: string[]) {
-    const founded = links.findIndex(x => x === 'forms');
+    const founded = links.findIndex((x) => x === 'forms');
     if (founded > -1) {
       links.splice(founded, 1);
     }
@@ -179,7 +187,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
       const dateEndMonth = new Date(y, m + 1, 0);
       const temp = {
         fromDate: Utils.DateTime.convertDateStringDDMMYYYY(dateStartMonth),
-        toDate: Utils.DateTime.convertDateStringDDMMYYYY(dateEndMonth)
+        toDate: Utils.DateTime.convertDateStringDDMMYYYY(dateEndMonth),
       };
       this.router.navigate([Routing.REPORTS], { queryParams: temp });
     } else {
@@ -218,11 +226,13 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   setSearchChange() {
-    this.searchChange.pipe(debounceTime(500), distinctUntilChanged()).subscribe(value => {
-      if (value !== null) {
-        this.handleSearchString(value);
-      }
-    });
+    this.searchChange
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((value) => {
+        if (value !== null) {
+          this.handleSearchString(value);
+        }
+      });
   }
 
   handleSearchString(value: string) {
@@ -240,13 +250,11 @@ export class PagesComponent implements OnInit, AfterViewInit {
       this.searchChange.next(value);
     }
   }
-
 }
-
 
 const NOTIFICATION_TYPES = {
   IMPORT_CONTACTS: 'ImportContacts',
-  EXPORT_CONTACTS: 'ExportContacts'
+  EXPORT_CONTACTS: 'ExportContacts',
 };
 
 class NotificationModel {
@@ -265,5 +273,3 @@ interface INotificationsHandled {
   status: string;
   list: NotificationModel[];
 }
-
-

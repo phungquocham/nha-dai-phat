@@ -1,5 +1,11 @@
-import { Component, OnInit, Inject, ElementRef, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContactsService } from 'src/app/shared/services/api/contacts.service';
 import { Subject } from 'rxjs';
@@ -10,7 +16,7 @@ import { SnackbarService } from 'src/app/shared/services/others/snackbar.service
   selector: 'app-dialog-import',
   templateUrl: './import.component.html',
   styleUrls: ['./import.component.scss'],
-  providers: [ContactsService]
+  providers: [ContactsService],
 })
 export class DialogImportComponent implements OnInit {
   form: FormGroup;
@@ -19,7 +25,7 @@ export class DialogImportComponent implements OnInit {
   valid = true;
   ngUnsubscribe = new Subject();
   isUploadingFile = false;
-  @ViewChild('inputSelect', {static: false}) inputSelect: ElementRef;
+  @ViewChild('inputSelect') inputSelect: ElementRef;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -29,22 +35,24 @@ export class DialogImportComponent implements OnInit {
     private snackbar: SnackbarService
   ) {
     this.form = this.fb.group({
-      source: ['', Validators.compose([Validators.required])]
+      source: ['', Validators.compose([Validators.required])],
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onSubmit() {
     this.isValid();
     if (this.valid && this.form.valid) {
       this.isUploadingFile = true;
       this.setData();
-      this.contactsService.import(this.addData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-        this.isUploadingFile = false;
-        this.closeDialog();
-      });
+      this.contactsService
+        .import(this.addData)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((_) => {
+          this.isUploadingFile = false;
+          this.closeDialog();
+        });
     }
   }
 

@@ -41,13 +41,13 @@ import { Ptor } from 'protractor';
 export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   static BUFFER_SIZE = 3;
 
-  @ViewChild('selectUsersElement', { static: false })
+  @ViewChild('selectUsersElement')
   selectUsersElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectTeamsElement', { static: false })
+  @ViewChild('selectTeamsElement')
   selectTeamsElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectSourcesElement', { static: false })
+  @ViewChild('selectSourcesElement')
   selectSourcesElement: CustomSelectAutocompleteComponent;
-  @ViewChild('selectProjectsElement', { static: false })
+  @ViewChild('selectProjectsElement')
   selectProjectsElement: CustomSelectAutocompleteComponent;
 
   private ngUnsubscribe = new Subject();

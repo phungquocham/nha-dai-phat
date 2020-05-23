@@ -1,31 +1,30 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ContactSourceService} from 'src/app/shared/services/api/contact-sources.service';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {SnackbarService} from 'src/app/shared/services/others/snackbar.service';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ContactSourceService } from 'src/app/shared/services/api/contact-sources.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { SnackbarService } from 'src/app/shared/services/others/snackbar.service';
 
 @Component({
   selector: 'app-dialog-contact-sources-edit',
   templateUrl: './contact-sources-edit.component.html',
-  providers: [ContactSourceService]
+  providers: [ContactSourceService],
 })
 export class ContactSourceEditComponent implements OnInit {
   form: FormGroup;
   ngUnsubscribe = new Subject();
 
   constructor(
-      @Inject(MAT_DIALOG_DATA) public data: any,
-      private dialogRef: MatDialogRef<ContactSourceEditComponent>,
-      private fb: FormBuilder,
-      private contactSourceService: ContactSourceService,
-      private snackbar: SnackbarService
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<ContactSourceEditComponent>,
+    private fb: FormBuilder,
+    private contactSourceService: ContactSourceService,
+    private snackbar: SnackbarService
   ) {
     this.form = this.fb.group({
-      source: ['', Validators.compose([Validators.required])]
+      source: ['', Validators.compose([Validators.required])],
     });
-
   }
 
   ngOnInit() {
@@ -35,12 +34,18 @@ export class ContactSourceEditComponent implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       const data = {
-        name: this.form.controls['source'].value
+        name: this.form.controls['source'].value,
       };
-      this.contactSourceService.update(this.data.id, data).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-        this.snackbar.open({message: 'Cập nhật thành công!', type: 'SUCCESS'});
-        this.closeDialog({edit: true});
-      });
+      this.contactSourceService
+        .update(this.data.id, data)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((response: any) => {
+          this.snackbar.open({
+            message: 'Cập nhật thành công!',
+            type: 'SUCCESS',
+          });
+          this.closeDialog({ edit: true });
+        });
     }
   }
 

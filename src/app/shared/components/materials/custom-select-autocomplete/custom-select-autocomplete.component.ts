@@ -20,8 +20,8 @@ import { FormControl } from '@angular/forms';
 })
 export class CustomSelectAutocompleteComponent implements OnInit {
 
-  @ViewChild('container', {static: false}) container: ElementRef;
-  @ViewChild('listElement', {static: false}) listElement: ElementRef;
+  @ViewChild('container') container: ElementRef;
+  @ViewChild('listElement') listElement: ElementRef;
 
   @Input() label = '';
   @Input() placeholder = 'Nhập để tìm';

@@ -17,14 +17,12 @@ import {
   MAT_DATE_LOCALE,
   DateAdapter,
   MAT_DATE_FORMATS,
-} from '@angular/material';
+} from '@angular/material/core';
 import {
   MomentDateAdapter,
   MAT_MOMENT_DATE_FORMATS,
 } from '@angular/material-moment-adapter';
-import {
-  CustomSelectAutocompleteModule
-} from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.module';
+import { CustomSelectAutocompleteModule } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.module';
 import { CalcTotalPourAndPushInRatingSourcesComponent } from './components/calc-total-pour-and-push-in-rating-sources/calc-total-pour-and-push-in-rating-sources.component';
 
 export const routes = [

@@ -1,9 +1,16 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+  ViewEncapsulation,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntil, debounceTime } from 'rxjs/operators';
-
 
 import { SourcesService } from 'src/app/shared/services/api/sources.service';
 import { ProjectsService } from 'src/app/shared/services/api/projects.service';
@@ -12,7 +19,12 @@ import { UsersService } from 'src/app/shared/services/api/users.service';
 import { ModelUserInList } from 'src/app/shared/models/users.model';
 import { DialogService } from 'src/app/shared/services/others/dialog.service';
 import { DialogConfirmComponent } from 'src/app/shared/components/dialogs/dialog-confirm/dialog-confirm.component';
-import { CONFIRM, TYPE_BASIC, TYPE_COMPONENT, USER_STATUSES } from 'src/app/shared/helpers/const';
+import {
+  CONFIRM,
+  TYPE_BASIC,
+  TYPE_COMPONENT,
+  USER_STATUSES,
+} from 'src/app/shared/helpers/const';
 import { DialogEditUserComponent } from './dialogs/dialog-edit-user/dialog-edit-user.component';
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { DialogUpdateNameComponent } from 'src/app/shared/components/dialogs/dialog-update-name/dialog-update-name.component';
@@ -29,11 +41,9 @@ import { ContactResultsService } from 'src/app/shared/services/api/contact-resul
   selector: 'app-manager',
   templateUrl: './manager.component.html',
   styleUrls: ['./manager.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
-
 export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
-
   @ViewChild('paginator', { static: true }) paginator: MatPaginator;
 
   private modelUserInList = new ModelUserInList();
@@ -69,7 +79,9 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   usersList = [];
   userConfirmMessage = 'Bạn chắc chắn muốn xóa nhân viên này?';
-  displayedColumnsUser = this.modelUserInList.getKeys({ exceptKeys: ['teamId'] });
+  displayedColumnsUser = this.modelUserInList.getKeys({
+    exceptKeys: ['teamId'],
+  });
   usersTotalCount = 0;
   pageSize = 25;
   searchUserString = '';
@@ -89,8 +101,7 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     private usersService: UsersService,
     private ratingsService: RatingsService,
     private contactResultsService: ContactResultsService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.setupUsersQueryParams();
@@ -105,76 +116,85 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getContactResultsList();
   }
 
-  ngOnDestroy() {
-
-  }
+  ngOnDestroy() {}
 
   private detectChanges() {
     this.cdr.detectChanges();
   }
 
   lockUser(id: number) {
-    this.usersService.lockUser(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getUsersList();
-    });
+    this.usersService
+      .lockUser(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getUsersList();
+      });
   }
 
   unlockUser(id: number) {
-    this.usersService.unlockUser(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getUsersList();
-    });
+    this.usersService
+      .unlockUser(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getUsersList();
+      });
   }
 
   private setupUsersQueryParams() {
-    this.route.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(queryParams => {
-      console.log(queryParams);
-      // check tab index - begin
-      Object.keys(this.query).forEach(key => {
-        if (queryParams[key]) {
-          this.query[key] = queryParams[key];
+    this.route.queryParams
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((queryParams) => {
+        console.log(queryParams);
+        // check tab index - begin
+        Object.keys(this.query).forEach((key) => {
+          if (queryParams[key]) {
+            this.query[key] = queryParams[key];
+          }
+        });
+        const tabName = queryParams['display'] || '';
+        switch (tabName) {
+          case 'sources':
+            this.tabIndex = 1;
+            break;
+          case 'contact-results':
+            this.tabIndex = 2;
+            break;
+          case 'projects':
+            this.tabIndex = 3;
+            break;
+          case 'teams':
+            this.tabIndex = 4;
+            break;
+          case 'users':
+            this.tabIndex = 5;
+            break;
+          default:
+            this.tabIndex = 0;
         }
+        if (this.query.q) {
+          this.searchUserString = this.query.q;
+        } else {
+          this.searchUserString = '';
+        }
+        if (this.query.page > 1) {
+          this.paginator.pageIndex = this.query.page - 1;
+        } else {
+          this.paginator.pageIndex = 0;
+        }
+        // check tab index - end
+        this.getUsersList(this.getQueryUrlForApi(this.query));
       });
-      const tabName = queryParams['display'] || '';
-      switch (tabName) {
-        case 'sources':
-          this.tabIndex = 1;
-          break;
-        case 'contact-results':
-          this.tabIndex = 2;
-          break;
-        case 'projects':
-          this.tabIndex = 3;
-          break;
-        case 'teams':
-          this.tabIndex = 4;
-          break;
-        case 'users':
-          this.tabIndex = 5;
-          break;
-        default:
-          this.tabIndex = 0;
-      }
-      if (this.query.q) {
-        this.searchUserString = this.query.q;
-      } else {
-        this.searchUserString = '';
-      }
-      if (this.query.page > 1) {
-        this.paginator.pageIndex = this.query.page - 1;
-      } else {
-        this.paginator.pageIndex = 0;
-      }
-      // check tab index - end
-      this.getUsersList(this.getQueryUrlForApi(this.query));
-    });
   }
 
   private getRatingsList() {
-    this.ratingsService.getRatingsList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.ratingsList = res;
-      this.ratingsListFilter = this.ratingsList;
-      this.detectChanges();
-    });
+    this.ratingsService
+      .getRatingsList()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.ratingsList = res;
+        this.ratingsListFilter = this.ratingsList;
+        this.detectChanges();
+      });
   }
 
   private getUsersList(query?: string) {
@@ -183,274 +203,378 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.query.pageSize = this.pageSize;
       query = this.getQueryUrlForApi(this.query);
     }
-    this.usersService.getList(query).pipe(takeUntil(this.ngUnsubscribe)).subscribe((res: IResponseUsers) => {
-      res.items.forEach((item: ModelUserInList) => {
-        item.phone = Utils.ConvertPhoneNumberToZero(item.phone);
+    this.usersService
+      .getList(query)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res: IResponseUsers) => {
+        res.items.forEach((item: ModelUserInList) => {
+          item.phone = Utils.ConvertPhoneNumberToZero(item.phone);
+        });
+        this.usersList = res.items;
+        this.usersTotalCount = res.totalCount;
+        this.query.page = 1;
+        this.detectChanges();
       });
-      this.usersList = res.items;
-      this.usersTotalCount = res.totalCount;
-      this.query.page = 1;
-      this.detectChanges();
-    });
   }
 
   private getTeamsList() {
-    this.teamsService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.teamsList = res;
-      this.teamsListFilter = this.teamsList;
-      this.detectChanges();
-    });
+    this.teamsService
+      .getList()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.teamsList = res;
+        this.teamsListFilter = this.teamsList;
+        this.detectChanges();
+      });
   }
 
   private getSourcesList() {
-    this.sourcesService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.sourcesList = res;
-      this.sourcesListFilter = this.sourcesList;
-      this.detectChanges();
-    });
+    this.sourcesService
+      .getList()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.sourcesList = res;
+        this.sourcesListFilter = this.sourcesList;
+        this.detectChanges();
+      });
   }
 
   private getProjectsList() {
-    this.projectsService.getList().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.projectsList = res;
-      this.projectsListFilter = this.projectsList;
-      this.detectChanges();
-    });
+    this.projectsService
+      .getList()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.projectsList = res;
+        this.projectsListFilter = this.projectsList;
+        this.detectChanges();
+      });
   }
 
   private getContactResultsList() {
-    this.contactResultsService.getListContactResults().pipe(takeUntil(this.ngUnsubscribe)).subscribe(res => {
-      this.contactResultsList = res;
-      this.contactResultsListFilter = this.contactResultsList;
-      this.detectChanges();
-    });
+    this.contactResultsService
+      .getListContactResults()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.contactResultsList = res;
+        this.contactResultsListFilter = this.contactResultsList;
+        this.detectChanges();
+      });
   }
 
   addContactResult() {
-    this.dialog.open({
-      component: DialogUpdateRatingComponent,
-      data: {
-        type: TYPE_BASIC.NEW,
-        hide: {
-          points: true
+    this.dialog
+      .open({
+        component: DialogUpdateRatingComponent,
+        data: {
+          type: TYPE_BASIC.NEW,
+          hide: {
+            points: true,
+          },
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.status === CONFIRM.OK) {
+          this.contactResultsService
+            .createContactResult(res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.getContactResultsList();
+            });
         }
-      }
-    }).subscribe(res => {
-      if (res && res.status === CONFIRM.OK) {
-        this.contactResultsService.createContactResult(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.getContactResultsList();
-        });
-      }
-    });
+      });
   }
 
   updateContactResult(status: string, data: any) {
     if (status === CONFIRM.OK) {
-      this.dialog.open({
-        component: DialogUpdateRatingComponent,
-        data: {
-          ...data,
-          hide: {
-            points: true
+      this.dialog
+        .open({
+          component: DialogUpdateRatingComponent,
+          data: {
+            ...data,
+            hide: {
+              points: true,
+            },
+          },
+        })
+        .subscribe((res) => {
+          if (res && res.status === CONFIRM.OK) {
+            this.contactResultsService
+              .updateContactResult(data.id, res.data)
+              .pipe(takeUntil(this.ngUnsubscribe))
+              .subscribe((_) => {
+                this.getContactResultsList();
+              });
           }
-        }
-      }).subscribe(res => {
-        if (res && res.status === CONFIRM.OK) {
-          this.contactResultsService.updateContactResult(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-            this.getContactResultsList();
-          });
-        }
-      });
+        });
     }
   }
 
   confirmDeleteContactResult(id: number) {
-    this.contactResultsService.deleteContactResult(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getContactResultsList();
-    });
+    this.contactResultsService
+      .deleteContactResult(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getContactResultsList();
+      });
   }
 
   addSource() {
-    this.dialog.open({
-      component: DialogUpdateRatingComponent,
-      data: {
-        type: TYPE_BASIC.NEW,
-        hide: {
-          points: true
+    this.dialog
+      .open({
+        component: DialogUpdateRatingComponent,
+        data: {
+          type: TYPE_BASIC.NEW,
+          hide: {
+            points: true,
+          },
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.status === CONFIRM.OK) {
+          this.sourcesService
+            .createSource(res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.getSourcesList();
+            });
         }
-      }
-    }).subscribe(res => {
-      if (res && res.status === CONFIRM.OK) {
-        this.sourcesService.createSource(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.getSourcesList();
-        });
-      }
-    });
+      });
   }
 
   updateSource(status: string, data: any) {
     if (status === CONFIRM.OK) {
-      this.dialog.open({
-        component: DialogUpdateRatingComponent,
-        data: {
-          ...data,
-          hide: {
-            points: true
+      this.dialog
+        .open({
+          component: DialogUpdateRatingComponent,
+          data: {
+            ...data,
+            hide: {
+              points: true,
+            },
+          },
+        })
+        .subscribe((res) => {
+          if (res && res.status === CONFIRM.OK) {
+            this.sourcesService
+              .updateSource(data.id, res.data)
+              .pipe(takeUntil(this.ngUnsubscribe))
+              .subscribe((_) => {
+                this.getSourcesList();
+              });
           }
-        }
-      }).subscribe(res => {
-        if (res && res.status === CONFIRM.OK) {
-          this.sourcesService.updateSource(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-            this.getSourcesList();
-          });
-        }
-      });
+        });
     }
   }
 
   confirmDeleteSource(id: number) {
-    this.sourcesService.deleteSource(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getSourcesList();
-    });
+    this.sourcesService
+      .deleteSource(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getSourcesList();
+      });
   }
 
   addProject() {
-    this.dialog.open({
-      component: DialogUpdateNameComponent,
-      data: {
-        type: TYPE_BASIC.NEW
-      }
-    }).subscribe(res => {
-      if (res && res.status === CONFIRM.OK) {
-        this.projectsService.createProject(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.getProjectsList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogUpdateNameComponent,
+        data: {
+          type: TYPE_BASIC.NEW,
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.status === CONFIRM.OK) {
+          this.projectsService
+            .createProject(res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.getProjectsList();
+            });
+        }
+      });
   }
 
   updateProject(data) {
     if (data && data.value && data.value.status === CONFIRM.OK) {
-      this.projectsService.updateProject(data.id, data.value.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-        this.getProjectsList();
-      });
+      this.projectsService
+        .updateProject(data.id, data.value.data)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((_) => {
+          this.getProjectsList();
+        });
     }
   }
 
   confirmDeleteProject(id: number) {
-    this.projectsService.deleteProject(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getProjectsList();
-    });
+    this.projectsService
+      .deleteProject(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getProjectsList();
+      });
   }
 
   addTeam() {
-    this.dialog.open({
-      component: DialogUpdateNameComponent,
-      data: {
-        type: TYPE_BASIC.NEW
-      }
-    }).subscribe(res => {
-      if (res && res.status === CONFIRM.OK) {
-        this.teamsService.createTeam(res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.getTeamsList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogUpdateNameComponent,
+        data: {
+          type: TYPE_BASIC.NEW,
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.status === CONFIRM.OK) {
+          this.teamsService
+            .createTeam(res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.getTeamsList();
+            });
+        }
+      });
   }
 
   updateTeam(data) {
     if (data && data.value && data.value.status === CONFIRM.OK) {
-      this.teamsService.updateTeam(data.id, data.value.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-        this.getTeamsList();
-      });
+      this.teamsService
+        .updateTeam(data.id, data.value.data)
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((_) => {
+          this.getTeamsList();
+        });
     }
   }
 
   confirmDeleteTeam(id: number) {
-    this.teamsService.deleteTeam(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-      this.getTeamsList();
-    });
+    this.teamsService
+      .deleteTeam(id)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((_) => {
+        this.getTeamsList();
+      });
   }
 
   addUser() {
-    this.dialog.open({
-      component: DialogEditUserComponent,
-      data: {
-        type: 'NEW'
-      }
-    }).subscribe(res => {
-      if (res) {
-        this.usersService.createUser(res).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.snackbar.open({ message: 'Thêm thành công', type: SNACKBAR.TYPE.SUCCESS });
-          this.getUsersList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogEditUserComponent,
+        data: {
+          type: 'NEW',
+        },
+      })
+      .subscribe((res) => {
+        if (res) {
+          this.usersService
+            .createUser(res)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.snackbar.open({
+                message: 'Thêm thành công',
+                type: SNACKBAR.TYPE.SUCCESS,
+              });
+              this.getUsersList();
+            });
+        }
+      });
   }
 
   confirmDeleteUser(id: number) {
-    this.dialog.open({
-      component: DialogConfirmComponent,
-      data: {
-        message: 'Bạn chắc chắn muốn xóa người dùng này?'
-      }
-    }).subscribe(ok => {
-      if (ok === CONFIRM.OK) {
-        this.usersService.deleteUser(id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.snackbar.open({ message: 'Xoá thành công', type: SNACKBAR.TYPE.SUCCESS });
-          this.getUsersList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogConfirmComponent,
+        data: {
+          message: 'Bạn chắc chắn muốn xóa người dùng này?',
+        },
+      })
+      .subscribe((ok) => {
+        if (ok === CONFIRM.OK) {
+          this.usersService
+            .deleteUser(id)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.snackbar.open({
+                message: 'Xoá thành công',
+                type: SNACKBAR.TYPE.SUCCESS,
+              });
+              this.getUsersList();
+            });
+        }
+      });
   }
 
   editUser(data: any) {
-    this.dialog.open({
-      component: DialogEditUserComponent,
-      data
-    }).subscribe(res => {
-      if (res && res.id) {
-        this.usersService.updateUser(res.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.snackbar.open({ message: 'Cập nhật thành công', type: SNACKBAR.TYPE.SUCCESS });
-          this.getUsersList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogEditUserComponent,
+        data,
+      })
+      .subscribe((res) => {
+        if (res && res.id) {
+          this.usersService
+            .updateUser(res.id, res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.snackbar.open({
+                message: 'Cập nhật thành công',
+                type: SNACKBAR.TYPE.SUCCESS,
+              });
+              this.getUsersList();
+            });
+        }
+      });
   }
 
   applyRatingsFilter(value: string) {
-    this.ratingsListFilter = this.ratingsList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+    this.ratingsListFilter = this.ratingsList.filter((item) =>
+      item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase())
+    );
   }
 
   applySourceFilter(value: string) {
-    this.sourcesListFilter = this.sourcesList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+    this.sourcesListFilter = this.sourcesList.filter((item) =>
+      item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase())
+    );
   }
 
   applyContactResultFilter(value: string) {
-    this.contactResultsListFilter = this.contactResultsList
-      .filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+    this.contactResultsListFilter = this.contactResultsList.filter((item) =>
+      item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase())
+    );
   }
 
   applyProjectFilter(value: string) {
-    this.projectsListFilter = this.projectsList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+    this.projectsListFilter = this.projectsList.filter((item) =>
+      item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase())
+    );
   }
 
   applyTeamFilter(value: string) {
-    this.teamsListFilter = this.teamsList.filter(item => item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase()));
+    this.teamsListFilter = this.teamsList.filter((item) =>
+      item.name.toLocaleLowerCase().includes(value.trim().toLocaleLowerCase())
+    );
   }
 
   openDialogUpdateRating(data: any) {
-    this.dialog.open({
-      component: DialogUpdateRatingComponent,
-      data
-    }).subscribe(res => {
-      if (res && res.status === CONFIRM.OK) {
-        this.ratingsService.updateRating(data.id, res.data).pipe(takeUntil(this.ngUnsubscribe)).subscribe(_ => {
-          this.snackbar.open({ message: 'Cập nhật thành công!', type: SNACKBAR.TYPE.SUCCESS });
-          this.getRatingsList();
-        });
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogUpdateRatingComponent,
+        data,
+      })
+      .subscribe((res) => {
+        if (res && res.status === CONFIRM.OK) {
+          this.ratingsService
+            .updateRating(data.id, res.data)
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe((_) => {
+              this.snackbar.open({
+                message: 'Cập nhật thành công!',
+                type: SNACKBAR.TYPE.SUCCESS,
+              });
+              this.getRatingsList();
+            });
+        }
+      });
   }
 
   changeTab(index: number) {
@@ -488,40 +612,46 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupUsersSearch() {
-    this.searchChange.pipe(debounceTime(500), takeUntil(this.ngUnsubscribe)).subscribe(value => {
-      value = value.trim().toLowerCase();
-      if (this.query.q.localeCompare(value) !== 0) {
-        this.query.q = value;
-        this.query.page = 1;
-        this.getUsersListRouter(this.query);
-      }
-    });
+    this.searchChange
+      .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+      .subscribe((value) => {
+        value = value.trim().toLowerCase();
+        if (this.query.q.localeCompare(value) !== 0) {
+          this.query.q = value;
+          this.query.page = 1;
+          this.getUsersListRouter(this.query);
+        }
+      });
   }
 
   private getQueryUrlForApi(query: ModelQueryUrl): string {
     return Utils.encodeQueryUrl({
-      query
+      query,
     });
   }
 
   private getQueryUrlForRouter(query: ModelQueryUrl): any {
     const obj = {};
     obj['display'] = 'users';
-    const result = Utils.encodeQueryUrl({
-      query,
-      exceptKeys: ['pageSize'],
-      exceptStrings: ['page=1']
-    }, true);
-    Object.keys(result).forEach(key => {
+    const result = Utils.encodeQueryUrl(
+      {
+        query,
+        exceptKeys: ['pageSize'],
+        exceptStrings: ['page=1'],
+      },
+      true
+    );
+    Object.keys(result).forEach((key) => {
       obj[key] = result[key];
     });
     return obj;
   }
 
-
   private getUsersListRouter(query: ModelQueryUrl) {
     console.log(this.getQueryUrlForRouter(query));
-    this.router.navigate([Routing.MANAGER], { queryParams: this.getQueryUrlForRouter(query) });
+    this.router.navigate([Routing.MANAGER], {
+      queryParams: this.getQueryUrlForRouter(query),
+    });
   }
 
   searchUsers(name: string) {
@@ -534,7 +664,6 @@ export class ManagerComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.query);
     this.getUsersListRouter(this.query);
   }
-
 }
 
 interface ModelBasic {

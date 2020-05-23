@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject, AfterViewInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { ProjectsService } from 'src/app/shared/services/api/projects.service';
@@ -11,10 +10,9 @@ import { BUTTON } from 'src/app/shared/helpers/const';
 @Component({
   selector: 'app-dialog-record-for-sales',
   templateUrl: './dialog-record-for-sales.component.html',
-  styleUrls: ['./dialog-record-for-sales.component.css']
+  styleUrls: ['./dialog-record-for-sales.component.css'],
 })
 export class DialogRecordForSalesComponent implements OnInit, AfterViewInit {
-
   userInfo = new UserInfo();
   projectsList = [];
 
@@ -26,7 +24,7 @@ export class DialogRecordForSalesComponent implements OnInit, AfterViewInit {
     private projectsService: ProjectsService,
     private contactsService: ContactsService,
     private snackbar: SnackbarService
-  ) { }
+  ) {}
 
   ngOnInit() {
     console.log(this.data.userInfo);
@@ -37,13 +35,16 @@ export class DialogRecordForSalesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.projectsService.getList().subscribe(res => {
+    this.projectsService.getList().subscribe((res) => {
       this.projectsList = res;
     });
   }
 
   onChangeContactResult(value) {
-    if (this.userInfo.contactResultId !== 9 && this.userInfo.contactResultId !== 10) {
+    if (
+      this.userInfo.contactResultId !== 9 &&
+      this.userInfo.contactResultId !== 10
+    ) {
       this.userInfo.interestedProjectId = 0;
     }
   }
@@ -69,22 +70,31 @@ export class DialogRecordForSalesComponent implements OnInit, AfterViewInit {
     if (this.userInfo.note) {
       data['note'] = this.userInfo.note;
     }
-    if (this.userInfo.contactResultId === 9) { // F1
+    if (this.userInfo.contactResultId === 9) {
+      // F1
       data['interestedProjectId'] = this.userInfo.interestedProjectId;
     }
-    if (this.userInfo.contactResultId === 10) { // F1A
+    if (this.userInfo.contactResultId === 10) {
+      // F1A
       data['interestedProjectId'] = this.userInfo.interestedProjectId;
-      data['appointmentDate'] = Utils.DateTime.convertDateStringDDMMYYYY(this.userInfo.appointmentDate);
+      data['appointmentDate'] = Utils.DateTime.convertDateStringDDMMYYYY(
+        this.userInfo.appointmentDate
+      );
     }
-    this.contactsService.updateAnAssignment({
-      contactId: this.contactId,
-      newData: data,
-      assignedDate: this.userInfo.assignedDate,
-      assignedUserId: this.userInfo.assignedUserId
-    }).subscribe(_ => {
-      this.snackbar.open({ message: 'Cập nhật thành công!', type: 'SUCCESS' });
-      this.closeDialog(BUTTON.OK);
-    });
+    this.contactsService
+      .updateAnAssignment({
+        contactId: this.contactId,
+        newData: data,
+        assignedDate: this.userInfo.assignedDate,
+        assignedUserId: this.userInfo.assignedUserId,
+      })
+      .subscribe((_) => {
+        this.snackbar.open({
+          message: 'Cập nhật thành công!',
+          type: 'SUCCESS',
+        });
+        this.closeDialog(BUTTON.OK);
+      });
   }
 
   closeDialog(data = null) {
@@ -93,7 +103,6 @@ export class DialogRecordForSalesComponent implements OnInit, AfterViewInit {
     });
     this.dialogRef.close(data);
   }
-
 }
 
 interface IDialogData {
@@ -146,5 +155,4 @@ class UserInfo implements IUserInfo {
     //   this.appointmentDate = new Date();
     // }
   }
-
 }

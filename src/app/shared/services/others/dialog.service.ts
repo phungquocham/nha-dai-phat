@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { Observable } from 'rxjs';
 // import { DialogAdapterData } from '../../helpers/dialog-adapter.namespace';
 
 @Injectable()
 export class DialogService {
-
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog) {}
 
   config(iConfig: IDialogConfig): any {
     return iConfig;
@@ -37,7 +36,7 @@ export class DialogService {
       position: {
         bottom: '2px',
         right: '2px',
-      }
+      },
     };
   }
 
@@ -48,7 +47,7 @@ export class DialogService {
     return {
       // autoFocus: (config && config.autoFocus === false) ? config.autoFocus : true,
       autoFocus: false,
-      width: (config && config.width) ? `${config.width}` : '700px',
+      width: config && config.width ? `${config.width}` : '700px',
       minWidth: '295px',
       // minWidth: '335px',
       height: 'calc(100% - 26px)',
@@ -57,10 +56,9 @@ export class DialogService {
         top: '13px',
         bottom: '13px',
         right: '13px',
-      }
+      },
     };
   }
-
 }
 
 export interface IDialog {

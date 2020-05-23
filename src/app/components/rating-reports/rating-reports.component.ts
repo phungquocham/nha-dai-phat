@@ -48,8 +48,8 @@ export class RatingReportsComponent implements OnInit, AfterViewInit, OnDestroy 
   RatingSources = [];
   teamTemplate = [];
   isLoading = false;
-  @ViewChild('selectTeams', {static: false}) selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', {static: false}) selectUsers: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeams') selectTeams: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsers') selectUsers: CustomSelectAutocompleteComponent;
 
   constructor(
     private router: Router,

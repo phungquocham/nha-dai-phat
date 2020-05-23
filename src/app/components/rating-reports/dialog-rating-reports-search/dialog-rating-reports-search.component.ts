@@ -1,5 +1,13 @@
-import { Component, OnInit, Inject, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  AfterViewInit,
+  ViewChild,
+} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { filterData } from '../rating-reports.model';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
@@ -10,7 +18,8 @@ import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/mat
   styleUrls: ['./dialog-rating-reports-search.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogRatingReportsSearchComponent implements OnInit, AfterViewInit {
+export class DialogRatingReportsSearchComponent
+  implements OnInit, AfterViewInit {
   fromDate = new Date();
   toDate = new Date();
   filterData = { ...filterData };
@@ -18,19 +27,16 @@ export class DialogRatingReportsSearchComponent implements OnInit, AfterViewInit
   teamList = [];
   usersSelected = [];
   usersList = [];
-  @ViewChild('selectTeams', {static: false}) selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', {static: false}) selectUsers: CustomSelectAutocompleteComponent;
+  @ViewChild('selectTeams') selectTeams: CustomSelectAutocompleteComponent;
+  @ViewChild('selectUsers') selectUsers: CustomSelectAutocompleteComponent;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<DialogRatingReportsSearchComponent>,
-    private ref: ChangeDetectorRef,
-  ) {
-  }
+    private ref: ChangeDetectorRef
+  ) {}
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     if (this.data) {
@@ -52,8 +58,14 @@ export class DialogRatingReportsSearchComponent implements OnInit, AfterViewInit
   search() {
     this.filterData.fromDate = Utils.convertDateString(this.fromDate);
     this.filterData.toDate = Utils.convertDateString(this.toDate);
-    this.filterData.teamIds = this.teamSelected.map(i => Number(i)).filter(i => i).join(',');
-    this.filterData.userIds = this.usersSelected.map(i => Number(i)).filter(i => i).join(',');
+    this.filterData.teamIds = this.teamSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
+    this.filterData.userIds = this.usersSelected
+      .map((i) => Number(i))
+      .filter((i) => i)
+      .join(',');
     this.closeDialog({ search: this.filterData });
   }
 
@@ -73,5 +85,4 @@ export class DialogRatingReportsSearchComponent implements OnInit, AfterViewInit
   getSelectedusers(selected) {
     this.usersSelected = selected;
   }
-
 }

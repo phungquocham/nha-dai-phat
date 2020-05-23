@@ -23,7 +23,7 @@ import { UserProfile } from '../../shared/models/user.profile.namespace';
 import { SnackbarService } from '../../shared/services/others/snackbar.service';
 import { TeamsService } from '../../shared/services/api/teams.service';
 import { UsersService } from '../../shared/services/api/users.service';
-import { PageEvent, MatPaginator } from '@angular/material';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
 import { PagingEvents } from '../../shared/helpers/pagingevent';
 import { forkJoin, Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
@@ -67,11 +67,11 @@ export class DailyReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingResults = true;
   totalCount = 0;
   latestRatings = [];
-  @ViewChild('selectTeams', { static: false })
+  @ViewChild('selectTeams')
   selectTeams: CustomSelectAutocompleteComponent;
-  @ViewChild('selectUsers', { static: false })
+  @ViewChild('selectUsers')
   selectUsers: CustomSelectAutocompleteComponent;
-  @ViewChild('selectSources', { static: false })
+  @ViewChild('selectSources')
   selectSources: CustomSelectAutocompleteComponent;
 
   constructor(
