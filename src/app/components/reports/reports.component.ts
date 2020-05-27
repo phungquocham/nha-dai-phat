@@ -290,13 +290,4 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     return obj;
   }
-
-  calculateTotalPourAndPush(sourceId, pourId, pourTotal) {
-    const push: any[] = this.totalRatingSourcesByColumn[sourceId].push;
-    const pushFounded = push.find((item) => item.id === pourId);
-    if (pushFounded) {
-      return `- ${pourTotal + pushFounded.total}`;
-    }
-    return '';
-  }
 }
