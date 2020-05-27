@@ -140,7 +140,7 @@
             <span fxLayoutAlign="center">{{ element.goldenHours }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">{{ totalGoldenHours }}</span>
+            <span fxLayoutAlign="center">totalGoldenHours</span>
           </td>
         </ng-container>
 
@@ -245,49 +245,49 @@
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringUncontactable }}
+                totalRegularPouringUncontactable
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringNotPickUp }}
+                totalRegularPouringNotPickUp
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringNoNeed }}
+                totalRegularPouringNoNeed
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringHangUp }}
+                totalRegularPouringHangUp
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringTwoSentences }}
+                totalRegularPouringTwoSentences
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalRegularPouringMoreThanTwoSentences }}
+                totalRegularPouringMoreThanTwoSentences
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalAllRegularPouring }}
+                totalAllRegularPouring
               </div>
             </div>
           </td>
@@ -394,49 +394,49 @@
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringUncontactable }}
+                totalSelfPouringUncontactable
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringNotPickUp }}
+                totalSelfPouringNotPickUp
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringNoNeed }}
+                totalSelfPouringNoNeed
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringHangUp }}
+                totalSelfPouringHangUp
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringTwoSentences }}
+                totalSelfPouringTwoSentences
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalSelfPouringMoreThanTwoSentences }}
+                totalSelfPouringMoreThanTwoSentences
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                {{ totalAllSelfPouring }}
+                totalAllSelfPouring
               </div>
             </div>
           </td>
@@ -450,7 +450,7 @@
             <span fxLayoutAlign="center">{{ element.pushCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">{{ totalPushCount }}</span>
+            <span fxLayoutAlign="center">totalPushCount</span>
           </td>
         </ng-container>
 
@@ -462,7 +462,7 @@
             <span fxLayoutAlign="center">{{ element.suggestionCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">{{ totalSuggesstionCount }}</span>
+            <span fxLayoutAlign="center">totalSuggesstionCount</span>
           </td>
         </ng-container>
 
@@ -474,7 +474,7 @@
             <span fxLayoutAlign="center">{{ element.emailCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">{{ totalEmailCount }}</span>
+            <span fxLayoutAlign="center"> totalEmailCount</span>
           </td>
         </ng-container>
 
@@ -488,9 +488,9 @@
             }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center" class="pr-1">{{
+            <span fxLayoutAlign="center" class="pr-1">
               totalFlirtingCount
-            }}</span>
+            </span>
           </td>
         </ng-container>
 
@@ -601,7 +601,8 @@
               class="px-24p py-0"
               *ngIf="source.showColumn"
             >
-              <div
+              updating...
+              <!-- <div
                 class="p-0-5 br-bottom-1p-solid-red"
                 fxLayout="row"
                 *ngIf="source.id === 0"
@@ -665,7 +666,7 @@
                     >{{ item?.name }}: {{ item?.total }}</span
                   >
                 </div>
-              </div>
+              </div> -->
             </div>
           </td>
         </ng-container>
