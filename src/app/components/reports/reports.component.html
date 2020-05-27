@@ -559,7 +559,7 @@
                   >
                 </div> -->
               </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+              <!-- <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
                 <div
                   fxLayout="row wrap"
                   class="rating-color"
@@ -586,7 +586,7 @@
                     >{{ item.name }}: {{ item.total }}</span
                   >
                 </div>
-              </div>
+              </div> -->
             </div>
             <!-- <div *ngIf="source.showColumn">
               <app-calc-total-pour-and-push-in-rating-sources
@@ -686,11 +686,11 @@
         ></tr>
         <tr
           mat-row
-          *matRowDef="let row; columns: displayedColumnsReport"
+          *matRowDef="let row; columns: displayedColumnsReport; let i = index"
           [ngClass]="{
             'team-row-show': showTeamRows && row.isTeamRow,
             'team-row-hide': !showTeamRows && row.isTeamRow,
-            'is-odd': row.isOddRow
+            'is-odd': i % 2 === 0 && !row.isTeamRow
           }"
         ></tr>
         <tr

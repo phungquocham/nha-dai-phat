@@ -98,6 +98,12 @@ export class ModelReportResponseInRow implements IReportResponse {
     }
   }
 
+  setTeamType(teamId: any, teamName: string) {
+    this.id = 'team_' + teamId;
+    this.reportUserName = teamName;
+    this.isTeamRow = true;
+  }
+
   generateRatingSourcesKeys(
     sourcesList: any[],
     pourList: number[],

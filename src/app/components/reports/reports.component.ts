@@ -5,17 +5,18 @@ import {
   ChangeDetectorRef,
   ViewEncapsulation,
   OnDestroy,
-  Inject,
   ViewChild,
 } from '@angular/core';
-import { DialogService } from 'src/app/shared/services/others/dialog.service';
-import { ReportsService } from 'src/app/shared/services/api/reports.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import * as _ from 'lodash';
+
+import { DialogService } from 'src/app/shared/services/others/dialog.service';
+import { ReportsService } from 'src/app/shared/services/api/reports.service';
 import { SourcesService } from 'src/app/shared/services/api/sources.service';
 import { ProjectsService } from 'src/app/shared/services/api/projects.service';
 import { RatingsService } from 'src/app/shared/services/api/ratings.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Utils } from 'src/app/shared/helpers/utilities';
 import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { UsersService } from 'src/app/shared/services/api/users.service';
@@ -29,6 +30,8 @@ import {
 } from './reports.model';
 import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
+import { identifierModuleUrl } from '@angular/compiler';
+import { report } from 'process';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -72,8 +75,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   mappingSources = {};
   mappingProjects = {};
   mappingRatings = {};
+  mappingTeams = {};
   reportsRawData = [];
   reportTotalFooter = new ModelReportResponseInRow();
+  mappingTeamsInTable = {};
 
   constructor(
     private dialog: DialogService,
@@ -149,6 +154,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.mappingSources = this.mappingObjectFromList(this.sourcesList);
         this.mappingProjects = this.mappingObjectFromList(this.projectsList);
         this.mappingRatings = this.mappingObjectFromList(this.ratingsList);
+        this.mappingTeams = this.mappingObjectFromList(this.teamsList);
         console.log('***************************');
       });
   }
@@ -289,13 +295,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((data) => {
-        this.resetreportTotalFooter();
-        console.log('111111');
-        console.log(this.sourcesList, this.teamsList, this.ratingsList);
-        console.log('111111');
-        console.log('HHHHHHHHHHHHHHHHHHH', data);
+        this.resetReportTotalFooter();
+        data = _.orderBy(data, ['reportUserName'], ['asc']);
+        if (this.isTeamRow()) {
+          this.resetTeamsInTable();
+          data = this.handleReportsWithTeams(data);
+        }
         this.reportsData = data;
-        this.handledReports(this.reportsData);
+        this.handledReports(this.reportsData, this.isTeamRow());
         this.isLoading = false;
         this.detechChanges();
       });
@@ -333,15 +340,59 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     return obj;
   }
 
-  handledReports(reports: IReportResponse[]) {
+  handledReports(reports: IReportResponse[], isTeamRow?: boolean) {
+    // tslint:disable-next-line:no-shadowed-variable
     reports.forEach((report) => {
-      this.handleReportUserNameWithTooltip(report);
+      if (!report.id) {
+        // userReport
+        this.handleReportUserNameWithTooltip(report);
+      }
       this.handleReportPouringTotal(report, 'regularPouring');
       this.handleReportPouringTotal(report, 'selfPouring');
-      this.handleReportTotalFooter(report);
+      this.calcBasicReportInRow(this.reportTotalFooter, report);
+      if (isTeamRow) {
+        this.calcBasicReportInRow(
+          this.mappingTeamsInTable['team_' + report.teamId],
+          report
+        );
+      }
     });
+    if (isTeamRow) {
+      reports.forEach((item: ModelReportResponseInRow) => {
+        if (item.id) {
+          if (item.id.includes('team_')) {
+            this.calcBasicReportInRow(item, this.mappingTeamsInTable[item.id]);
+          }
+        }
+      });
+      this.reportsData = reports;
+      this.detechChanges();
+      console.log(this.reportsData);
+    }
   }
 
+  private isTeamRow() {
+    return this.teamsSelected.length > 0;
+  }
+
+  private handleReportsWithTeams(reports: IReportResponse[]) {
+    const groups = _.groupBy(reports, 'teamId');
+    const reportsWithTeam = [];
+    Object.keys(groups).forEach((teamId) => {
+      this.mappingTeamsInTable[
+        'team_' + teamId
+      ] = new ModelReportResponseInRow();
+      const teamRow = new ModelReportResponseInRow();
+      teamRow.setTeamType(teamId, this.mappingTeams[teamId].name);
+      reportsWithTeam.push(teamRow);
+      groups[teamId].forEach((userRow) => {
+        reportsWithTeam.push(userRow);
+      });
+    });
+    return reportsWithTeam;
+  }
+
+  // tslint:disable-next-line:no-shadowed-variable
   private handleReportUserNameWithTooltip(report: IReportResponse) {
     report.reportUserNameTooltip = report.reportUserName;
     const words = report.reportUserName.split(' ');
@@ -349,6 +400,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleReportPouringTotal(
+    // tslint:disable-next-line:no-shadowed-variable
     report: IReportResponse,
     pouringKey: string
   ) {
@@ -360,42 +412,84 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private handleReportTotalFooter(report: IReportResponse) {
-    this.reportTotalFooter.goldenHours += report.goldenHours;
+  private calcBasicReportInRow(
+    reportObject: ModelReportResponseInRow,
+    // tslint:disable-next-line:no-shadowed-variable
+    report: IReportResponse
+  ) {
+    if (!reportObject) {
+      return;
+    }
+    reportObject.goldenHours += report.goldenHours;
 
-    this.reportTotalFooter.regularPouring.uncontactable +=
+    reportObject.regularPouring.uncontactable +=
       report.regularPouring.uncontactable;
-    this.reportTotalFooter.regularPouring.notPickUp +=
-      report.regularPouring.notPickUp;
-    this.reportTotalFooter.regularPouring.noNeed +=
-      report.regularPouring.noNeed;
-    this.reportTotalFooter.regularPouring.hangUp +=
-      report.regularPouring.hangUp;
-    this.reportTotalFooter.regularPouring.twoSentences +=
+    reportObject.regularPouring.notPickUp += report.regularPouring.notPickUp;
+    reportObject.regularPouring.noNeed += report.regularPouring.noNeed;
+    reportObject.regularPouring.hangUp += report.regularPouring.hangUp;
+    reportObject.regularPouring.twoSentences +=
       report.regularPouring.twoSentences;
-    this.reportTotalFooter.regularPouring.moreThanTwoSentences +=
+    reportObject.regularPouring.moreThanTwoSentences +=
       report.regularPouring.moreThanTwoSentences;
-    this.reportTotalFooter.regularPouring.total += report.regularPouring.total;
+    reportObject.regularPouring.total += report.regularPouring.total;
 
-    this.reportTotalFooter.selfPouring.uncontactable +=
-      report.selfPouring.uncontactable;
-    this.reportTotalFooter.selfPouring.notPickUp +=
-      report.selfPouring.notPickUp;
-    this.reportTotalFooter.selfPouring.noNeed += report.selfPouring.noNeed;
-    this.reportTotalFooter.selfPouring.hangUp += report.selfPouring.hangUp;
-    this.reportTotalFooter.selfPouring.twoSentences +=
-      report.selfPouring.twoSentences;
-    this.reportTotalFooter.selfPouring.moreThanTwoSentences +=
+    reportObject.selfPouring.uncontactable += report.selfPouring.uncontactable;
+    reportObject.selfPouring.notPickUp += report.selfPouring.notPickUp;
+    reportObject.selfPouring.noNeed += report.selfPouring.noNeed;
+    reportObject.selfPouring.hangUp += report.selfPouring.hangUp;
+    reportObject.selfPouring.twoSentences += report.selfPouring.twoSentences;
+    reportObject.selfPouring.moreThanTwoSentences +=
       report.selfPouring.moreThanTwoSentences;
-    this.reportTotalFooter.selfPouring.total += report.selfPouring.total;
+    reportObject.selfPouring.total += report.selfPouring.total;
 
-    this.reportTotalFooter.pushCount += report.pushCount;
-    this.reportTotalFooter.suggestionCount += report.suggestionCount;
-    this.reportTotalFooter.emailCount += report.emailCount;
-    this.reportTotalFooter.flirtingCount += report.flirtingCount;
+    reportObject.pushCount += report.pushCount;
+    reportObject.suggestionCount += report.suggestionCount;
+    reportObject.emailCount += report.emailCount;
+    reportObject.flirtingCount += report.flirtingCount;
   }
 
-  private resetreportTotalFooter() {
+  // private handleReportTotalFooter(report: IReportResponse) {
+  //   this.reportTotalFooter.goldenHours += report.goldenHours;
+
+  //   this.reportTotalFooter.regularPouring.uncontactable +=
+  //     report.regularPouring.uncontactable;
+  //   this.reportTotalFooter.regularPouring.notPickUp +=
+  //     report.regularPouring.notPickUp;
+  //   this.reportTotalFooter.regularPouring.noNeed +=
+  //     report.regularPouring.noNeed;
+  //   this.reportTotalFooter.regularPouring.hangUp +=
+  //     report.regularPouring.hangUp;
+  //   this.reportTotalFooter.regularPouring.twoSentences +=
+  //     report.regularPouring.twoSentences;
+  //   this.reportTotalFooter.regularPouring.moreThanTwoSentences +=
+  //     report.regularPouring.moreThanTwoSentences;
+  //   this.reportTotalFooter.regularPouring.total += report.regularPouring.total;
+
+  //   this.reportTotalFooter.selfPouring.uncontactable +=
+  //     report.selfPouring.uncontactable;
+  //   this.reportTotalFooter.selfPouring.notPickUp +=
+  //     report.selfPouring.notPickUp;
+  //   this.reportTotalFooter.selfPouring.noNeed += report.selfPouring.noNeed;
+  //   this.reportTotalFooter.selfPouring.hangUp += report.selfPouring.hangUp;
+  //   this.reportTotalFooter.selfPouring.twoSentences +=
+  //     report.selfPouring.twoSentences;
+  //   this.reportTotalFooter.selfPouring.moreThanTwoSentences +=
+  //     report.selfPouring.moreThanTwoSentences;
+  //   this.reportTotalFooter.selfPouring.total += report.selfPouring.total;
+
+  //   this.reportTotalFooter.pushCount += report.pushCount;
+  //   this.reportTotalFooter.suggestionCount += report.suggestionCount;
+  //   this.reportTotalFooter.emailCount += report.emailCount;
+  //   this.reportTotalFooter.flirtingCount += report.flirtingCount;
+  // }
+
+  private resetReportTotalFooter() {
     this.reportTotalFooter = new ModelReportResponseInRow();
+  }
+
+  private resetTeamsInTable() {
+    Object.keys(this.mappingTeamsInTable).forEach((teamId) => {
+      this.mappingTeamsInTable[teamId] = new ModelReportResponseInRow();
+    });
   }
 }
