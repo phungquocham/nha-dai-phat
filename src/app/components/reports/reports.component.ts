@@ -95,6 +95,39 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
+        const keys = [
+          'reportUserName',
+          'goldenHours',
+          'regularPouring',
+          'selfPouring',
+          'pushCount',
+          'suggestionCount',
+          'emailCount',
+          'flirtingCount',
+          // 'totalSources'
+        ];
+        keys.push('column0');
+        this.sourcesList.push({
+          id: 0,
+          name: 'TỔNG NGUỒN',
+          column: 'column0',
+          color: 'goldenrod',
+        });
+        res[0].forEach((item, index) => {
+          item.column = 'column' + (index + 1);
+          keys.push(item.column);
+          this.sourcesList.push(item);
+        });
+        // keys.push('totalRatingPoints');
+        this.displayedColumnsReport = keys;
+        this.sourcesList.forEach((item) => {
+          const obj = {
+            id: item.id,
+            name: item.name,
+            showColumn: item.showColumn,
+          };
+          this.sourcesColumnsList.push(obj);
+        });
         this.projectsList = res[1];
         this.teamsList = res[2];
         this.usersList = res[3];
@@ -254,6 +287,8 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log(this.sourcesList, this.teamsList, this.ratingsList);
         console.log('111111');
         console.log('HHHHHHHHHHHHHHHHHHH', data);
+        this.reportsData = data;
+        this.handledReports(this.reportsData);
         this.isLoading = false;
         this.detechChanges();
       });
@@ -289,5 +324,11 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       obj[item[key]] = item;
     });
     return obj;
+  }
+
+  handledReports(reports: any[]) {
+    reports.forEach((report) => {
+      report.reportUserNameTooltip = report.reportUserName;
+    });
   }
 }
