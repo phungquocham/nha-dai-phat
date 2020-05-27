@@ -21,7 +21,12 @@ import { TeamsService } from 'src/app/shared/services/api/teams.service';
 import { UsersService } from 'src/app/shared/services/api/users.service';
 import { Routing } from 'src/app/shared/helpers/routing';
 import { PageLoadingService } from 'src/app/shared/services/others/page-loading.service';
-import { IReportQueryParams, ReportQueryParams } from './reports.model';
+import {
+  IReportQueryParams,
+  ReportQueryParams,
+  IReportResponse,
+  ModelReportResponseInRow,
+} from './reports.model';
 import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
 @Component({
@@ -68,6 +73,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   mappingProjects = {};
   mappingRatings = {};
   reportsRawData = [];
+  reportTotalFooter = new ModelReportResponseInRow();
 
   constructor(
     private dialog: DialogService,
@@ -283,6 +289,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((data) => {
+        this.resetreportTotalFooter();
         console.log('111111');
         console.log(this.sourcesList, this.teamsList, this.ratingsList);
         console.log('111111');
@@ -326,9 +333,69 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     return obj;
   }
 
-  handledReports(reports: any[]) {
+  handledReports(reports: IReportResponse[]) {
     reports.forEach((report) => {
-      report.reportUserNameTooltip = report.reportUserName;
+      this.handleReportUserNameWithTooltip(report);
+      this.handleReportPouringTotal(report, 'regularPouring');
+      this.handleReportPouringTotal(report, 'selfPouring');
+      this.handleReportTotalFooter(report);
     });
+  }
+
+  private handleReportUserNameWithTooltip(report: IReportResponse) {
+    report.reportUserNameTooltip = report.reportUserName;
+    const words = report.reportUserName.split(' ');
+    report.reportUserName = `${words[0]} ${words[1]}`;
+  }
+
+  private handleReportPouringTotal(
+    report: IReportResponse,
+    pouringKey: string
+  ) {
+    report[pouringKey].total = 0;
+    Object.keys(report[pouringKey]).forEach((key) => {
+      if (key !== 'total') {
+        report[pouringKey].total += report[pouringKey][key];
+      }
+    });
+  }
+
+  private handleReportTotalFooter(report: IReportResponse) {
+    this.reportTotalFooter.goldenHours += report.goldenHours;
+
+    this.reportTotalFooter.regularPouring.uncontactable +=
+      report.regularPouring.uncontactable;
+    this.reportTotalFooter.regularPouring.notPickUp +=
+      report.regularPouring.notPickUp;
+    this.reportTotalFooter.regularPouring.noNeed +=
+      report.regularPouring.noNeed;
+    this.reportTotalFooter.regularPouring.hangUp +=
+      report.regularPouring.hangUp;
+    this.reportTotalFooter.regularPouring.twoSentences +=
+      report.regularPouring.twoSentences;
+    this.reportTotalFooter.regularPouring.moreThanTwoSentences +=
+      report.regularPouring.moreThanTwoSentences;
+    this.reportTotalFooter.regularPouring.total += report.regularPouring.total;
+
+    this.reportTotalFooter.selfPouring.uncontactable +=
+      report.selfPouring.uncontactable;
+    this.reportTotalFooter.selfPouring.notPickUp +=
+      report.selfPouring.notPickUp;
+    this.reportTotalFooter.selfPouring.noNeed += report.selfPouring.noNeed;
+    this.reportTotalFooter.selfPouring.hangUp += report.selfPouring.hangUp;
+    this.reportTotalFooter.selfPouring.twoSentences +=
+      report.selfPouring.twoSentences;
+    this.reportTotalFooter.selfPouring.moreThanTwoSentences +=
+      report.selfPouring.moreThanTwoSentences;
+    this.reportTotalFooter.selfPouring.total += report.selfPouring.total;
+
+    this.reportTotalFooter.pushCount += report.pushCount;
+    this.reportTotalFooter.suggestionCount += report.suggestionCount;
+    this.reportTotalFooter.emailCount += report.emailCount;
+    this.reportTotalFooter.flirtingCount += report.flirtingCount;
+  }
+
+  private resetreportTotalFooter() {
+    this.reportTotalFooter = new ModelReportResponseInRow();
   }
 }

@@ -140,7 +140,9 @@
             <span fxLayoutAlign="center">{{ element.goldenHours }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">totalGoldenHours</span>
+            <span fxLayoutAlign="center">{{
+              reportTotalFooter.goldenHours
+            }}</span>
           </td>
         </ng-container>
 
@@ -245,49 +247,49 @@
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringUncontactable
+                {{ reportTotalFooter.regularPouring.uncontactable }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringNotPickUp
+                {{ reportTotalFooter.regularPouring.notPickUp }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringNoNeed
+                {{ reportTotalFooter.regularPouring.noNeed }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringHangUp
+                {{ reportTotalFooter.regularPouring.hangUp }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringTwoSentences
+                {{ reportTotalFooter.regularPouring.twoSentences }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalRegularPouringMoreThanTwoSentences
+                {{ reportTotalFooter.regularPouring.moreThanTwoSentences }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalAllRegularPouring
+                {{ reportTotalFooter.regularPouring.total }}
               </div>
             </div>
           </td>
@@ -394,49 +396,49 @@
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringUncontactable
+                {{ reportTotalFooter.selfPouring.uncontactable }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringNotPickUp
+                {{ reportTotalFooter.selfPouring.notPickUp }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringNoNeed
+                {{ reportTotalFooter.selfPouring.noNeed }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringHangUp
+                {{ reportTotalFooter.selfPouring.hangUp }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringTwoSentences
+                {{ reportTotalFooter.selfPouring.twoSentences }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalSelfPouringMoreThanTwoSentences
+                {{ reportTotalFooter.selfPouring.moreThanTwoSentences }}
               </div>
               <div
                 fxFlex="14.2857143"
                 fxLayoutAlign="center center"
                 class="px-1"
               >
-                totalAllSelfPouring
+                {{ reportTotalFooter.selfPouring.total }}
               </div>
             </div>
           </td>
@@ -450,7 +452,9 @@
             <span fxLayoutAlign="center">{{ element.pushCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">totalPushCount</span>
+            <span fxLayoutAlign="center">{{
+              reportTotalFooter.pushCount
+            }}</span>
           </td>
         </ng-container>
 
@@ -462,7 +466,9 @@
             <span fxLayoutAlign="center">{{ element.suggestionCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center">totalSuggesstionCount</span>
+            <span fxLayoutAlign="center">{{
+              reportTotalFooter.suggestionCount
+            }}</span>
           </td>
         </ng-container>
 
@@ -474,7 +480,9 @@
             <span fxLayoutAlign="center">{{ element.emailCount }}</span>
           </td>
           <td mat-footer-cell *matFooterCellDef>
-            <span fxLayoutAlign="center"> totalEmailCount</span>
+            <span fxLayoutAlign="center">{{
+              reportTotalFooter.emailCount
+            }}</span>
           </td>
         </ng-container>
 
@@ -489,7 +497,7 @@
           </td>
           <td mat-footer-cell *matFooterCellDef>
             <span fxLayoutAlign="center" class="pr-1">
-              totalFlirtingCount
+              {{ reportTotalFooter.flirtingCount }}
             </span>
           </td>
         </ng-container>

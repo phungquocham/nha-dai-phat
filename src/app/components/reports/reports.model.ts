@@ -1,4 +1,3 @@
-
 interface IReportRating {
   id: number;
   name: string;
@@ -20,7 +19,7 @@ export class ReportQueryParams implements IReportQueryParams {
   sources = '';
   constructor() {}
   setData(data: IReportQueryParams) {
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       if (data[key]) {
         this[key] = data[key];
       }
@@ -44,6 +43,7 @@ interface IReportInteractionPhone {
   hangUp?: number;
   twoSentences?: number;
   moreThanTwoSentences?: number;
+  total?: number;
 }
 
 class ModelReportInteractionPhone implements IReportInteractionPhone {
@@ -92,26 +92,31 @@ export class ModelReportResponseInRow implements IReportResponse {
   totalRatingPoints = 0;
   constructor(data?: IReportResponse) {
     if (data) {
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         this[key] = data[key];
       });
     }
   }
 
-  generateRatingSourcesKeys(sourcesList: any[], pourList: number[], pushList: number[], othersList: number[]) {
-    sourcesList.forEach(source => {
+  generateRatingSourcesKeys(
+    sourcesList: any[],
+    pourList: number[],
+    pushList: number[],
+    othersList: number[]
+  ) {
+    sourcesList.forEach((source) => {
       this.ratingSources[source.id] = {
         1: {},
         2: {},
-        4: {}
+        4: {},
       };
-      pourList.forEach(id => {
+      pourList.forEach((id) => {
         this.ratingSources[source.id][1][id] = [];
       });
-      pushList.forEach(id => {
+      pushList.forEach((id) => {
         this.ratingSources[source.id][2][id] = [];
       });
-      othersList.forEach(id => {
+      othersList.forEach((id) => {
         this.ratingSources[source.id][4][id] = [];
       });
     });
@@ -126,5 +131,5 @@ export class ModelReportRatingHandle {
   total = 0;
   tooltipsList = [];
   totalRatingPoints = 0;
-  constructor() { }
+  constructor() {}
 }
