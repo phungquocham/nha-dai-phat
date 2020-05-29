@@ -527,25 +527,43 @@
               class="px-24p py-0"
               *ngIf="source.showColumn"
             >
-              <div
-                class="p-0-5 br-bottom-1p-solid-red"
-                fxLayout="row"
-                *ngIf="source.id === 0"
-                fxLayoutAlign="center center"
-              >
-                <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ element.totalRatingPoints | number: '1.0-2' }}
-                </div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
+              <div fxLayout="row">
                 <app-calc-total-pour-and-push-in-rating-sources
-                  [sourceId]="source.id"
-                  [pour]="element.ratingSources[source.id][1]"
-                  [push]="element.ratingSources[source.id][2]"
+                  *ngIf="
+                    element.ratingSources && element.ratingSources[source.id];
+                    else emptyElement
+                  "
+                  [showTotalWithPoints]="source.id === 0"
+                  [rowPourIds]="row.pourIds"
+                  [rowPushIds]="row.pushIds"
+                  [rowHintIds]="row.hintIds"
+                  [rowOtherIds]="row.otherIds"
+                  [ratingsInSource]="element.ratingSources[source.id]"
                   [mappingSources]="mappingSources"
                   [mappingProjects]="mappingProjects"
                   [mappingRatings]="mappingRatings"
                 ></app-calc-total-pour-and-push-in-rating-sources>
+                <ng-template #emptyElement>
+                  <app-calc-total-pour-and-push-in-rating-sources
+                    [defaultComponentEmpty]="true"
+                    [showTotalWithPoints]="source.id === 0"
+                    [rowPourIds]="row.pourIds"
+                    [rowPushIds]="row.pushIds"
+                    [rowHintIds]="row.hintIds"
+                    [rowOtherIds]="row.otherIds"
+                    [mappingRatings]="mappingRatings"
+                  >
+                  </app-calc-total-pour-and-push-in-rating-sources>
+                </ng-template>
+
+                <!-- <app-calc-total-pour-and-push-in-rating-sources
+                [sourceId]="source.id"
+                [pour]="element.ratingSources[source.id][1]"
+                [push]="element.ratingSources[source.id][2]"
+                [mappingSources]="mappingSources"
+                [mappingProjects]="mappingProjects"
+                [mappingRatings]="mappingRatings"
+              ></app-calc-total-pour-and-push-in-rating-sources> -->
                 <!-- <div
                   fxLayout="row wrap"
                   class="rating-color"
@@ -609,7 +627,36 @@
               class="px-24p py-0"
               *ngIf="source.showColumn"
             >
-              updating...
+              <div fxLayout="row">
+                <app-calc-total-pour-and-push-in-rating-sources
+                  *ngIf="
+                    totalFooterRatingSources &&
+                      totalFooterRatingSources[source.id];
+                    else emptyTotalElement
+                  "
+                  [showTotalWithPoints]="source.id === 0"
+                  [rowPourIds]="row.pourIds"
+                  [rowPushIds]="row.pushIds"
+                  [rowHintIds]="row.hintIds"
+                  [rowOtherIds]="row.otherIds"
+                  [ratingsInSource]="totalFooterRatingSources[source.id]"
+                  [mappingSources]="mappingSources"
+                  [mappingProjects]="mappingProjects"
+                  [mappingRatings]="mappingRatings"
+                ></app-calc-total-pour-and-push-in-rating-sources>
+                <ng-template #emptyTotalElement>
+                  <app-calc-total-pour-and-push-in-rating-sources
+                    [defaultComponentEmpty]="true"
+                    [showTotalWithPoints]="source.id === 0"
+                    [rowPourIds]="row.pourIds"
+                    [rowPushIds]="row.pushIds"
+                    [rowHintIds]="row.hintIds"
+                    [rowOtherIds]="row.otherIds"
+                    [mappingRatings]="mappingRatings"
+                  >
+                  </app-calc-total-pour-and-push-in-rating-sources>
+                </ng-template>
+              </div>
               <!-- <div
                 class="p-0-5 br-bottom-1p-solid-red"
                 fxLayout="row"

@@ -16,32 +16,38 @@ export class ReportsService {
 
   constructor(private http: HttpClient) {}
 
-  // static GetReportTypesList(ratingsList: any[]): any {
-  //   const pour = [],
-  //     push = [],
-  //     others = [];
-  //   if (ratingsList) {
-  //     ratingsList.forEach((item) => {
-  //       //  tslint:disable-next-line:no-bitwise
-  //       if ((item.types & 1) !== 0) {
-  //         pour.push('_' + item.id);
-  //       }
-  //       //  tslint:disable-next-line:no-bitwise
-  //       if ((item.types & 2) !== 0) {
-  //         push.push('_' + item.id);
-  //       }
-  //       //  tslint:disable-next-line:no-bitwise
-  //       if ((item.types & 4) !== 0) {
-  //         others.push('_' + item.id);
-  //       }
-  //     });
-  //   }
-  //   return {
-  //     pourIds: pour,
-  //     pushIds: push,
-  //     othersIds: others,
-  //   };
-  // }
+  static GetRatingTypesFull(ratingsList: any[]): any {
+    const pour = [];
+    const push = [];
+    const other = [];
+    const hint = [];
+    if (ratingsList) {
+      ratingsList.forEach((item) => {
+        //  tslint:disable-next-line:no-bitwise
+        if ((item.types & 1) !== 0) {
+          pour.push('_' + item.id);
+        }
+        //  tslint:disable-next-line:no-bitwise
+        if ((item.types & 2) !== 0) {
+          push.push('_' + item.id);
+        }
+        //  tslint:disable-next-line:no-bitwise
+        if ((item.types & 8) !== 0) {
+          hint.push('_' + item.id);
+        }
+        //  tslint:disable-next-line:no-bitwise
+        if ((item.types & 4) !== 0) {
+          other.push('_' + item.id);
+        }
+      });
+    }
+    return {
+      pourIds: pour,
+      pushIds: push,
+      hintIds: hint,
+      otherIds: other,
+    };
+  }
 
   private addIdIntoUrl(id: number) {
     return this.apiUrl + '/' + id;

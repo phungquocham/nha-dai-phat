@@ -139,3 +139,41 @@ export class ModelReportRatingHandle {
   totalRatingPoints = 0;
   constructor() {}
 }
+
+export class ModelRatingSourceColumn implements IRatingSourceColumn {
+  pour: any;
+  push: any;
+  hint: any;
+  other: any;
+  constructor(data?: IRatingSourceColumn) {
+    if (data) {
+      this.pour = data.pour;
+      this.push = data.push;
+      this.hint = data.hint;
+      this.other = data.other;
+    }
+  }
+
+  setPour(data) {
+    this.pour = data;
+  }
+
+  setPush(data) {
+    this.push = data;
+  }
+
+  setHint(data) {
+    this.hint = data;
+  }
+
+  setOther(data) {
+    this.other = data;
+  }
+}
+
+interface IRatingSourceColumn {
+  pour?: any;
+  push?: any;
+  hint?: any;
+  other?: any;
+}

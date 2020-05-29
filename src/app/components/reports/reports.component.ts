@@ -79,6 +79,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   reportsRawData = [];
   reportTotalFooter = new ModelReportResponseInRow();
   mappingTeamsInTable = {};
+  row = {
+    pourIds: [],
+    pushIds: [],
+    hintIds: [],
+    otherIds: [],
+  };
+  totalFooterWithPoints = 0;
+  totalFooterRatingSources = {};
 
   constructor(
     private dialog: DialogService,
@@ -153,8 +161,22 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('***************************');
         this.mappingSources = this.mappingObjectFromList(this.sourcesList);
         this.mappingProjects = this.mappingObjectFromList(this.projectsList);
-        this.mappingRatings = this.mappingObjectFromList(this.ratingsList);
+        this.mappingRatings = this.mappingObjectFromList(
+          this.ratingsList,
+          'id',
+          '_'
+        );
         this.mappingTeams = this.mappingObjectFromList(this.teamsList);
+        const {
+          pourIds,
+          pushIds,
+          hintIds,
+          otherIds,
+        } = ReportsService.GetRatingTypesFull(this.ratingsList);
+        this.row.pourIds = pourIds;
+        this.row.pushIds = pushIds;
+        this.row.hintIds = hintIds;
+        this.row.otherIds = otherIds;
         console.log('***************************');
       });
   }
@@ -302,6 +324,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           data = this.handleReportsWithTeams(data);
         }
         this.reportsData = data;
+        this.totalFooterRatingSources = this.calcFooterRatingSources(data);
         this.handledReports(this.reportsData, this.isTeamRow());
         this.isLoading = false;
         this.detechChanges();
@@ -332,10 +355,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate([Routing.REPORTS], { queryParams });
   }
 
-  mappingObjectFromList(list: any[], key = 'id') {
+  mappingObjectFromList(list: any[], key = 'id', char = '') {
     const obj = {};
     list.forEach((item) => {
-      obj[item[key]] = item;
+      if (char) {
+        obj[char + item[key]] = item;
+      } else {
+        obj[item[key]] = item;
+      }
     });
     return obj;
   }
@@ -491,5 +518,67 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     Object.keys(this.mappingTeamsInTable).forEach((teamId) => {
       this.mappingTeamsInTable[teamId] = new ModelReportResponseInRow();
     });
+  }
+
+  private calcFooterRatingSources(reports: IReportResponse[]) {
+    const sourcesFooter = {};
+    const temp = _.cloneDeep(reports);
+    // tslint:disable-next-line:no-shadowed-variable
+    temp.forEach((report) => {
+      Object.keys(report.ratingSources).forEach((sourceId) => {
+        if (!sourcesFooter[sourceId]) {
+          sourcesFooter[sourceId] = {
+            1: {},
+            2: {},
+            4: {},
+            8: {},
+          };
+        }
+        const source = _.cloneDeep(report.ratingSources);
+        sourcesFooter[sourceId][1] = this.handleFooterTotalRating(
+          source[sourceId][1],
+          sourcesFooter[sourceId][1]
+        );
+
+        sourcesFooter[sourceId][2] = this.handleFooterTotalRating(
+          source[sourceId][2],
+          sourcesFooter[sourceId][2]
+        );
+
+        sourcesFooter[sourceId][4] = this.handleFooterTotalRating(
+          source[sourceId][4],
+          sourcesFooter[sourceId][4]
+        );
+
+        sourcesFooter[sourceId][8] = this.handleFooterTotalRating(
+          source[sourceId][8],
+          sourcesFooter[sourceId][8]
+        );
+      });
+    });
+    console.log('>>>>>>>>>', sourcesFooter);
+    return sourcesFooter;
+  }
+
+  private handleFooterTotalRating(ratingObj, resultObj) {
+    if (ratingObj) {
+      Object.keys(ratingObj).forEach((ratingId) => {
+        if (!resultObj[ratingId]) {
+          resultObj[ratingId] = ratingObj[ratingId];
+        } else {
+          ratingObj[ratingId].forEach((item) => {
+            const founded = resultObj[ratingId].find(
+              (element) => element[0] === item[0]
+            );
+            if (founded) {
+              founded[1] += item[1];
+            } else {
+              resultObj[ratingId].push(item);
+            }
+          });
+        }
+      });
+    }
+    return { ...resultObj };
   }
 }

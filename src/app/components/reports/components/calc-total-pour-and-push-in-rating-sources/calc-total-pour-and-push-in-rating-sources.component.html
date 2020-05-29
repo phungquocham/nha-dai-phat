@@ -1,40 +1,206 @@
 <div class="cal-total-pour-and-push-in-rating-sources">
-  <div
-    class="container"
-    fxLayout="row"
-    [ngClass]="{ 'source-total': sourceId === 0 }"
-  >
-    <div fxLayout="row wrap" class="pour-and-push-total">
+  <div *ngIf="defaultComponentEmpty; else componentOther">
+    <div class="container" fxLayout="row">
       <div
-        fxLayout="row wrap"
-        class="rating-color"
-        *ngFor="let ratingIdWithDash of ratingIds"
+        class="p-0-5 br-bottom-1p-solid-red"
+        fxLayout="row"
+        *ngIf="showTotalWithPoints"
         fxLayoutAlign="center center"
-        [ngStyle]="{
-          background: getBackgroundColor(ratingIdWithDash)
-        }"
-        [matTooltip]="getTooltipInfo(mappingPour[ratingIdWithDash])"
       >
-        <span class="white-space-nowrap">
-          {{ getRatingName(ratingIdWithDash) }}:
-          <span
-            *ngIf="
-              mappingRatings[removeDashFromId(ratingIdWithDash)].types ===
-                TYPES.THREE;
-              else otherRatings
-            "
-          >
-            {{ getValueTotal(mappingPour[ratingIdWithDash]) }} -
-            {{ getValueTotal(mappingData[ratingIdWithDash]) }}
-          </span>
-
-          <ng-template #otherRatings>
-            <span>
-              {{ getValueTotal(mappingPour[ratingIdWithDash]) }}
+        <div class="total-rating-points" fxLayoutAlign="center center">
+          0
+        </div>
+      </div>
+      <div
+        fxLayout="row"
+        class="pour-and-push-total p-0-5 br-bottom-1p-solid-red"
+      >
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowPourIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}:
+            <span
+              *ngIf="
+                mappingRatings[ratingIdWithDash].types === TYPES.THREE;
+                else otherRatings
+              "
+            >
+              0 - 0
             </span>
-          </ng-template>
-        </span>
+            <ng-template #otherRatings>
+              <span>
+                0
+              </span>
+            </ng-template>
+          </span>
+        </div>
+      </div>
+
+      <div fxLayout="row" class="push p-0-5 br-bottom-1p-solid-red">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowPushIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}: 0
+          </span>
+        </div>
+      </div>
+      <div fxLayout="row" class="hint p-0-5 br-bottom-1p-solid-red">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowHintIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}: 0
+          </span>
+        </div>
+      </div>
+      <div fxLayout="row" class="other p-0-5">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowOtherIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}: 0
+          </span>
+        </div>
       </div>
     </div>
   </div>
+
+  <ng-template #componentOther>
+    <div
+      class="container"
+      fxLayout="row"
+      [ngClass]="{ 'source-total': sourceId === 0 }"
+    >
+      <div
+        class="p-0-5 br-bottom-1p-solid-red"
+        fxLayout="row"
+        *ngIf="showTotalWithPoints"
+        fxLayoutAlign="center center"
+      >
+        <div class="total-rating-points" fxLayoutAlign="center center">
+          <!-- {{ element.totalRatingPoints | number: '1.0-2' }} -->
+          {{ totalRatingWithPoints | number: '1.0-2' }}
+        </div>
+      </div>
+      <div
+        fxLayout="row"
+        class="pour-and-push-total p-0-5 br-bottom-1p-solid-red"
+      >
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowPourIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+          [matTooltip]="pourTooltip[ratingIdWithDash]"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}:
+            <span
+              *ngIf="
+                mappingRatings[ratingIdWithDash].types === TYPES.THREE;
+                else otherRatings
+              "
+            >
+              {{ pourColumn[ratingIdWithDash] }}
+              -
+              {{ pourColumn[ratingIdWithDash] + pushColumn[ratingIdWithDash] }}
+            </span>
+
+            <ng-template #otherRatings>
+              <span>
+                {{ pourColumn[ratingIdWithDash] }}
+              </span>
+            </ng-template>
+          </span>
+        </div>
+      </div>
+
+      <div fxLayout="row" class="push p-0-5 br-bottom-1p-solid-red">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowPushIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+          [matTooltip]="pushTooltip[ratingIdWithDash]"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}:
+            <span>
+              {{ pushColumn[ratingIdWithDash] }}
+            </span>
+          </span>
+        </div>
+      </div>
+      <div fxLayout="row" class="hint p-0-5 br-bottom-1p-solid-red">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowHintIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+          [matTooltip]="hintTooltip[ratingIdWithDash]"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}:
+            <span>
+              {{ hintColumn[ratingIdWithDash] }}
+            </span>
+          </span>
+        </div>
+      </div>
+      <div fxLayout="row" class="other p-0-5">
+        <div
+          fxLayout="row wrap"
+          class="rating-color"
+          *ngFor="let ratingIdWithDash of rowOtherIds"
+          fxLayoutAlign="center center"
+          [ngStyle]="{
+            background: mappingRatings[ratingIdWithDash].color
+          }"
+          [matTooltip]="otherTooltip[ratingIdWithDash]"
+        >
+          <span class="white-space-nowrap">
+            {{ mappingRatings[ratingIdWithDash].name }}:
+            <span>
+              {{ otherColumn[ratingIdWithDash] }}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </div>

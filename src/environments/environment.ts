@@ -3,19 +3,6 @@
 // The list of file replacements can be found in `angular.json`.
 
 // DEV
-// export const environment = {
-//   production: false,
-//   FIREBASE: {
-//     apiKey: 'AIzaSyBebx1WLevPWD-1vaQLetIrNo7la6clTr4',
-//     authDomain: 'https://dev.nhadaiphat.net',
-//     databaseURL: 'https://nhadaiphat-dev.firebaseapp.com',
-//     projectId: 'nhadaiphat-dev',
-//     storageBucket: 'nhadaiphat-dev.appspot.com'
-//   },
-//   API_DOMAIN: 'https://api.dev.nhadaiphat.net'
-// };
-
-// PRODUCT
 export const environment = {
   production: false,
   FIREBASE: {
@@ -27,6 +14,19 @@ export const environment = {
   },
   API_DOMAIN: 'https://api.dev.nhadaiphat.net',
 };
+
+// PRODUCT
+// export const environment = {
+//   production: true,
+//   FIREBASE: {
+//     apiKey: 'AIzaSyBgPW41JiJ5UJYQ0NM7SnxjJIBl_k0j8DQ',
+//     authDomain: 'https://nhadaiphat.net',
+//     databaseURL: 'https://nhadaiphat-prod.firebaseapp.com',
+//     projectId: 'nhadaiphat-prod',
+//     storageBucket: 'nhadaiphat-prod.appspot.com',
+//   },
+//   API_DOMAIN: 'https://api.nhadaiphat.net',
+// };
 
 /*
  * For easier debugging in development mode, you can import the following file

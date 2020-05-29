@@ -1,4 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import * as _ from 'lodash';
 
 const TYPES = {
@@ -10,44 +16,145 @@ const TYPES = {
   selector: 'app-calc-total-pour-and-push-in-rating-sources',
   templateUrl: './calc-total-pour-and-push-in-rating-sources.component.html',
   styleUrls: ['./calc-total-pour-and-push-in-rating-sources.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
-  @Input() pour = {}; // 8 types
-  @Input() push = {};
   @Input() mappingSources = {};
   @Input() mappingProjects = {};
   @Input() mappingRatings = {};
   @Input() sourceId = 0;
+  @Input() ratingsInSource = {};
 
-  ratingIds = [];
+  @Input() rowPourIds = [];
+  @Input() rowPushIds = [];
+  @Input() rowHintIds = [];
+  @Input() rowOtherIds = [];
+
+  @Input() defaultComponentEmpty = false;
+  @Input() showTotalWithPoints = false;
+
+  // ratingIds = [];
   mappingData = {};
   mappingPour = {};
+  mappingPush = {};
+  mappingHint = {};
+  mappingOther = {};
   TYPES = TYPES;
+  totalRatingWithPoints = 0;
 
-  constructor() {}
+  private pour = {};
+  private push = {};
+  private hint = {};
+  private other = {};
+
+  pourColumn = {};
+  pourTooltip = {};
+
+  pushColumn = {};
+  pushTooltip = {};
+
+  hintColumn = {};
+  hintTooltip = {};
+
+  otherColumn = {};
+  otherTooltip = {};
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.mappingPour = _.cloneDeep(this.pour);
+    if (this.ratingsInSource) {
+      this.pour = this.ratingsInSource[1] || {};
+      this.push = this.ratingsInSource[2] || {};
+      this.hint = this.ratingsInSource[8] || {};
+      this.other = this.ratingsInSource[4] || {};
+    }
+
+    this.mappingPour = this.cloneRating(this.pour);
+    this.mappingPush = this.cloneRating(this.push);
+    this.mappingHint = this.cloneRating(this.hint);
+    this.mappingOther = this.cloneRating(this.other);
+
     this.mappingData = _.mergeWith(
-      this.pour,
-      this.push,
+      _.cloneDeep(this.mappingPour),
+      _.cloneDeep(this.mappingPush),
       this.handleWhenMergePourAndPush
     );
-    this.ratingIds = [];
 
-    if (this.mappingPour) {
-      Object.keys(this.mappingPour).forEach((ratingIdWithDash) => {
-        // if (
-        //   this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
-        //     1 ||
-        //   this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].types ===
-        //     3
-        // ) {
-        this.ratingIds.push(ratingIdWithDash);
-        // }
-      });
+    this.handleRatingColumn(
+      this.rowPourIds,
+      this.pourColumn,
+      this.pourTooltip,
+      this.mappingPour
+    );
+
+    this.handleRatingColumn(
+      this.rowPushIds,
+      this.pushColumn,
+      this.pushTooltip,
+      this.mappingPush
+    );
+
+    this.handleRatingColumn(
+      this.rowHintIds,
+      this.hintColumn,
+      this.hintTooltip,
+      this.mappingHint
+    );
+
+    this.handleRatingColumn(
+      this.rowOtherIds,
+      this.otherColumn,
+      this.otherTooltip,
+      this.mappingOther
+    );
+
+    if (this.showTotalWithPoints) {
+      this.totalRatingWithPoints = 0;
+      this.totalRatingWithPoints =
+        this.calcColumnWithPoints(this.pourColumn) +
+        this.calcColumnWithPoints(this.pushColumn) +
+        this.calcColumnWithPoints(this.hintColumn) +
+        this.calcColumnWithPoints(this.otherColumn);
     }
-    this.ratingIds = _.uniq(this.ratingIds);
+  }
+
+  detectChanges() {
+    this.cdr.detectChanges();
+  }
+
+  calcColumnWithPoints(ratingColumn) {
+    let result = 0;
+    Object.keys(ratingColumn).forEach((id) => {
+      result += ratingColumn[id] * this.mappingRatings[id].points;
+    });
+    return result;
+  }
+
+  // handlePourColumn() {
+  //   this.rowPourIds.forEach((id) => {
+  //     this.pourColumn[id] = 0;
+  //     this.pourTooltip[id] = '';
+  //   });
+  //   Object.keys(this.mappingPour).forEach((id) => {
+  //     this.pourColumn[id] = this.getValueTotal(this.mappingPour[id]);
+  //     this.pourTooltip[id] = this.getTooltipInfo(this.mappingPour[id]);
+  //   });
+  // }
+
+  handleRatingColumn(
+    rowIds = [],
+    ratingColumn = {},
+    ratingTooltip = {},
+    ratingMapping = {}
+  ) {
+    rowIds.forEach((id) => {
+      ratingColumn[id] = 0;
+      ratingTooltip[id] = '';
+    });
+    Object.keys(ratingMapping).forEach((id) => {
+      ratingColumn[id] = this.getValueTotal(ratingMapping[id]);
+      ratingTooltip[id] = this.getTooltipInfo(ratingMapping[id]);
+    });
   }
 
   handleWhenMergePourAndPush(pourArr: any[], pushArr: any[]) {
@@ -66,16 +173,17 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
     }
   }
 
-  getRatingIds(ratingObj) {
-    return Object.keys(ratingObj);
-  }
-
-  removeDashFromId(id: string) {
-    return +id.replace('_', '');
-  }
-
   getValueTotal(array: any[]) {
     return _.sumBy(array, (i) => i[1]);
+  }
+
+  handleValueTotal(ratingIdWithDash, array: any[]) {
+    const total = this.getValueTotal(array);
+    if (this.showTotalWithPoints) {
+      this.totalRatingWithPoints +=
+        this.mappingRatings[ratingIdWithDash].points * total;
+    }
+    return total;
   }
 
   getTooltipInfo(data: any[]) {
@@ -93,21 +201,12 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
       .join('\n');
   }
 
-  getBackgroundColor(ratingIdWithDash: string) {
-    return (
-      this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].color ||
-      'unset'
-    );
-  }
-
-  getRatingName(ratingIdWithDash: string) {
-    return (
-      this.mappingRatings[this.removeDashFromId(ratingIdWithDash)].name ||
-      'unknow'
-    );
-  }
-
-  isRatingTypeThree(id: number) {
-    return this.mappingRatings[id].types === 3;
+  cloneRating(obj: any) {
+    const result = {};
+    // const temp = _.cloneDeep(obj);
+    Object.keys(obj).forEach((id) => {
+      result['_' + id] = obj[id];
+    });
+    return result;
   }
 }
