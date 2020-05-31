@@ -555,67 +555,8 @@
                   >
                   </app-calc-total-pour-and-push-in-rating-sources>
                 </ng-template>
-
-                <!-- <app-calc-total-pour-and-push-in-rating-sources
-                [sourceId]="source.id"
-                [pour]="element.ratingSources[source.id][1]"
-                [push]="element.ratingSources[source.id][2]"
-                [mappingSources]="mappingSources"
-                [mappingProjects]="mappingProjects"
-                [mappingRatings]="mappingRatings"
-              ></app-calc-total-pour-and-push-in-rating-sources> -->
-                <!-- <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="let item of element.ratingSources[source.id]?.pour"
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item.name }}: {{ item.total }}</span
-                  >
-                </div> -->
               </div>
-              <!-- <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="let item of element.ratingSources[source.id]?.push"
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item.name }}: {{ item.total }}</span
-                  >
-                </div>
-              </div>
-              <div class="p-0-5" fxLayout="row">
-                <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="let item of element.ratingSources[source.id]?.others"
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item.name }}: {{ item.total }}</span
-                  >
-                </div>
-              </div> -->
             </div>
-            <!-- <div *ngIf="source.showColumn">
-              <app-calc-total-pour-and-push-in-rating-sources
-                [sourceId]="source.id"
-                [reportUserId]="element.reportUserId"
-                [ratingSources]="element.ratingSources[source.id]"
-                [mappingSources]="mappingSources"
-                [mappingProjects]="mappingProjects"
-                [mappingRatings]="mappingRatings"
-              ></app-calc-total-pour-and-push-in-rating-sources>
-            </div> -->
           </td>
           <td
             mat-footer-cell
@@ -625,7 +566,7 @@
             <div
               fxLayoutAlign="center center"
               class="px-24p py-0"
-              *ngIf="source.showColumn"
+              *ngIf="showFooterTotal && source.showColumn"
             >
               <div fxLayout="row">
                 <app-calc-total-pour-and-push-in-rating-sources
@@ -657,71 +598,6 @@
                   </app-calc-total-pour-and-push-in-rating-sources>
                 </ng-template>
               </div>
-              <!-- <div
-                class="p-0-5 br-bottom-1p-solid-red"
-                fxLayout="row"
-                *ngIf="source.id === 0"
-                fxLayoutAlign="center center"
-              >
-                <div class="total-rating-points" fxLayoutAlign="center center">
-                  {{ totalRatingPointsByColumn | number: '1.0-2' }}
-                </div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="
-                    let item of totalRatingSourcesByColumn[source.id]?.pour
-                  "
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item?.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item?.name }}: {{ item?.total }}
-                    {{
-                      calculateTotalPourAndPush(
-                        source.id,
-                        item?.id,
-                        item?.total
-                      )
-                    }}</span
-                  >
-                </div>
-              </div>
-              <div class="p-0-5 br-bottom-1p-solid-red" fxLayout="row">
-                <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="
-                    let item of totalRatingSourcesByColumn[source.id]?.push
-                  "
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item?.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item?.name }}: {{ item?.total }}</span
-                  >
-                </div>
-              </div>
-              <div class="p-0-5" fxLayout="row">
-                <div
-                  fxLayout="row wrap"
-                  class="rating-color"
-                  *ngFor="
-                    let item of totalRatingSourcesByColumn[source.id]?.others
-                  "
-                  [matTooltip]="item.tooltip"
-                  [ngStyle]="{ background: item?.color }"
-                  fxLayoutAlign="center center"
-                >
-                  <span class="white-space-nowrap"
-                    >{{ item?.name }}: {{ item?.total }}</span
-                  >
-                </div>
-              </div> -->
             </div>
           </td>
         </ng-container>

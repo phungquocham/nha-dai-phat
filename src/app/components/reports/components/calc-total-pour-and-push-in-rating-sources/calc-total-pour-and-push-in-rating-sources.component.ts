@@ -130,17 +130,6 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
     return result;
   }
 
-  // handlePourColumn() {
-  //   this.rowPourIds.forEach((id) => {
-  //     this.pourColumn[id] = 0;
-  //     this.pourTooltip[id] = '';
-  //   });
-  //   Object.keys(this.mappingPour).forEach((id) => {
-  //     this.pourColumn[id] = this.getValueTotal(this.mappingPour[id]);
-  //     this.pourTooltip[id] = this.getTooltipInfo(this.mappingPour[id]);
-  //   });
-  // }
-
   handleRatingColumn(
     rowIds = [],
     ratingColumn = {},
@@ -203,7 +192,6 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
 
   cloneRating(obj: any) {
     const result = {};
-    // const temp = _.cloneDeep(obj);
     Object.keys(obj).forEach((id) => {
       result['_' + id] = obj[id];
     });

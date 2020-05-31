@@ -87,6 +87,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   totalFooterWithPoints = 0;
   totalFooterRatingSources = {};
+  showFooterTotal = true;
 
   constructor(
     private dialog: DialogService,
@@ -158,7 +159,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.detechChanges();
         this.subscribePageLoading();
         this.subscribeQueryParams();
-        console.log('***************************');
+
         this.mappingSources = this.mappingObjectFromList(this.sourcesList);
         this.mappingProjects = this.mappingObjectFromList(this.projectsList);
         this.mappingRatings = this.mappingObjectFromList(
@@ -177,7 +178,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.row.pushIds = pushIds;
         this.row.hintIds = hintIds;
         this.row.otherIds = otherIds;
-        console.log('***************************');
       });
   }
 
@@ -219,7 +219,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe((res) => {
         if (res) {
-          console.log(res);
           this.routeWithQueryParams({
             fromDate: res.startDate,
             toDate: res.endDate,
@@ -317,14 +316,26 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((data) => {
+        this.showFooterTotal = false;
+        setTimeout(() => {
+          this.showFooterTotal = true;
+          this.detechChanges();
+        }, 0);
         this.resetReportTotalFooter();
         data = _.orderBy(data, ['reportUserName'], ['asc']);
         if (this.isTeamRow()) {
           this.resetTeamsInTable();
           data = this.handleReportsWithTeams(data);
+          this.totalFooterRatingSources = this.calcFooterRatingSources(
+            data.filter(
+              (reportData: ModelReportResponseInRow) =>
+                reportData.id && reportData.id.includes('team_')
+            )
+          );
+        } else {
+          this.totalFooterRatingSources = this.calcFooterRatingSources(data);
         }
         this.reportsData = data;
-        this.totalFooterRatingSources = this.calcFooterRatingSources(data);
         this.handledReports(this.reportsData, this.isTeamRow());
         this.isLoading = false;
         this.detechChanges();
@@ -394,7 +405,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.reportsData = reports;
       this.detechChanges();
-      console.log(this.reportsData);
     }
   }
 
@@ -402,7 +412,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.teamsSelected.length > 0;
   }
 
-  private handleReportsWithTeams(reports: IReportResponse[]) {
+  private handleReportsWithTeams(reports: IReportResponse[]): any[] {
     const groups = _.groupBy(reports, 'teamId');
     const reportsWithTeam = [];
     Object.keys(groups).forEach((teamId) => {
@@ -411,6 +421,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       ] = new ModelReportResponseInRow();
       const teamRow = new ModelReportResponseInRow();
       teamRow.setTeamType(teamId, this.mappingTeams[teamId].name);
+      teamRow.ratingSources = this.calcFooterRatingSources(groups[teamId]);
       reportsWithTeam.push(teamRow);
       groups[teamId].forEach((userRow) => {
         reportsWithTeam.push(userRow);
@@ -475,41 +486,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     reportObject.flirtingCount += report.flirtingCount;
   }
 
-  // private handleReportTotalFooter(report: IReportResponse) {
-  //   this.reportTotalFooter.goldenHours += report.goldenHours;
-
-  //   this.reportTotalFooter.regularPouring.uncontactable +=
-  //     report.regularPouring.uncontactable;
-  //   this.reportTotalFooter.regularPouring.notPickUp +=
-  //     report.regularPouring.notPickUp;
-  //   this.reportTotalFooter.regularPouring.noNeed +=
-  //     report.regularPouring.noNeed;
-  //   this.reportTotalFooter.regularPouring.hangUp +=
-  //     report.regularPouring.hangUp;
-  //   this.reportTotalFooter.regularPouring.twoSentences +=
-  //     report.regularPouring.twoSentences;
-  //   this.reportTotalFooter.regularPouring.moreThanTwoSentences +=
-  //     report.regularPouring.moreThanTwoSentences;
-  //   this.reportTotalFooter.regularPouring.total += report.regularPouring.total;
-
-  //   this.reportTotalFooter.selfPouring.uncontactable +=
-  //     report.selfPouring.uncontactable;
-  //   this.reportTotalFooter.selfPouring.notPickUp +=
-  //     report.selfPouring.notPickUp;
-  //   this.reportTotalFooter.selfPouring.noNeed += report.selfPouring.noNeed;
-  //   this.reportTotalFooter.selfPouring.hangUp += report.selfPouring.hangUp;
-  //   this.reportTotalFooter.selfPouring.twoSentences +=
-  //     report.selfPouring.twoSentences;
-  //   this.reportTotalFooter.selfPouring.moreThanTwoSentences +=
-  //     report.selfPouring.moreThanTwoSentences;
-  //   this.reportTotalFooter.selfPouring.total += report.selfPouring.total;
-
-  //   this.reportTotalFooter.pushCount += report.pushCount;
-  //   this.reportTotalFooter.suggestionCount += report.suggestionCount;
-  //   this.reportTotalFooter.emailCount += report.emailCount;
-  //   this.reportTotalFooter.flirtingCount += report.flirtingCount;
-  // }
-
   private resetReportTotalFooter() {
     this.reportTotalFooter = new ModelReportResponseInRow();
   }
@@ -522,9 +498,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private calcFooterRatingSources(reports: IReportResponse[]) {
     const sourcesFooter = {};
-    const temp = _.cloneDeep(reports);
+    // const temp = _.cloneDeep(reports);
     // tslint:disable-next-line:no-shadowed-variable
-    temp.forEach((report) => {
+    reports.forEach((report) => {
       Object.keys(report.ratingSources).forEach((sourceId) => {
         if (!sourcesFooter[sourceId]) {
           sourcesFooter[sourceId] = {
@@ -535,6 +511,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           };
         }
         const source = _.cloneDeep(report.ratingSources);
+        // const source = report.ratingSources;
         sourcesFooter[sourceId][1] = this.handleFooterTotalRating(
           source[sourceId][1],
           sourcesFooter[sourceId][1]
@@ -556,7 +533,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         );
       });
     });
-    console.log('>>>>>>>>>', sourcesFooter);
     return sourcesFooter;
   }
 
