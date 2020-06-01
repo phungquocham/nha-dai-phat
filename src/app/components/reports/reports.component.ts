@@ -498,9 +498,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private calcFooterRatingSources(reports: IReportResponse[]) {
     const sourcesFooter = {};
-    // const temp = _.cloneDeep(reports);
+    const temp = _.cloneDeep(reports);
     // tslint:disable-next-line:no-shadowed-variable
-    reports.forEach((report) => {
+    temp.forEach((report) => {
       Object.keys(report.ratingSources).forEach((sourceId) => {
         if (!sourcesFooter[sourceId]) {
           sourcesFooter[sourceId] = {
@@ -510,8 +510,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
             8: {},
           };
         }
-        const source = _.cloneDeep(report.ratingSources);
-        // const source = report.ratingSources;
+        const source = report.ratingSources;
         sourcesFooter[sourceId][1] = this.handleFooterTotalRating(
           source[sourceId][1],
           sourcesFooter[sourceId][1]
