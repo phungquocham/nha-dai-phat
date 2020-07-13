@@ -184,7 +184,10 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
         if (item[0] === 0) {
           return `${item[1]}`;
         } else {
-          return `${this.mappingProjects[item[0]].name}: ${item[1]}`;
+          if (this.mappingProjects[item[0]]) {
+            return `${this.mappingProjects[item[0]].name}: ${item[1]}`;
+          }
+          return '';
         }
       })
       .join('\n');
