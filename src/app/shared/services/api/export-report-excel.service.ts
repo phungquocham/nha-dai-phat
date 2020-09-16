@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Workbook, Worksheet } from 'exceljs';
+import { CellValue, Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
 
 interface HeaderCell {
@@ -24,7 +24,7 @@ interface ChildHeaderCell {
 @Injectable({
   providedIn: 'root',
 })
-export class ExportExcelService {
+export class ExportReportExcelService {
   private xColumns = [];
   private alphaStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -107,13 +107,14 @@ export class ExportExcelService {
       worksheet,
       mergeCells: 'A1:A2',
       value: 'TÊN',
+      width: 25,
     });
 
     this.createHeaderCell({
       worksheet,
       mergeCells: 'B1:B2',
       value: 'GIỜ VÀNG',
-      width: 20,
+      width: 15,
     });
 
     this.createHeaderCell({
@@ -121,22 +122,70 @@ export class ExportExcelService {
       mergeCells: 'C1:I1',
       value: 'ĐỔ ĐỀU ĐẶN',
     });
-    const columns = ['KLL', 'KBM', 'KNC', 'CM', '2 câu', '> 2 câu', 'Tổng'];
-    const cells = this.getChildHeaderCells({
+    const pourColumns = ['KLL', 'KBM', 'KNC', 'CM', '2 câu', '> 2 câu', 'Tổng'];
+    const pourCells = this.getChildHeaderCells({
       cellName: 'C2',
-      values: columns,
+      values: pourColumns,
       xColumns: this.xColumns,
     });
-    cells.forEach((cell, index) => {
+    pourColumns.forEach((value, index) => {
       this.createHeaderCell({
         worksheet,
-        cellName: cell,
-        value: columns[index],
+        cellName: pourCells[index],
+        value,
         font: {
           bold: false,
         },
         width: 10,
       });
+    });
+
+    this.createHeaderCell({
+      worksheet,
+      mergeCells: 'J1:P1',
+      value: 'TỰ ĐỔ',
+    });
+    const pushColumns = [...pourColumns];
+    const pushCells = this.getChildHeaderCells({
+      cellName: 'J2',
+      values: pushColumns,
+      xColumns: this.xColumns,
+    });
+    pushColumns.forEach((value, index) => {
+      this.createHeaderCell({
+        worksheet,
+        cellName: pushCells[index],
+        value,
+        font: {
+          bold: false,
+        },
+        width: 10,
+      });
+    });
+
+    this.createHeaderCell({
+      worksheet,
+      mergeCells: 'Q1:Q2',
+      value: 'ĐẨY',
+      width: 10,
+    });
+    this.createHeaderCell({
+      worksheet,
+      mergeCells: 'R1:R2',
+      value: 'GỢI MỞ',
+      width: 10,
+    });
+    this.createHeaderCell({
+      worksheet,
+      mergeCells: 'S1:S2',
+      value: 'EMAIL',
+      width: 10,
+    });
+    this.createHeaderCell({
+      worksheet,
+      mergeCells: 'T1:T2',
+      value: 'THÍNH',
+      width: 10,
     });
 
     // Add Row and formatting
@@ -197,16 +246,28 @@ export class ExportExcelService {
     data.forEach((item) => {
       const row = worksheet.addRow(item);
 
+      row.alignment = { vertical: 'middle', horizontal: 'center' };
+
+      const nameColumn = row.getCell(1);
+      nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
+
       const sales = row.getCell(6);
       let color = 'FF99FF99';
       if (+sales.value < 200000) {
         color = 'FF9999';
       }
-
       sales.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: color },
+      };
+      // tooltip for cell:  sales.comment not working, but sales.note is
+      sales.note = {
+        texts: [
+          {
+            text: 'aaaaaaaaaaaa',
+          },
+        ],
       };
     });
 

@@ -30,8 +30,7 @@ import {
 } from './reports.model';
 import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
-import { identifierModuleUrl } from '@angular/compiler';
-import { report } from 'process';
+import { ExportReportExcelService } from 'src/app/shared/services/api/export-report-excel.service';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -100,7 +99,8 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private pageLoadingService: PageLoadingService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private exportReportExcelService: ExportReportExcelService
   ) {}
 
   ngOnInit() {}
@@ -555,5 +555,52 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     return { ...resultObj };
+  }
+
+  private convertReportItemToExcelRow(report: ModelReportResponseInRow) {
+    const result = [];
+
+    const nameArr = report.reportUserNameTooltip.split(' ');
+    nameArr.push(nameArr.shift());
+    result.push(nameArr.join(' '));
+
+    result.push(report.goldenHours);
+
+    result.push(report.regularPouring.uncontactable);
+    result.push(report.regularPouring.notPickUp);
+    result.push(report.regularPouring.noNeed);
+    result.push(report.regularPouring.hangUp);
+    result.push(report.regularPouring.twoSentences);
+    result.push(report.regularPouring.moreThanTwoSentences);
+    result.push(report.regularPouring.total);
+
+    return result;
+  }
+
+  exportReportToExcel() {
+    console.log(this.reportsData);
+
+    const handledReportsData = [];
+    this.reportsData.forEach((report) => {
+      handledReportsData.push(this.convertReportItemToExcelRow(report));
+    });
+
+    const dataForExcel = [];
+    handledReportsData.forEach((row: any) => {
+      dataForExcel.push(Object.values(row));
+    });
+    const dateRange = `${Utils.DateTime.convertDateStringDDMMYYYY(
+      this.startDate
+    )} - ${Utils.DateTime.convertDateStringDDMMYYYY(this.endDate)}`;
+
+    const reportData = {
+      title: `Report -- ${dateRange}`,
+      data: dataForExcel,
+      // headers: Object.keys(empPerformance[0]),
+    };
+
+    console.log(reportData);
+
+    this.exportReportExcelService.exportExcel(reportData);
   }
 }
