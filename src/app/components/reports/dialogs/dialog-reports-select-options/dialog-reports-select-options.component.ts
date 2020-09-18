@@ -107,17 +107,17 @@ export class DialogReportsSelectOptionsComponent
     let { startDate, endDate } = this.form.value;
     if (!(startDate instanceof Date)) {
       // instanceof Moment
-      startDate = startDate['_d'];
+      startDate = startDate._d;
     }
     if (!(endDate instanceof Date)) {
       // instanceof Moment
-      endDate = endDate['_d'];
+      endDate = endDate._d;
     }
     startDate = Utils.DateTime.convertDateStringDDMMYYYY(startDate);
     endDate = Utils.DateTime.convertDateStringDDMMYYYY(endDate);
     const data = {
-      startDate: startDate,
-      endDate: endDate,
+      startDate,
+      endDate,
       projectsSelected: this.projectsSelected,
       teamsSelected: this.teamsSelected,
       usersSelected: this.usersSelected,
@@ -131,5 +131,11 @@ export class DialogReportsSelectOptionsComponent
       this.dialogRef = null;
     });
     this.dialogRef.close(data);
+  }
+
+  exportReports() {
+    this.closeDialog({
+      export: true,
+    });
   }
 }

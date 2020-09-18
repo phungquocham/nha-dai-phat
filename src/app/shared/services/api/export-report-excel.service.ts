@@ -317,13 +317,10 @@ export class ExportReportExcelService {
     sourcesData: any[]
   ) {
     const rowsLength = data.length;
-    const columnsLength = data[0]
-      ? data[0].length
-      : 0 + sourcesData[0]
-      ? sourcesData[0].length
-      : 0;
+    const dataColumnsLength = (data[0] && data[0].length) || 0;
+    const sourceColumnsLength = (sourcesData[0] && sourcesData[0].length) || 0;
     for (let i = 4; i < rowsLength + 4; i++) {
-      for (let j = 0; j < columnsLength; j++) {
+      for (let j = 0; j < dataColumnsLength + sourceColumnsLength; j++) {
         const cell = worksheet.getCell(`${this.xColumnsAutoInit[j]}${i}`);
         cell.border = this.createCellBorder();
       }

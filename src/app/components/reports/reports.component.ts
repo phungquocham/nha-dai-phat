@@ -232,6 +232,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe((res) => {
         if (res) {
+          if (res.export) {
+            this.exportReportToExcel();
+            return;
+          }
           this.routeWithQueryParams({
             fromDate: res.startDate,
             toDate: res.endDate,

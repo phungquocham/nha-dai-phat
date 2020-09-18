@@ -210,10 +210,26 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
     mappingRatings: object,
     key: string,
     column: object,
-    tooltip: object
+    tooltip: object,
+    isAddedPushColumn: boolean = false,
+    pushColumn?: object
   ) {
+    let value = '';
+
+    if (isAddedPushColumn) {
+      if (key !== '_1' && key !== '_2') {
+        value = `${mappingRatings[key].name}: ${column[key]} - ${
+          column[key] + pushColumn[key]
+        }`;
+      } else {
+        value = `${mappingRatings[key].name}: ${column[key]}`;
+      }
+    } else {
+      value = `${mappingRatings[key].name}: ${column[key]}`;
+    }
+
     return {
-      value: `${mappingRatings[key].name}: ${column[key]}`,
+      value,
       color: mappingRatings[key].color,
       tooltip: tooltip[key] ? tooltip[key] : [],
     };
@@ -235,7 +251,9 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
           this.mappingRatings,
           key,
           this.pourColumn,
-          this.pourTooltip
+          this.pourTooltip,
+          true,
+          this.pushColumn
         )
       );
     });
