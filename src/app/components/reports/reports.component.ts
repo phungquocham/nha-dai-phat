@@ -59,6 +59,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     CalcTotalPourAndPushInRatingSourcesComponent
   >;
 
+  @ViewChildren('ratingsSourceFooter')
+  ratingsSourceFooter: QueryList<CalcTotalPourAndPushInRatingSourcesComponent>;
+
   private ngUnsubscribe = new Subject();
 
   showTeamRows = false;
@@ -567,12 +570,19 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     return { ...resultObj };
   }
 
-  private convertReportItemToExcelRow(report: ModelReportResponseInRow) {
+  private convertReportItemToExcelRow(
+    report: ModelReportResponseInRow,
+    customName: string = ''
+  ) {
     const result = [];
 
-    const nameArr = report.reportUserNameTooltip.split(' ');
-    nameArr.push(nameArr.shift());
-    result.push(nameArr.join(' '));
+    if (!customName) {
+      const nameArr = report.reportUserNameTooltip.split(' ');
+      nameArr.push(nameArr.shift());
+      result.push(nameArr.join(' '));
+    } else {
+      result.push(customName);
+    }
 
     result.push(report.goldenHours);
 
@@ -626,12 +636,6 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     sourceExcelRows = sourceExcelRows.map((item) => item.ratingsData);
 
-    console.log({
-      reportsData: this.reportsData,
-      sources: sourceHeadersList,
-      sourceExcelRows,
-    });
-
     const handledReportsData = [];
     this.reportsData.forEach((report) => {
       handledReportsData.push(this.convertReportItemToExcelRow(report));
@@ -645,11 +649,23 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.startDate
     )} - ${Utils.DateTime.convertDateStringDDMMYYYY(this.endDate)}`;
 
+    let totalRatings = [];
+    this.ratingsSourceFooter.forEach((item) => {
+      totalRatings = totalRatings.concat(
+        item.getHandledRatingsData().ratingsData
+      );
+    });
+
     const reportData = {
       title: `Report -- ${dateRange}`,
       data: dataForExcel,
       sourceHeaders: sourceHeadersList,
       sourceExcelRows,
+      reportTotalData: this.convertReportItemToExcelRow(
+        this.reportTotalFooter,
+        'TỔNG'
+      ),
+      reportTotalSourcesData: totalRatings,
     };
 
     console.log(reportData);

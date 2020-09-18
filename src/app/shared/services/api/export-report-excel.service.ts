@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CellValue, Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
 import { Rgba } from 'ngx-color-picker';
+import { ROLE } from '../../helpers/const';
 
 interface HeaderCell {
   worksheet: Worksheet;
@@ -41,7 +42,7 @@ export class ExportReportExcelService {
   constructor() {
     this.xColumns = this.alphaStr.split('');
     this.xColumnsAutoInit = [...this.xColumns];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       this.xColumnsAutoInit = this.xColumnsAutoInit.concat(
         this.xColumns.map((item) => this.xColumns[i] + item)
       );
@@ -126,7 +127,7 @@ export class ExportReportExcelService {
       worksheet,
       mergeCells: 'B1:B2',
       value: 'GIỜ VÀNG',
-      width: 12,
+      width: 10,
     });
 
     this.createHeaderCell({
@@ -146,9 +147,10 @@ export class ExportReportExcelService {
         cellName: pourCells[index],
         value,
         font: {
-          bold: false,
+          bold: true,
+          size: 10,
         },
-        width: 8,
+        width: 7,
       });
     });
 
@@ -169,9 +171,10 @@ export class ExportReportExcelService {
         cellName: pushCells[index],
         value,
         font: {
-          bold: false,
+          bold: true,
+          size: 10,
         },
-        width: 8,
+        width: 7,
       });
     });
 
@@ -179,25 +182,25 @@ export class ExportReportExcelService {
       worksheet,
       mergeCells: 'Q1:Q2',
       value: 'ĐẨY',
-      width: 10,
+      width: 8,
     });
     this.createHeaderCell({
       worksheet,
       mergeCells: 'R1:R2',
       value: 'GỢI MỞ',
-      width: 10,
+      width: 8,
     });
     this.createHeaderCell({
       worksheet,
       mergeCells: 'S1:S2',
       value: 'EMAIL',
-      width: 10,
+      width: 8,
     });
     this.createHeaderCell({
       worksheet,
       mergeCells: 'T1:T2',
       value: 'THÍNH',
-      width: 10,
+      width: 8,
     });
   }
 
@@ -208,6 +211,7 @@ export class ExportReportExcelService {
   ) {
     if (sourceHeaders.length > 0) {
       let sourceCurrentColumn = currentXCell;
+      let cellsLength = 0;
       sourceHeaders.forEach((source) => {
         let childCellLen = 0;
         if (source.id === 0) {
@@ -215,7 +219,7 @@ export class ExportReportExcelService {
         } else {
           childCellLen = 18;
         }
-
+        cellsLength += childCellLen;
         const beginIndex = this.xColumnsAutoInit.indexOf(sourceCurrentColumn);
         const endIndex = beginIndex + childCellLen - 1;
 
@@ -233,7 +237,45 @@ export class ExportReportExcelService {
 
         sourceCurrentColumn = this.xColumnsAutoInit[endIndex + 1];
       });
+
+      let currentIndex = this.xColumnsAutoInit.indexOf(currentXCell);
+      for (let i = 0; i < cellsLength; i++) {
+        worksheet.getColumn(this.xColumnsAutoInit[currentIndex]).width = 12;
+        currentIndex++;
+      }
     }
+  }
+
+  private addStyleForCells(sourcesData: any[], dataIndex: number, row: any) {
+    let sourceCell = 'U';
+    let sourceCellIndex = this.xColumnsAutoInit.indexOf(sourceCell);
+
+    if (!sourcesData[dataIndex]) {
+      return;
+    }
+
+    sourcesData[dataIndex].forEach((src) => {
+      const cell = row.getCell(sourceCell);
+
+      cell.font = {
+        color: { argb: 'ffffff' },
+        bold: true,
+        size: 12,
+      };
+
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: this.removeHashTag(src.color) },
+      };
+
+      if (src.tooltip && src.tooltip.length > 0) {
+        cell.note = this.createCellTooltip(src.tooltip);
+      }
+
+      sourceCellIndex += 1;
+      sourceCell = this.xColumnsAutoInit[sourceCellIndex];
+    });
   }
 
   private addDataCells(worksheet: Worksheet, data: any[], sourcesData: any[]) {
@@ -251,59 +293,150 @@ export class ExportReportExcelService {
       const row = worksheet.addRow(item);
 
       row.alignment = { vertical: 'middle', horizontal: 'center' };
-
-      row.border = {
-        bottom: { style: 'thin' },
-        right: { style: 'thin' },
+      row.font = {
+        size: 12,
       };
 
       const nameColumn = row.getCell('A');
       nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
 
-      let sourceCell = 'U';
-      let sourceCellIndex = this.xColumnsAutoInit.indexOf(sourceCell);
-
-      sourcesData[dataIndex].forEach((src) => {
-        const cell = row.getCell(sourceCell);
-        cell.font = {
-          color: { argb: 'ffffff' },
-          bold: true,
-        };
-
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: this.removeHashTag(src.color) },
-        };
-
-        if (src.tooltip && src.tooltip.length > 0) {
-          cell.note = {
-            texts: [
-              {
-                font: {
-                  size: 12,
-                  name: 'Calibri',
-                  family: 2,
-                },
-                text: src.tooltip,
-              },
-            ],
-            margins: {
-              insetmode: 'custom',
-              inset: [0.25, 0.25, 0.35, 0.35],
-            },
-            protection: {
-              locked: 'True',
-              lockText: 'False',
-            },
-            editAs: 'twoCells',
-          };
-        }
-
-        sourceCellIndex += 1;
-        sourceCell = this.xColumnsAutoInit[sourceCellIndex];
-      });
+      this.addStyleForCells(sourcesData, dataIndex, row);
     });
+  }
+
+  private createCellBorder(): any {
+    return {
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  }
+
+  private addBorderForCells(
+    worksheet: Worksheet,
+    data: any[],
+    sourcesData: any[]
+  ) {
+    const rowsLength = data.length;
+    const columnsLength = data[0]
+      ? data[0].length
+      : 0 + sourcesData[0]
+      ? sourcesData[0].length
+      : 0;
+    for (let i = 4; i < rowsLength + 4; i++) {
+      for (let j = 0; j < columnsLength; j++) {
+        const cell = worksheet.getCell(`${this.xColumnsAutoInit[j]}${i}`);
+        cell.border = this.createCellBorder();
+      }
+    }
+  }
+
+  private createCellTooltip(text: string): any {
+    return {
+      texts: [
+        {
+          font: {
+            size: 12,
+            name: 'Calibri',
+            family: 2,
+          },
+          text,
+        },
+      ],
+      margins: {
+        insetmode: 'custom',
+        inset: [0.25, 0.25, 0.35, 0.35],
+      },
+      protection: {
+        locked: 'True',
+        lockText: 'False',
+      },
+      editAs: 'twoCells',
+    };
+  }
+
+  private addReportTotalData(
+    worksheet: Worksheet,
+    data: any[],
+    reportTotalSourcesData: any[],
+    currentXCell: string
+  ) {
+    const sourceValues: any[] = reportTotalSourcesData.map(
+      (item) => item.value
+    );
+
+    let beginIndex = this.xColumnsAutoInit.indexOf(currentXCell);
+    const sourceCells = [];
+
+    for (const item of reportTotalSourcesData) {
+      sourceCells.push(this.xColumnsAutoInit[beginIndex]);
+      beginIndex += 1;
+    }
+
+    const combinedData = data.concat(sourceValues);
+
+    const cellsLength = combinedData.length;
+
+    const row = worksheet.addRow(combinedData);
+
+    row.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    for (let i = 0; i < cellsLength; i++) {
+      const cell = row.getCell(this.xColumnsAutoInit[i]);
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'daa520' },
+      };
+      cell.border = this.createCellBorder();
+      cell.font = {
+        color: { argb: 'ffffff' },
+        bold: true,
+        size: 12,
+      };
+
+      const sourceCellIndex = sourceCells.indexOf(this.xColumnsAutoInit[i]);
+
+      if (sourceCellIndex > -1) {
+        if (reportTotalSourcesData[sourceCellIndex]) {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {
+              argb: this.removeHashTag(
+                reportTotalSourcesData[sourceCellIndex].color
+              ),
+            },
+          };
+
+          if (
+            reportTotalSourcesData[sourceCellIndex].tooltip &&
+            reportTotalSourcesData[sourceCellIndex].tooltip.length > 0
+          ) {
+            cell.note = this.createCellTooltip(
+              reportTotalSourcesData[sourceCellIndex].tooltip
+            );
+          }
+        }
+      }
+    }
+
+    // row.fill = {
+    //   type: 'pattern',
+    //   pattern: 'solid',
+    //   fgColor: { argb: 'daa520' }, // goldenrod
+    // };
+
+    // // Adding Data with Conditional Formatting
+    // combinedData.forEach((item, dataIndex) => {
+    //   const row = worksheet.addRow(item);
+
+    //   row.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    //   const nameColumn = row.getCell('A');
+    //   nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
+
+    //   this.addStyleForCells(sourcesData, dataIndex, row);
+    // });
   }
 
   exportExcel(excelData) {
@@ -311,7 +444,9 @@ export class ExportReportExcelService {
     const title: string = excelData.title;
     const data: any[] = excelData.data;
     const sourceHeaders: any[] = excelData.sourceHeaders;
-    const sourceExcelRows: [] = excelData.sourceExcelRows;
+    const sourceExcelRows: any[] = excelData.sourceExcelRows;
+    const reportTotalData: any[] = excelData.reportTotalData;
+    const reportTotalSourcesData = excelData.reportTotalSourcesData;
 
     // Create a workbook with a worksheet
     const workbook = new Workbook();
@@ -322,7 +457,7 @@ export class ExportReportExcelService {
       {
         state: 'frozen',
         xSplit: 1,
-        ySplit: 2,
+        ySplit: 3,
         activeCell: 'A1',
       },
     ];
@@ -331,11 +466,20 @@ export class ExportReportExcelService {
 
     this.createSourcesHeaderCell(worksheet, sourceHeaders, 'U');
 
+    this.addReportTotalData(
+      worksheet,
+      reportTotalData,
+      reportTotalSourcesData,
+      'U'
+    );
+
     this.addDataCells(worksheet, data, sourceExcelRows);
 
-    // Footer Row
+    this.addBorderForCells(worksheet, data, sourceExcelRows);
+
+    // // Footer Row
     // const footerRow = worksheet.addRow([
-    //   'Employee Sales Report Generated from example.com at ' + date,
+    //   'Employee Sales Report Generated from example.com at ABCDEF',
     // ]);
     // footerRow.getCell(1).fill = {
     //   type: 'pattern',
@@ -343,7 +487,7 @@ export class ExportReportExcelService {
     //   fgColor: { argb: 'FFB050' },
     // };
 
-    // Merge Cells
+    // // Merge Cells
     // worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
 
     // Generate & Save Excel File
@@ -352,7 +496,8 @@ export class ExportReportExcelService {
         type:
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      fs.saveAs(blob, title + '.xlsx');
+      // fs.saveAs(blob, title + '.xlsx');
+      fs.saveAs(blob, title + '.xls');
     });
   }
 }
