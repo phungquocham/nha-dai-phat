@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CellValue, Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
+import { Rgba } from 'ngx-color-picker';
 
 interface HeaderCell {
   worksheet: Worksheet;
@@ -13,6 +14,7 @@ interface HeaderCell {
   width?: number;
   height?: number;
   cellName?: string;
+  fill?: object;
 }
 
 interface ChildHeaderCell {
@@ -21,15 +23,29 @@ interface ChildHeaderCell {
   xColumns: any[];
 }
 
+interface IXNextKeyData {
+  initKeys: string[];
+  currentKey: string;
+  keysCount: number;
+  yKey?: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ExportReportExcelService {
   private xColumns = [];
   private alphaStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  private xColumnsAutoInit = [];
 
   constructor() {
     this.xColumns = this.alphaStr.split('');
+    this.xColumnsAutoInit = [...this.xColumns];
+    for (let i = 0; i < 20; i++) {
+      this.xColumnsAutoInit = this.xColumnsAutoInit.concat(
+        this.xColumns.map((item) => this.xColumns[i] + item)
+      );
+    }
   }
 
   private createHeaderCell(headerCell: HeaderCell) {
@@ -52,7 +68,6 @@ export class ExportReportExcelService {
       size: 12,
       bold: true,
     };
-
     if (headerCell.font) {
       cell.font = { ...cell.font, ...headerCell.font };
     }
@@ -63,10 +78,22 @@ export class ExportReportExcelService {
       bottom: { style: 'thin' },
       right: { style: 'thin' },
     };
+    if (headerCell.border) {
+      cell.border = { ...cell.border, ...headerCell.border };
+    }
 
     if (headerCell.width) {
       const key = cellName.split('')[0];
       headerCell.worksheet.getColumn(key).width = headerCell.width;
+    }
+
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: '' },
+    };
+    if (headerCell.fill) {
+      cell.fill = { ...cell.fill, ...headerCell.fill };
     }
   }
 
@@ -83,38 +110,23 @@ export class ExportReportExcelService {
     return [];
   }
 
-  exportExcel(excelData) {
-    // Title, Header & Data
-    const title = excelData.title;
-    const header = excelData.headers;
-    const data = excelData.data;
+  private removeHashTag(colorHex: string) {
+    return colorHex.replace('#', '');
+  }
 
-    // Create a workbook with a worksheet
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Sales Data');
-
-    // Freeze Header & first column
-    worksheet.views = [
-      {
-        state: 'frozen',
-        xSplit: 1,
-        ySplit: 2,
-        activeCell: 'A1',
-      },
-    ];
-
+  private createBasicHeaderCell(worksheet: Worksheet) {
     this.createHeaderCell({
       worksheet,
       mergeCells: 'A1:A2',
       value: 'TÊN',
-      width: 25,
+      width: 22,
     });
 
     this.createHeaderCell({
       worksheet,
       mergeCells: 'B1:B2',
       value: 'GIỜ VÀNG',
-      width: 15,
+      width: 12,
     });
 
     this.createHeaderCell({
@@ -136,7 +148,7 @@ export class ExportReportExcelService {
         font: {
           bold: false,
         },
-        width: 10,
+        width: 8,
       });
     });
 
@@ -159,7 +171,7 @@ export class ExportReportExcelService {
         font: {
           bold: false,
         },
-        width: 10,
+        width: 8,
       });
     });
 
@@ -187,92 +199,139 @@ export class ExportReportExcelService {
       value: 'THÍNH',
       width: 10,
     });
+  }
 
-    // Add Row and formatting
-    // worksheet.mergeCells('C1:F4');
-    // const titleRow = worksheet.getCell('C1');
-    // titleRow.value = title;
-    // titleRow.font = {
-    //   name: 'Calibri',
-    //   size: 16,
-    //   underline: 'single',
-    //   bold: true,
-    //   color: { argb: '0085A3' },
-    // };
-    // titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+  private createSourcesHeaderCell(
+    worksheet: Worksheet,
+    sourceHeaders: any[],
+    currentXCell: string
+  ) {
+    if (sourceHeaders.length > 0) {
+      let sourceCurrentColumn = currentXCell;
+      sourceHeaders.forEach((source) => {
+        let childCellLen = 0;
+        if (source.id === 0) {
+          childCellLen = 19;
+        } else {
+          childCellLen = 18;
+        }
 
-    // Date
-    // worksheet.mergeCells('G1:H4');
-    // const d = new Date();
-    // const date = d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear();
-    // const dateCell = worksheet.getCell('G1');
-    // dateCell.value = date;
-    // dateCell.font = {
-    //   name: 'Calibri',
-    //   size: 12,
-    //   bold: true,
-    // };
-    // dateCell.alignment = { vertical: 'middle', horizontal: 'center' };
+        const beginIndex = this.xColumnsAutoInit.indexOf(sourceCurrentColumn);
+        const endIndex = beginIndex + childCellLen - 1;
 
-    // Add Image
-    // const myLogoImage = workbook.addImage({
-    //   base64: logo.imgBase64,
-    //   extension: 'png',
-    // });
-    // worksheet.mergeCells('A1:B4');
-    // worksheet.addImage(myLogoImage, 'A1:B4');
+        this.createHeaderCell({
+          worksheet,
+          mergeCells: `${this.xColumnsAutoInit[beginIndex]}1:${this.xColumnsAutoInit[endIndex]}2`,
+          value: source.name,
+          border: {
+            bottom: {
+              style: 'double',
+              color: { argb: this.removeHashTag(source.color) },
+            },
+          },
+        });
 
-    // Blank Row
-    // worksheet.addRow([]);
+        sourceCurrentColumn = this.xColumnsAutoInit[endIndex + 1];
+      });
+    }
+  }
 
-    // Adding Header Row
-    // const headerRow = worksheet.addRow(header);
-    // // headerRow.eachCell((cell, number) => {
-    // headerRow.eachCell((cell) => {
-    //   cell.fill = {
-    //     type: 'pattern',
-    //     pattern: 'solid',
-    //     fgColor: { argb: '4167B8' },
-    //     bgColor: { argb: '' },
-    //   };
-    //   cell.font = {
-    //     bold: false,
-    //     color: { argb: 'FFFFFF' },
-    //     size: 12,
-    //   };
-    // });
+  private addDataCells(worksheet: Worksheet, data: any[], sourcesData: any[]) {
+    const sourceValues: any[] = sourcesData.map((source: any[]) => {
+      return source.map((item) => item.value);
+    });
+    const combinedData = [];
+    data.forEach((item, index) => {
+      // basic data + source data
+      combinedData.push(item.concat(sourceValues[index]));
+    });
 
     // Adding Data with Conditional Formatting
-    data.forEach((item) => {
+    combinedData.forEach((item, dataIndex) => {
       const row = worksheet.addRow(item);
 
       row.alignment = { vertical: 'middle', horizontal: 'center' };
 
-      const nameColumn = row.getCell(1);
+      row.border = {
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+
+      const nameColumn = row.getCell('A');
       nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
 
-      const sales = row.getCell(6);
-      let color = 'FF99FF99';
-      if (+sales.value < 200000) {
-        color = 'FF9999';
-      }
-      sales.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: color },
-      };
-      // tooltip for cell:  sales.comment not working, but sales.note is
-      sales.note = {
-        texts: [
-          {
-            text: 'aaaaaaaaaaaa',
-          },
-        ],
-      };
-    });
+      let sourceCell = 'U';
+      let sourceCellIndex = this.xColumnsAutoInit.indexOf(sourceCell);
 
-    // worksheet.getColumn(3).width = 20;
-    // worksheet.addRow([]);
+      sourcesData[dataIndex].forEach((src) => {
+        const cell = row.getCell(sourceCell);
+        cell.font = {
+          color: { argb: 'ffffff' },
+          bold: true,
+        };
+
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: this.removeHashTag(src.color) },
+        };
+
+        if (src.tooltip && src.tooltip.length > 0) {
+          cell.note = {
+            texts: [
+              {
+                font: {
+                  size: 12,
+                  name: 'Calibri',
+                  family: 2,
+                },
+                text: src.tooltip,
+              },
+            ],
+            margins: {
+              insetmode: 'custom',
+              inset: [0.25, 0.25, 0.35, 0.35],
+            },
+            protection: {
+              locked: 'True',
+              lockText: 'False',
+            },
+            editAs: 'twoCells',
+          };
+        }
+
+        sourceCellIndex += 1;
+        sourceCell = this.xColumnsAutoInit[sourceCellIndex];
+      });
+    });
+  }
+
+  exportExcel(excelData) {
+    // Title, Header & Data
+    const title: string = excelData.title;
+    const data: any[] = excelData.data;
+    const sourceHeaders: any[] = excelData.sourceHeaders;
+    const sourceExcelRows: [] = excelData.sourceExcelRows;
+
+    // Create a workbook with a worksheet
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Sales Data');
+
+    // Freeze Header & first column
+    worksheet.views = [
+      {
+        state: 'frozen',
+        xSplit: 1,
+        ySplit: 2,
+        activeCell: 'A1',
+      },
+    ];
+
+    this.createBasicHeaderCell(worksheet);
+
+    this.createSourcesHeaderCell(worksheet, sourceHeaders, 'U');
+
+    this.addDataCells(worksheet, data, sourceExcelRows);
 
     // Footer Row
     // const footerRow = worksheet.addRow([
@@ -297,110 +356,3 @@ export class ExportReportExcelService {
     });
   }
 }
-
-// exportExcel(excelData) {
-//   // Title, Header & Data
-//   const title = excelData.title;
-//   const header = excelData.headers;
-//   const data = excelData.data;
-
-//   // Create a workbook with a worksheet
-//   const workbook = new Workbook();
-//   const worksheet = workbook.addWorksheet('Sales Data');
-
-//   // Add Row and formatting
-//   // worksheet.mergeCells('C1:F4');
-//   // const titleRow = worksheet.getCell('C1');
-//   // titleRow.value = title;
-//   // titleRow.font = {
-//   //   name: 'Calibri',
-//   //   size: 16,
-//   //   underline: 'single',
-//   //   bold: true,
-//   //   color: { argb: '0085A3' },
-//   // };
-//   // titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
-
-//   // Date
-//   // worksheet.mergeCells('G1:H4');
-//   // const d = new Date();
-//   // const date = d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear();
-//   // const dateCell = worksheet.getCell('G1');
-//   // dateCell.value = date;
-//   // dateCell.font = {
-//   //   name: 'Calibri',
-//   //   size: 12,
-//   //   bold: true,
-//   // };
-//   // dateCell.alignment = { vertical: 'middle', horizontal: 'center' };
-
-//   // Add Image
-//   // const myLogoImage = workbook.addImage({
-//   //   base64: logo.imgBase64,
-//   //   extension: 'png',
-//   // });
-//   // worksheet.mergeCells('A1:B4');
-//   // worksheet.addImage(myLogoImage, 'A1:B4');
-
-//   // Blank Row
-//   // worksheet.addRow([]);
-
-//   // Adding Header Row
-//   const headerRow = worksheet.addRow(header);
-//   // headerRow.eachCell((cell, number) => {
-//   headerRow.eachCell((cell) => {
-//     cell.fill = {
-//       type: 'pattern',
-//       pattern: 'solid',
-//       fgColor: { argb: '4167B8' },
-//       bgColor: { argb: '' },
-//     };
-//     cell.font = {
-//       bold: false,
-//       color: { argb: 'FFFFFF' },
-//       size: 12,
-//     };
-//   });
-
-//   // Adding Data with Conditional Formatting
-//   data.forEach((item) => {
-//     const row = worksheet.addRow(item);
-
-//     const sales = row.getCell(6);
-//     let color = 'FF99FF99';
-//     if (+sales.value < 200000) {
-//       color = 'FF9999';
-//     }
-
-//     sales.fill = {
-//       type: 'pattern',
-//       pattern: 'solid',
-//       fgColor: { argb: color },
-//     };
-//   });
-
-//   worksheet.getColumn(3).width = 20;
-//   worksheet.addRow([]);
-
-//   // Footer Row
-//   // const footerRow = worksheet.addRow([
-//   //   'Employee Sales Report Generated from example.com at ' + date,
-//   // ]);
-//   // footerRow.getCell(1).fill = {
-//   //   type: 'pattern',
-//   //   pattern: 'solid',
-//   //   fgColor: { argb: 'FFB050' },
-//   // };
-
-//   // Merge Cells
-//   // worksheet.mergeCells(`A${footerRow.number}:F${footerRow.number}`);
-
-//   // Generate & Save Excel File
-//   workbook.xlsx.writeBuffer().then((resp) => {
-//     const blob = new Blob([resp], {
-//       type:
-//         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-//     });
-//     fs.saveAs(blob, title + '.xlsx');
-//   });
-// }

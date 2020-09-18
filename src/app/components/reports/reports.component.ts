@@ -6,11 +6,15 @@ import {
   ViewEncapsulation,
   OnDestroy,
   ViewChild,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import * as _ from 'lodash';
+import orderBy from 'lodash/orderBy';
+import groupBy from 'lodash/groupBy';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { DialogService } from 'src/app/shared/services/others/dialog.service';
 import { ReportsService } from 'src/app/shared/services/api/reports.service';
@@ -31,6 +35,7 @@ import {
 import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
 import { ExportReportExcelService } from 'src/app/shared/services/api/export-report-excel.service';
+import { CalcTotalPourAndPushInRatingSourcesComponent } from './components/calc-total-pour-and-push-in-rating-sources/calc-total-pour-and-push-in-rating-sources.component';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -48,6 +53,11 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectSourcesElement: CustomSelectAutocompleteComponent;
   @ViewChild('selectProjectsElement')
   selectProjectsElement: CustomSelectAutocompleteComponent;
+
+  @ViewChildren(CalcTotalPourAndPushInRatingSourcesComponent)
+  ratingsSourceElements: QueryList<
+    CalcTotalPourAndPushInRatingSourcesComponent
+  >;
 
   private ngUnsubscribe = new Subject();
 
@@ -131,7 +141,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           id: 0,
           name: 'TỔNG NGUỒN',
           column: 'column0',
-          color: 'goldenrod',
+          color: '#daa520',
         });
         res[0].forEach((item, index) => {
           item.column = 'column' + (index + 1);
@@ -322,7 +332,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.detechChanges();
         }, 0);
         this.resetReportTotalFooter();
-        data = _.orderBy(data, ['reportUserName'], ['asc']);
+        data = orderBy(data, ['reportUserName'], ['asc']);
         if (this.isTeamRow()) {
           this.resetTeamsInTable();
           data = this.handleReportsWithTeams(data);
@@ -413,7 +423,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleReportsWithTeams(reports: IReportResponse[]): any[] {
-    const groups = _.groupBy(reports, 'teamId');
+    const groups = groupBy(reports, 'teamId');
     const reportsWithTeam = [];
     Object.keys(groups).forEach((teamId) => {
       this.mappingTeamsInTable[
@@ -498,7 +508,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private calcFooterRatingSources(reports: IReportResponse[]) {
     const sourcesFooter = {};
-    const temp = _.cloneDeep(reports);
+    const temp = cloneDeep(reports);
     // tslint:disable-next-line:no-shadowed-variable
     temp.forEach((report) => {
       Object.keys(report.ratingSources).forEach((sourceId) => {
@@ -574,11 +584,53 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     result.push(report.regularPouring.moreThanTwoSentences);
     result.push(report.regularPouring.total);
 
+    result.push(report.selfPouring.uncontactable);
+    result.push(report.selfPouring.notPickUp);
+    result.push(report.selfPouring.noNeed);
+    result.push(report.selfPouring.hangUp);
+    result.push(report.selfPouring.twoSentences);
+    result.push(report.selfPouring.moreThanTwoSentences);
+    result.push(report.selfPouring.total);
+
+    result.push(report.pushCount);
+    result.push(report.suggestionCount);
+    result.push(report.emailCount);
+    result.push(report.flirtingCount);
+
     return result;
   }
 
   exportReportToExcel() {
-    console.log(this.reportsData);
+    const sourceHeadersList = this.sourcesList.filter(
+      (source) => source.showColumn
+    );
+
+    let sourceExcelRows = [];
+
+    this.ratingsSourceElements.forEach((item) => {
+      if (item.isTeamRow === false) {
+        return;
+      }
+      const data = item.getHandledRatingsData();
+      const index = sourceExcelRows.findIndex(
+        (ele) => ele.reportUserId === data.reportUserId
+      );
+      if (index > -1) {
+        sourceExcelRows[index].ratingsData = sourceExcelRows[
+          index
+        ].ratingsData.concat(data.ratingsData);
+      } else {
+        sourceExcelRows.push(data);
+      }
+    });
+
+    sourceExcelRows = sourceExcelRows.map((item) => item.ratingsData);
+
+    console.log({
+      reportsData: this.reportsData,
+      sources: sourceHeadersList,
+      sourceExcelRows,
+    });
 
     const handledReportsData = [];
     this.reportsData.forEach((report) => {
@@ -596,7 +648,8 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     const reportData = {
       title: `Report -- ${dateRange}`,
       data: dataForExcel,
-      // headers: Object.keys(empPerformance[0]),
+      sourceHeaders: sourceHeadersList,
+      sourceExcelRows,
     };
 
     console.log(reportData);
