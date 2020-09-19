@@ -208,17 +208,18 @@ export class ExportReportExcelService {
   private createSourcesHeaderCell(
     worksheet: Worksheet,
     sourceHeaders: any[],
-    currentXCell: string
+    currentXCell: string,
+    ratingOfTypesLengthList: any[]
   ) {
     if (sourceHeaders.length > 0) {
       let sourceCurrentColumn = currentXCell;
       let cellsLength = 0;
       sourceHeaders.forEach((source, index) => {
-        let childCellLen = 0;
+        let childCellLen = ratingOfTypesLengthList.reduce((sum, value) => {
+          return sum + value;
+        }, 0);
         if (source.id === 0) {
-          childCellLen = 19;
-        } else {
-          childCellLen = 18;
+          childCellLen += 1;
         }
         cellsLength += childCellLen;
         const beginIndex = this.xColumnsAutoInit.indexOf(sourceCurrentColumn);
@@ -254,7 +255,7 @@ export class ExportReportExcelService {
 
       let currentIndex = this.xColumnsAutoInit.indexOf(currentXCell);
       for (let i = 0; i < cellsLength; i++) {
-        worksheet.getColumn(this.xColumnsAutoInit[currentIndex]).width = 12;
+        worksheet.getColumn(this.xColumnsAutoInit[currentIndex]).width = 18;
         currentIndex++;
       }
     }
@@ -577,7 +578,12 @@ export class ExportReportExcelService {
 
     this.createBasicHeaderCell(worksheet);
 
-    this.createSourcesHeaderCell(worksheet, sourceHeaders, 'U');
+    this.createSourcesHeaderCell(
+      worksheet,
+      sourceHeaders,
+      'U',
+      ratingOfTypesLengthList
+    );
 
     this.addReportTotalData(
       worksheet,
@@ -597,9 +603,6 @@ export class ExportReportExcelService {
       'U'
     );
 
-    console.log('***************');
-    console.log(sourceExcelRows, ratingOfTypesLengthList);
-    console.log('***************');
     // // Footer Row
     // const footerRow = worksheet.addRow([
     //   'Employee Sales Report Generated from example.com at ABCDEF',
