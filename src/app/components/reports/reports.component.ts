@@ -581,9 +581,13 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     const result = [];
 
     if (!customName) {
-      const nameArr = report.reportUserNameTooltip.split(' ');
-      nameArr.push(nameArr.shift());
-      result.push(nameArr.join(' '));
+      if (report.isTeamRow) {
+        result.push(report.reportUserName);
+      } else {
+        const nameArr = report.reportUserNameTooltip.split(' ');
+        nameArr.push(nameArr.shift());
+        result.push(nameArr.join(' '));
+      }
     } else {
       result.push(customName);
     }
@@ -611,7 +615,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     result.push(report.emailCount);
     result.push(report.flirtingCount);
 
-    return result;
+    return {
+      isTeamRow: report.isTeamRow,
+      result,
+    };
   }
 
   exportReportToExcel() {
@@ -626,9 +633,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       const data = item.getHandledRatingsData();
-      const index = sourceExcelRows.findIndex(
-        (ele) => ele.reportUserId === data.reportUserId
-      );
+      let index = -1;
+      if (item.isTeamRow) {
+        index = sourceExcelRows.findIndex((ele) => ele.teamId === data.teamId);
+      } else {
+        index = sourceExcelRows.findIndex(
+          (ele) => ele.reportUserId === data.reportUserId
+        );
+      }
       if (index > -1) {
         sourceExcelRows[index].ratingsData = sourceExcelRows[
           index
@@ -638,11 +650,18 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    console.log({ ...sourceExcelRows });
+
     sourceExcelRows = sourceExcelRows.map((item) => item.ratingsData);
 
     const handledReportsData = [];
-    this.reportsData.forEach((report) => {
-      handledReportsData.push(this.convertReportItemToExcelRow(report));
+    const teamsIndex = [];
+    this.reportsData.forEach((report, index) => {
+      const { isTeamRow, result } = this.convertReportItemToExcelRow(report);
+      if (isTeamRow) {
+        teamsIndex.push(index);
+      }
+      handledReportsData.push(result);
     });
 
     const dataForExcel = [];
@@ -668,11 +687,13 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       reportTotalData: this.convertReportItemToExcelRow(
         this.reportTotalFooter,
         'TỔNG'
-      ),
+      ).result,
       reportTotalSourcesData: totalRatings,
+      teamsIndex,
     };
 
     console.log(reportData);
+    console.log(this.reportsData);
 
     this.exportReportExcelService.exportExcel(reportData);
   }

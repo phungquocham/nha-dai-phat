@@ -246,7 +246,11 @@ export class ExportReportExcelService {
     }
   }
 
-  private addStyleForCells(sourcesData: any[], dataIndex: number, row: any) {
+  private addStyleForSourceCells(
+    sourcesData: any[],
+    dataIndex: number,
+    row: any
+  ) {
     let sourceCell = 'U';
     let sourceCellIndex = this.xColumnsAutoInit.indexOf(sourceCell);
 
@@ -300,7 +304,7 @@ export class ExportReportExcelService {
       const nameColumn = row.getCell('A');
       nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
 
-      this.addStyleForCells(sourcesData, dataIndex, row);
+      this.addStyleForSourceCells(sourcesData, dataIndex, row);
     });
   }
 
@@ -311,19 +315,55 @@ export class ExportReportExcelService {
     };
   }
 
-  private addBorderForCells(
+  private handleStyleForCells(
     worksheet: Worksheet,
     data: any[],
-    sourcesData: any[]
+    sourcesData: any[],
+    teamsIndex: number[]
   ) {
     const rowsLength = data.length;
     const dataColumnsLength = (data[0] && data[0].length) || 0;
     const sourceColumnsLength = (sourcesData[0] && sourcesData[0].length) || 0;
+    const columnsLength = dataColumnsLength + sourceColumnsLength;
+
+    // Add border
     for (let i = 4; i < rowsLength + 4; i++) {
-      for (let j = 0; j < dataColumnsLength + sourceColumnsLength; j++) {
+      for (let j = 0; j < columnsLength; j++) {
         const cell = worksheet.getCell(`${this.xColumnsAutoInit[j]}${i}`);
         cell.border = this.createCellBorder();
       }
+    }
+
+    // Add style for team row
+    if (teamsIndex.length > 0) {
+      teamsIndex.forEach((teamIndex) => {
+        const rowIndex = teamIndex + 4; // 4: 3 header row + itself
+        for (let i = 0; i < columnsLength; i++) {
+          const cell = worksheet.getCell(
+            `${this.xColumnsAutoInit[i]}:${rowIndex}`
+          );
+
+          cell.font = {
+            bold: true,
+            size: 12,
+          };
+
+          const indexCharacter = this.xColumnsAutoInit.indexOf('U');
+          if (i < indexCharacter) {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFD700' },
+            };
+          } else {
+            cell.font = {
+              color: { argb: 'ffffff' },
+              bold: true,
+              size: 12,
+            };
+          }
+        }
+      });
     }
   }
 
@@ -416,24 +456,6 @@ export class ExportReportExcelService {
         }
       }
     }
-
-    // row.fill = {
-    //   type: 'pattern',
-    //   pattern: 'solid',
-    //   fgColor: { argb: 'daa520' }, // goldenrod
-    // };
-
-    // // Adding Data with Conditional Formatting
-    // combinedData.forEach((item, dataIndex) => {
-    //   const row = worksheet.addRow(item);
-
-    //   row.alignment = { vertical: 'middle', horizontal: 'center' };
-
-    //   const nameColumn = row.getCell('A');
-    //   nameColumn.alignment = { vertical: 'middle', horizontal: 'left' };
-
-    //   this.addStyleForCells(sourcesData, dataIndex, row);
-    // });
   }
 
   exportExcel(excelData) {
@@ -444,6 +466,7 @@ export class ExportReportExcelService {
     const sourceExcelRows: any[] = excelData.sourceExcelRows;
     const reportTotalData: any[] = excelData.reportTotalData;
     const reportTotalSourcesData = excelData.reportTotalSourcesData;
+    const teamsIndex: number[] = excelData.teamsIndex;
 
     // Create a workbook with a worksheet
     const workbook = new Workbook();
@@ -472,7 +495,7 @@ export class ExportReportExcelService {
 
     this.addDataCells(worksheet, data, sourceExcelRows);
 
-    this.addBorderForCells(worksheet, data, sourceExcelRows);
+    this.handleStyleForCells(worksheet, data, sourceExcelRows, teamsIndex);
 
     // // Footer Row
     // const footerRow = worksheet.addRow([

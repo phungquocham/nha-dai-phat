@@ -36,6 +36,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   @Input() defaultComponentEmpty = false;
   @Input() showTotalWithPoints = false;
   @Input() isTeamRow = false;
+  @Input() teamId = 0;
   @Input() reportUserId = 0;
 
   // ratingIds = [];
@@ -294,6 +295,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
     return {
       reportUserId: this.reportUserId,
       ratingsData: result,
+      teamId: this.teamId,
     };
   }
 }
