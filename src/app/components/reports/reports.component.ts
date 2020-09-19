@@ -679,6 +679,13 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     });
 
+    const ratingOfTypesLengthList = [
+      this.row.pourIds.length,
+      this.row.pushIds.length,
+      this.row.hintIds.length,
+      this.row.otherIds.length,
+    ];
+
     const reportData = {
       title: `Report -- ${dateRange}`,
       data: dataForExcel,
@@ -690,10 +697,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       ).result,
       reportTotalSourcesData: totalRatings,
       teamsIndex,
+      ratingOfTypesLengthList,
     };
 
     console.log(reportData);
-    console.log(this.reportsData);
 
     this.exportReportExcelService.exportExcel(reportData);
   }

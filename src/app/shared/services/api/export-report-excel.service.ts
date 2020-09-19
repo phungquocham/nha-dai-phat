@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CellValue, Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
+import isNumber from 'lodash/isNumber';
 import { Rgba } from 'ngx-color-picker';
 import { ROLE } from '../../helpers/const';
 
@@ -212,7 +213,7 @@ export class ExportReportExcelService {
     if (sourceHeaders.length > 0) {
       let sourceCurrentColumn = currentXCell;
       let cellsLength = 0;
-      sourceHeaders.forEach((source) => {
+      sourceHeaders.forEach((source, index) => {
         let childCellLen = 0;
         if (source.id === 0) {
           childCellLen = 19;
@@ -223,16 +224,29 @@ export class ExportReportExcelService {
         const beginIndex = this.xColumnsAutoInit.indexOf(sourceCurrentColumn);
         const endIndex = beginIndex + childCellLen - 1;
 
+        const border = {
+          bottom: {
+            style: 'thick',
+            color: { argb: this.removeHashTag(source.color) },
+          },
+          right: {
+            style: 'thin',
+            color: {},
+          },
+        };
+
+        if (index < sourceHeaders.length - 1) {
+          border.right = {
+            style: 'thick',
+            color: { argb: 'FF0000' },
+          };
+        }
+
         this.createHeaderCell({
           worksheet,
           mergeCells: `${this.xColumnsAutoInit[beginIndex]}1:${this.xColumnsAutoInit[endIndex]}2`,
           value: source.name,
-          border: {
-            bottom: {
-              style: 'double',
-              color: { argb: this.removeHashTag(source.color) },
-            },
-          },
+          border,
         });
 
         sourceCurrentColumn = this.xColumnsAutoInit[endIndex + 1];
@@ -417,6 +431,8 @@ export class ExportReportExcelService {
 
     row.alignment = { vertical: 'middle', horizontal: 'center' };
 
+    const sourceBeginIndex = this.xColumnsAutoInit.indexOf(currentXCell);
+
     for (let i = 0; i < cellsLength; i++) {
       const cell = row.getCell(this.xColumnsAutoInit[i]);
       cell.fill = {
@@ -426,7 +442,7 @@ export class ExportReportExcelService {
       };
       cell.border = this.createCellBorder();
       cell.font = {
-        color: { argb: 'ffffff' },
+        color: { argb: i < sourceBeginIndex ? '' : 'ffffff' },
         bold: true,
         size: 12,
       };
@@ -458,6 +474,82 @@ export class ExportReportExcelService {
     }
   }
 
+  private setBorderForSourceCell(
+    worksheet: Worksheet,
+    sourcesData: any[],
+    ratingsTypeLengthList: any,
+    beginXCell: string
+  ) {
+    if (sourcesData && sourcesData.length > 0) {
+      const sourcesLength = sourcesData.length;
+      const beginCellIndex = this.xColumnsAutoInit.indexOf(beginXCell);
+      if (sourcesData.length > 0) {
+        const sources: any[] = sourcesData[0];
+        const bordersIndex = [];
+        let borderIndex = 0;
+        let ratingTypeIndex = 0;
+        let isOtherSource = false;
+        const value = sources[0] && sources[0].value;
+        if (isNumber(value)) {
+          borderIndex += 1;
+        } else {
+          borderIndex += ratingsTypeLengthList[0] + 1;
+          ratingTypeIndex = 1;
+        }
+
+        while (borderIndex < sources.length) {
+          if (isOtherSource) {
+            isOtherSource = false;
+            bordersIndex.push({
+              index: borderIndex,
+              color: 'FF0000',
+            });
+          } else {
+            bordersIndex.push({
+              index: borderIndex,
+              color: 'ffffff',
+            });
+          }
+          borderIndex += ratingsTypeLengthList[ratingTypeIndex];
+          ratingTypeIndex++;
+          if (ratingTypeIndex === ratingsTypeLengthList.length) {
+            ratingTypeIndex = 0;
+            isOtherSource = true;
+          }
+        }
+
+        sourcesData.forEach((_, rowIndex) => {
+          bordersIndex.forEach((item) => {
+            const cell = worksheet.getCell(
+              `${this.xColumnsAutoInit[item.index + beginCellIndex]}${
+                rowIndex + 4
+              }`
+            );
+
+            cell.border = {
+              left: { style: 'thick', color: { argb: item.color } },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+        });
+
+        // for total row
+        bordersIndex.forEach((item) => {
+          const cell = worksheet.getCell(
+            `${this.xColumnsAutoInit[item.index + beginCellIndex]}3`
+          );
+
+          cell.border = {
+            left: { style: 'thick', color: { argb: item.color } },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+      }
+    }
+  }
+
   exportExcel(excelData) {
     // Title, Header & Data
     const title: string = excelData.title;
@@ -467,6 +559,7 @@ export class ExportReportExcelService {
     const reportTotalData: any[] = excelData.reportTotalData;
     const reportTotalSourcesData = excelData.reportTotalSourcesData;
     const teamsIndex: number[] = excelData.teamsIndex;
+    const ratingOfTypesLengthList: any[] = excelData.ratingOfTypesLengthList;
 
     // Create a workbook with a worksheet
     const workbook = new Workbook();
@@ -497,6 +590,16 @@ export class ExportReportExcelService {
 
     this.handleStyleForCells(worksheet, data, sourceExcelRows, teamsIndex);
 
+    this.setBorderForSourceCell(
+      worksheet,
+      sourceExcelRows,
+      ratingOfTypesLengthList,
+      'U'
+    );
+
+    console.log('***************');
+    console.log(sourceExcelRows, ratingOfTypesLengthList);
+    console.log('***************');
     // // Footer Row
     // const footerRow = worksheet.addRow([
     //   'Employee Sales Report Generated from example.com at ABCDEF',
