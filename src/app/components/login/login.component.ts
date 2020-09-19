@@ -75,8 +75,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    if (this.form.controls['phone'].valid) {
-      const phone = this.form.value['phone'];
+    if (this.form.controls.phone.valid) {
+      const phone = this.form.value.phone;
       this.showElementCodeForm = true;
       this.authService
         .signInWithPhoneNumber({
@@ -84,7 +84,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
           applicationVerifier: this.windowRef.recaptchaVerifier,
         })
         .then((confirmationResult) => {
-          console.log('SUBMIT LOGIN', this.replaceAt(phone, 0, '+84'), this.windowRef.recaptchaVerifier);
+          console.log(
+            'SUBMIT LOGIN',
+            this.replaceAt(phone, 0, '+84'),
+            this.windowRef.recaptchaVerifier
+          );
           console.log('SUBMIT RESULT', confirmationResult);
           // SMS sent. Prompt user to type the code from the message, then sign the
           // user in with confirmationResult.confirm(code).
@@ -101,7 +105,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   verifyLoginCode() {
-    this.verificationCode = this.form.value['verifyCode'];
+    this.verificationCode = this.form.value.verifyCode;
     console.log('AAAAAA', this.windowRef, this.windowRef.confirmationResult);
     this.windowRef.confirmationResult
       .confirm(this.verificationCode)

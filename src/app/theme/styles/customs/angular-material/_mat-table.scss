@@ -1,4 +1,4 @@
-@import "../../variables";
+@import '../../variables';
 .table-cells-no-padding {
   .mat-cell,
   .mat-header-cell {
@@ -103,10 +103,10 @@ tr.mat-row:hover:not(.team-row-show) {
     }
   }
   .mat-footer-row.total {
-    background-color: goldenrod;
+    background-color: #daa520;
   }
   tr.mat-row.team-row-show {
-    background-color: gold;
+    background-color: #ffd700;
     font-weight: 600;
   }
   tr.mat-row.is-odd {

@@ -5,7 +5,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import * as _ from 'lodash';
+import mergeWith from 'lodash/mergeWith';
+import cloneDeep from 'lodash/cloneDeep';
+import isArray from 'lodash/isArray';
+import sumBy from 'lodash/sumBy';
 
 const TYPES = {
   ONE: 1,
@@ -32,6 +35,9 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
 
   @Input() defaultComponentEmpty = false;
   @Input() showTotalWithPoints = false;
+  @Input() isTeamRow = false;
+  @Input() teamId = 0;
+  @Input() reportUserId = 0;
 
   // ratingIds = [];
   mappingData = {};
@@ -74,9 +80,9 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
     this.mappingHint = this.cloneRating(this.hint);
     this.mappingOther = this.cloneRating(this.other);
 
-    this.mappingData = _.mergeWith(
-      _.cloneDeep(this.mappingPour),
-      _.cloneDeep(this.mappingPush),
+    this.mappingData = mergeWith(
+      cloneDeep(this.mappingPour),
+      cloneDeep(this.mappingPush),
       this.handleWhenMergePourAndPush
     );
 
@@ -147,7 +153,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   }
 
   handleWhenMergePourAndPush(pourArr: any[], pushArr: any[]) {
-    if (_.isArray(pourArr)) {
+    if (isArray(pourArr)) {
       pushArr.forEach((pushItem) => {
         const index = pourArr.findIndex(
           (pourItem) => pourItem[0] === pushItem[0]
@@ -163,7 +169,7 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
   }
 
   getValueTotal(array: any[]) {
-    return _.sumBy(array, (i) => i[1]);
+    return sumBy(array, (i) => i[1]);
   }
 
   handleValueTotal(ratingIdWithDash, array: any[]) {
@@ -199,5 +205,97 @@ export class CalcTotalPourAndPushInRatingSourcesComponent implements OnInit {
       result['_' + id] = obj[id];
     });
     return result;
+  }
+
+  private getCellData(
+    mappingRatings: object,
+    key: string,
+    column: object,
+    tooltip: object,
+    isAddedPushColumn: boolean = false,
+    pushColumn?: object
+  ) {
+    let value = '';
+
+    if (isAddedPushColumn) {
+      if (key !== '_1' && key !== '_2') {
+        value = `${mappingRatings[key].name}: ${column[key]} - ${
+          column[key] + pushColumn[key]
+        }`;
+      } else {
+        value = `${mappingRatings[key].name}: ${column[key]}`;
+      }
+    } else {
+      value = `${mappingRatings[key].name}: ${column[key]}`;
+    }
+
+    return {
+      value,
+      color: mappingRatings[key].color,
+      tooltip: tooltip[key] ? tooltip[key] : [],
+    };
+  }
+
+  getHandledRatingsData() {
+    const result = [];
+
+    if (this.showTotalWithPoints) {
+      result.push({
+        value: this.totalRatingWithPoints,
+        color: '#FF1493',
+      });
+    }
+
+    Object.keys(this.pourColumn).forEach((key) => {
+      result.push(
+        this.getCellData(
+          this.mappingRatings,
+          key,
+          this.pourColumn,
+          this.pourTooltip,
+          true,
+          this.pushColumn
+        )
+      );
+    });
+
+    Object.keys(this.pushColumn).forEach((key) => {
+      result.push(
+        this.getCellData(
+          this.mappingRatings,
+          key,
+          this.pushColumn,
+          this.pushTooltip
+        )
+      );
+    });
+
+    Object.keys(this.hintColumn).forEach((key) => {
+      result.push(
+        this.getCellData(
+          this.mappingRatings,
+          key,
+          this.hintColumn,
+          this.hintTooltip
+        )
+      );
+    });
+
+    Object.keys(this.otherColumn).forEach((key) => {
+      result.push(
+        this.getCellData(
+          this.mappingRatings,
+          key,
+          this.otherColumn,
+          this.otherTooltip
+        )
+      );
+    });
+
+    return {
+      reportUserId: this.reportUserId,
+      ratingsData: result,
+      teamId: this.teamId,
+    };
   }
 }

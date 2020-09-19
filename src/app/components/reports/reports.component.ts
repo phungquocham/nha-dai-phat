@@ -6,11 +6,15 @@ import {
   ViewEncapsulation,
   OnDestroy,
   ViewChild,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import * as _ from 'lodash';
+import orderBy from 'lodash/orderBy';
+import groupBy from 'lodash/groupBy';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { DialogService } from 'src/app/shared/services/others/dialog.service';
 import { ReportsService } from 'src/app/shared/services/api/reports.service';
@@ -30,8 +34,8 @@ import {
 } from './reports.model';
 import { DialogReportsSelectOptionsComponent } from './dialogs/dialog-reports-select-options/dialog-reports-select-options.component';
 import { CustomSelectAutocompleteComponent } from 'src/app/shared/components/materials/custom-select-autocomplete/custom-select-autocomplete.component';
-import { identifierModuleUrl } from '@angular/compiler';
-import { report } from 'process';
+import { ExportReportExcelService } from 'src/app/shared/services/api/export-report-excel.service';
+import { CalcTotalPourAndPushInRatingSourcesComponent } from './components/calc-total-pour-and-push-in-rating-sources/calc-total-pour-and-push-in-rating-sources.component';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -49,6 +53,14 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectSourcesElement: CustomSelectAutocompleteComponent;
   @ViewChild('selectProjectsElement')
   selectProjectsElement: CustomSelectAutocompleteComponent;
+
+  @ViewChildren(CalcTotalPourAndPushInRatingSourcesComponent)
+  ratingsSourceElements: QueryList<
+    CalcTotalPourAndPushInRatingSourcesComponent
+  >;
+
+  @ViewChildren('ratingsSourceFooter')
+  ratingsSourceFooter: QueryList<CalcTotalPourAndPushInRatingSourcesComponent>;
 
   private ngUnsubscribe = new Subject();
 
@@ -100,7 +112,8 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private pageLoadingService: PageLoadingService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private exportReportExcelService: ExportReportExcelService
   ) {}
 
   ngOnInit() {}
@@ -131,7 +144,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           id: 0,
           name: 'TỔNG NGUỒN',
           column: 'column0',
-          color: 'goldenrod',
+          color: '#daa520',
         });
         res[0].forEach((item, index) => {
           item.column = 'column' + (index + 1);
@@ -219,6 +232,10 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe((res) => {
         if (res) {
+          if (res.export) {
+            this.exportReportToExcel();
+            return;
+          }
           this.routeWithQueryParams({
             fromDate: res.startDate,
             toDate: res.endDate,
@@ -322,7 +339,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.detechChanges();
         }, 0);
         this.resetReportTotalFooter();
-        data = _.orderBy(data, ['reportUserName'], ['asc']);
+        data = orderBy(data, ['reportUserName'], ['asc']);
         if (this.isTeamRow()) {
           this.resetTeamsInTable();
           data = this.handleReportsWithTeams(data);
@@ -413,7 +430,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleReportsWithTeams(reports: IReportResponse[]): any[] {
-    const groups = _.groupBy(reports, 'teamId');
+    const groups = groupBy(reports, 'teamId');
     const reportsWithTeam = [];
     Object.keys(groups).forEach((teamId) => {
       this.mappingTeamsInTable[
@@ -498,7 +515,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private calcFooterRatingSources(reports: IReportResponse[]) {
     const sourcesFooter = {};
-    const temp = _.cloneDeep(reports);
+    const temp = cloneDeep(reports);
     // tslint:disable-next-line:no-shadowed-variable
     temp.forEach((report) => {
       Object.keys(report.ratingSources).forEach((sourceId) => {
@@ -555,5 +572,136 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     return { ...resultObj };
+  }
+
+  private convertReportItemToExcelRow(
+    report: ModelReportResponseInRow,
+    customName: string = ''
+  ) {
+    const result = [];
+
+    if (!customName) {
+      if (report.isTeamRow) {
+        result.push(report.reportUserName);
+      } else {
+        const nameArr = report.reportUserNameTooltip.split(' ');
+        nameArr.push(nameArr.shift());
+        result.push(nameArr.join(' '));
+      }
+    } else {
+      result.push(customName);
+    }
+
+    result.push(report.goldenHours);
+
+    result.push(report.regularPouring.uncontactable);
+    result.push(report.regularPouring.notPickUp);
+    result.push(report.regularPouring.noNeed);
+    result.push(report.regularPouring.hangUp);
+    result.push(report.regularPouring.twoSentences);
+    result.push(report.regularPouring.moreThanTwoSentences);
+    result.push(report.regularPouring.total);
+
+    result.push(report.selfPouring.uncontactable);
+    result.push(report.selfPouring.notPickUp);
+    result.push(report.selfPouring.noNeed);
+    result.push(report.selfPouring.hangUp);
+    result.push(report.selfPouring.twoSentences);
+    result.push(report.selfPouring.moreThanTwoSentences);
+    result.push(report.selfPouring.total);
+
+    result.push(report.pushCount);
+    result.push(report.suggestionCount);
+    result.push(report.emailCount);
+    result.push(report.flirtingCount);
+
+    return {
+      isTeamRow: report.isTeamRow,
+      result,
+    };
+  }
+
+  exportReportToExcel() {
+    const sourceHeadersList = this.sourcesList.filter(
+      (source) => source.showColumn
+    );
+
+    let sourceExcelRows = [];
+
+    this.ratingsSourceElements.forEach((item) => {
+      if (item.isTeamRow === false) {
+        return;
+      }
+      const data = item.getHandledRatingsData();
+      let index = -1;
+      if (item.isTeamRow) {
+        index = sourceExcelRows.findIndex((ele) => ele.teamId === data.teamId);
+      } else {
+        index = sourceExcelRows.findIndex(
+          (ele) => ele.reportUserId === data.reportUserId
+        );
+      }
+      if (index > -1) {
+        sourceExcelRows[index].ratingsData = sourceExcelRows[
+          index
+        ].ratingsData.concat(data.ratingsData);
+      } else {
+        sourceExcelRows.push(data);
+      }
+    });
+
+    console.log({ ...sourceExcelRows });
+
+    sourceExcelRows = sourceExcelRows.map((item) => item.ratingsData);
+
+    const handledReportsData = [];
+    const teamsIndex = [];
+    this.reportsData.forEach((report, index) => {
+      const { isTeamRow, result } = this.convertReportItemToExcelRow(report);
+      if (isTeamRow) {
+        teamsIndex.push(index);
+      }
+      handledReportsData.push(result);
+    });
+
+    const dataForExcel = [];
+    handledReportsData.forEach((row: any) => {
+      dataForExcel.push(Object.values(row));
+    });
+    const dateRange = `${Utils.DateTime.convertDateStringDDMMYYYY(
+      this.startDate
+    )} - ${Utils.DateTime.convertDateStringDDMMYYYY(this.endDate)}`;
+
+    let totalRatings = [];
+    this.ratingsSourceFooter.forEach((item) => {
+      totalRatings = totalRatings.concat(
+        item.getHandledRatingsData().ratingsData
+      );
+    });
+
+    const ratingOfTypesLengthList = [
+      this.row.pourIds.length,
+      this.row.pushIds.length,
+      this.row.hintIds.length,
+      this.row.otherIds.length,
+    ];
+
+    const reportData = {
+      title: `Report -- ${dateRange}`,
+      data: dataForExcel,
+      sourceHeaders: sourceHeadersList,
+      sourceExcelRows,
+      reportTotalData: this.convertReportItemToExcelRow(
+        this.reportTotalFooter,
+        'TỔNG'
+      ).result,
+      reportTotalSourcesData: totalRatings,
+      teamsIndex,
+      ratingOfTypesLengthList,
+    };
+
+    console.log(reportData);
+
+    this.exportReportExcelService.exportExcel(reportData);
   }
 }
