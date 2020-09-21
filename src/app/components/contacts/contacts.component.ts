@@ -174,6 +174,9 @@ export class ContactsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getFirstAndLastName(name: string) {
+    if (!name) {
+      return 'No name';
+    }
     const temp = name.split(' ');
     return `${temp[0]} ${temp[1]}`;
   }
