@@ -622,8 +622,7 @@ export class ExportReportExcelService {
         type:
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      // fs.saveAs(blob, title + '.xlsx');
-      fs.saveAs(blob, title + '.xls');
+      fs.saveAs(blob, title + '.xlsx');
     });
   }
 }
