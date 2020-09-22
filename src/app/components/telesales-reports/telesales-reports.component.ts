@@ -21,6 +21,7 @@ import { first, takeUntil } from 'rxjs/operators';
 import { DialogService } from 'src/app/shared/services/others/dialog.service';
 import { setDate, splitNames } from '../daily-reports/daily-reports.model';
 import { DialogTelesalesReportsComponent } from './dialog-telesales-reports/dialog-telesales-reports.component';
+import { ExportTelesalesReportService } from 'src/app/shared/services/api/export-telesales-report.service';
 
 @Component({
   selector: 'app-telesales-reports',
@@ -29,6 +30,7 @@ import { DialogTelesalesReportsComponent } from './dialog-telesales-reports/dial
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
+
 export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestroy {
   ngUnsubscribe = new Subject();
   columns = Utils.sortIndex(displayedColumns).map(item => item.column);
@@ -60,7 +62,8 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
     private activatedRoute: ActivatedRoute,
     private ref: ChangeDetectorRef,
     private snackbar: SnackbarService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private exportTelesalesExcelService: ExportTelesalesReportService
   ) {
   }
 
@@ -201,5 +204,13 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
         this.routeRedirect();
       }
     });
+  }
+
+  exportReport() {
+    console.log(this.dataSource)
+    console.log(Utils.convertDateString(this.fromDate), Utils.convertDateString(this.toDate))
+    // this.exportTelesalesExcelService.exportExcel({
+    //   title: 
+    // })
   }
 }

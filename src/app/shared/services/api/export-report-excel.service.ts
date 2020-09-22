@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CellValue, Workbook, Worksheet } from 'exceljs';
+import { Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
 import isNumber from 'lodash/isNumber';
 import { Rgba } from 'ngx-color-picker';
