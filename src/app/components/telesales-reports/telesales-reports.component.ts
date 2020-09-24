@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
   AfterViewInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { DailyReportService } from '../../shared/services/api/daily-reports.service';
 import { TelesalesReportService } from '../../shared/services/api/telesales-reports.service';
@@ -28,12 +28,12 @@ import { ExportTelesalesReportService } from 'src/app/shared/services/api/export
   templateUrl: './telesales-reports.component.html',
   styleUrls: ['./telesales-reports.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
-
-export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TelesalesReportsComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   ngUnsubscribe = new Subject();
-  columns = Utils.sortIndex(displayedColumns).map(item => item.column);
+  columns = Utils.sortIndex(displayedColumns).map((item) => item.column);
   filterData = { ...filterData };
   dataSource = [];
   permission = '';
@@ -64,11 +64,9 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
     private snackbar: SnackbarService,
     private dialog: DialogService,
     private exportTelesalesExcelService: ExportTelesalesReportService
-  ) {
-  }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.reloadPage();
@@ -81,14 +79,14 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   getInit() {
-    return forkJoin(
-      this.dailyReportService.getRatingName().pipe(first())
-    ).pipe(takeUntil(this.ngUnsubscribe)).subscribe((response: any) => {
-      this.ratingPourings = response[0].pourings;
-      this.ratingPushings = response[0].pushings;
-      this.ratingOthers = response[0].others;
-      this.renderRatingSources();
-    });
+    return forkJoin(this.dailyReportService.getRatingName().pipe(first()))
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response: any) => {
+        this.ratingPourings = response[0].pourings;
+        this.ratingPushings = response[0].pushings;
+        this.ratingOthers = response[0].others;
+        this.renderRatingSources();
+      });
   }
 
   setQueryString(params: Params) {
@@ -113,22 +111,27 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   routeRedirect() {
-    this.router.navigateByUrl(`${Routing.TELESALES_REPORTS}${Utils.encodeQueryData(this.filterData)}`);
+    this.router.navigateByUrl(
+      `${Routing.TELESALES_REPORTS}${Utils.encodeQueryData(this.filterData)}`
+    );
   }
 
   getList() {
     this.dataSource = [];
     this.isLoading = true;
     this.ref.markForCheck();
-    this.telesalesReportService.getList(this.filterData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(response => {
-      response.forEach(element => {
-        element.teleUserNameTooltip = element.teleUserName;
-        element.teleUserName = splitNames(element.teleUserName);
+    this.telesalesReportService
+      .getList(this.filterData)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((response) => {
+        response.forEach((element) => {
+          element.teleUserNameTooltip = element.teleUserName;
+          element.teleUserName = splitNames(element.teleUserName);
+        });
+        this.dataSource = response;
+        this.isLoading = false;
+        this.renderRatingSources();
       });
-      this.dataSource = response;
-      this.isLoading = false;
-      this.renderRatingSources();
-    });
   }
 
   search() {
@@ -139,35 +142,45 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
 
   renderRatingSources() {
     if (this.dataSource.length > 0 && this.ratingPourings.length > 0) {
-
-      this.dataSource.map(items => {
-
+      this.dataSource.map((items) => {
         const ratings = {
           ratingPourings: [],
           ratingPushings: [],
-          ratingOthers: []
+          ratingOthers: [],
         };
 
-        ratings.ratingPourings = this.createRating(this.ratingPourings, items.ratingItems['1']);
-        ratings.ratingPushings = this.createRating(this.ratingPushings, items.ratingItems['2']);
-        ratings.ratingOthers = this.createRating(this.ratingOthers, items.ratingItems['4']);
+        ratings.ratingPourings = this.createRating(
+          this.ratingPourings,
+          items.ratingItems['1']
+        );
+        ratings.ratingPushings = this.createRating(
+          this.ratingPushings,
+          items.ratingItems['2']
+        );
+        ratings.ratingOthers = this.createRating(
+          this.ratingOthers,
+          items.ratingItems['4']
+        );
 
         items[`ratings`] = [];
         items[`ratings`] = ratings;
-
       });
     }
-    console.log(this.dataSource);
     this.ref.markForCheck();
   }
 
   createRating(ratingSources: any[], ratingData: any) {
     const ratings = [];
-    ratingSources.map(x => {
+    ratingSources.map((x) => {
       const filter = ratingData[x.id];
       if (filter) {
         const { value, tooltip } = this.sum(filter);
-        ratings.push({ name: x.name, value: value, color: x.color, tooltip: tooltip });
+        ratings.push({
+          name: x.name,
+          value,
+          color: x.color,
+          tooltip,
+        });
       } else {
         ratings.push({ name: x.name, value: 0, color: x.color, tooltip: '' });
       }
@@ -179,38 +192,43 @@ export class TelesalesReportsComponent implements OnInit, AfterViewInit, OnDestr
     let sum = 0;
     const tooltip = [];
     arr = Utils.sortDESC(arr);
-    arr.map(x => {
+    arr.map((x) => {
       if (x[2]) {
-        tooltip.push(`[ ${Utils.transform(x[0])} ] ${x[1]} - ${x[2]} - ${x[3]}`);
+        tooltip.push(
+          `[ ${Utils.transform(x[0])} ] ${x[1]} - ${x[2]} - ${x[3]}`
+        );
       } else {
         tooltip.push(`[ ${Utils.transform(x[0])} ] ${x[1]} - ${x[3]}`);
       }
       sum = sum + x[3];
     });
     return { value: sum, tooltip: tooltip.join('\n') };
-  }
+  };
 
   openDialogReportSearch() {
-    this.dialog.open({
-      component: DialogTelesalesReportsComponent,
-      config: { width: '80vw', height: 'calc(100% - 2em)', autoFocus: false },
-      data: {
-        fromDate: this.fromDate,
-        toDate: this.toDate,
-      }
-    }).subscribe(res => {
-      if (res && res.search) {
-        this.filterData = { ...res.search };
-        this.routeRedirect();
-      }
-    });
+    this.dialog
+      .open({
+        component: DialogTelesalesReportsComponent,
+        config: { width: '80vw', height: 'calc(100% - 2em)', autoFocus: false },
+        data: {
+          fromDate: this.fromDate,
+          toDate: this.toDate,
+        },
+      })
+      .subscribe((res) => {
+        if (res && res.search) {
+          this.filterData = { ...res.search };
+          this.routeRedirect();
+        }
+      });
   }
 
   exportReport() {
-    console.log(this.dataSource)
-    console.log(Utils.convertDateString(this.fromDate), Utils.convertDateString(this.toDate))
-    // this.exportTelesalesExcelService.exportExcel({
-    //   title: 
-    // })
+    this.exportTelesalesExcelService.exportExcel({
+      title: `Telesales Report -- ${Utils.convertDateString(
+        this.fromDate
+      )} - ${Utils.convertDateString(this.toDate)}`,
+      data: this.dataSource,
+    });
   }
 }
