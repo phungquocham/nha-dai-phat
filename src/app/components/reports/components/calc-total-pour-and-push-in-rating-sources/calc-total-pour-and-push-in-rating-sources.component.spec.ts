@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CalcTotalPourAndPushInRatingSourcesComponent } from './calc-total-pour-and-push-in-rating-sources.component';
 
@@ -6,7 +6,7 @@ describe('CalcTotalPourAndPushInRatingSourcesComponent', () => {
   let component: CalcTotalPourAndPushInRatingSourcesComponent;
   let fixture: ComponentFixture<CalcTotalPourAndPushInRatingSourcesComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CalcTotalPourAndPushInRatingSourcesComponent ]
     })
