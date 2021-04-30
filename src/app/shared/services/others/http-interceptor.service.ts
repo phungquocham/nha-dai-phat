@@ -24,7 +24,7 @@ export class HttpInterceptorCustomService implements HttpInterceptor {
     // console.log('PAGE LOADING');
     this.pageLoadingService.loading(true);
     try {
-      return from(<Promise<any>>this.authService.getIdToken()).pipe(
+      return from(this.authService.getIdToken() as Promise<any>).pipe(
         switchMap(token => {
           return this.handle(req, token, next);
         })

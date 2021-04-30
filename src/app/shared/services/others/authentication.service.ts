@@ -25,21 +25,23 @@ export class AuthenticationService {
     phoneNumber: string;
     applicationVerifier: any
   }): Promise<any> {
-    return this.afAuth.auth.signInWithPhoneNumber(data.phoneNumber, data.applicationVerifier);
+    return this.afAuth.signInWithPhoneNumber(data.phoneNumber, data.applicationVerifier);
   }
 
   signInWithCustomToken(customToken: string): Promise<any> {
     console.log(customToken);
-    return this.afAuth.auth.signInWithCustomToken(customToken);
+    return this.afAuth.signInWithCustomToken(customToken);
   }
 
   getIdToken(): Promise<any> {
-    return this.afAuth.auth.currentUser.getIdToken();
+    return this.afAuth.currentUser.then(user => {
+      return user && user.getIdToken();
+    });
   }
 
   signOut(): Promise<any> {
     // UserProfile.setAllowGetProfile(false);
-    return this.afAuth.auth.signOut().catch(_ => {
+    return this.afAuth.signOut().catch(_ => {
       // UserProfile.setAllowGetProfile(true);
     });
   }
