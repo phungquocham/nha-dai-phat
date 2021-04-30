@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   FIREBASE: {
     apiKey: 'AIzaSyBgPW41JiJ5UJYQ0NM7SnxjJIBl_k0j8DQ',
     authDomain: 'https://nhadaiphat.net',

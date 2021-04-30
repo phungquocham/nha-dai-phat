@@ -15,19 +15,6 @@ export const environment = {
   API_DOMAIN: 'https://api.dev.nhadaiphat.net',
 };
 
-// PRODUCT
-// export const environment = {
-//   production: true,
-//   FIREBASE: {
-//     apiKey: 'AIzaSyBgPW41JiJ5UJYQ0NM7SnxjJIBl_k0j8DQ',
-//     authDomain: 'https://nhadaiphat.net',
-//     databaseURL: 'https://nhadaiphat-prod.firebaseapp.com',
-//     projectId: 'nhadaiphat-prod',
-//     storageBucket: 'nhadaiphat-prod.appspot.com',
-//   },
-//   API_DOMAIN: 'https://api.nhadaiphat.net',
-// };
-
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

@@ -7,7 +7,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "start-prod": "ng serve --configuration=production",
+    "start-beta": "ng serve --configuration=beta"
   },
   "private": true,
   "dependencies": {

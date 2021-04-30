@@ -116,7 +116,9 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     private exportReportExcelService: ExportReportExcelService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log('check ng onchange');
+  }
 
   ngAfterViewInit() {
     forkJoin(
