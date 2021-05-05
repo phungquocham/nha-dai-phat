@@ -171,7 +171,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectTeamsElement.setData(this.teamsList);
         this.selectSourcesElement.setData(this.sourcesList);
         this.selectProjectsElement.setData(this.projectsList);
-        this.detechChanges();
+        this.detectChanges();
         this.subscribePageLoading();
         this.subscribeQueryParams();
 
@@ -201,7 +201,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  private detechChanges() {
+  private detectChanges() {
     this.cdr.detectChanges();
   }
 
@@ -255,7 +255,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res: any[]) => {
         res.length > 0 ? (this.isLoading = true) : (this.isLoading = false);
-        this.detechChanges();
+        this.detectChanges();
       });
   }
 
@@ -319,7 +319,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       this.previousQueryParams.setData(queryParams);
-      this.detechChanges();
+      this.detectChanges();
       this.getReportsList(queryParams);
     });
   }
@@ -338,7 +338,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showFooterTotal = false;
         setTimeout(() => {
           this.showFooterTotal = true;
-          this.detechChanges();
+          this.detectChanges();
         }, 0);
         this.resetReportTotalFooter();
         data = orderBy(data, ['reportUserName'], ['asc']);
@@ -357,7 +357,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.reportsData = data;
         this.handledReports(this.reportsData, this.isTeamRow());
         this.isLoading = false;
-        this.detechChanges();
+        this.detectChanges();
       });
   }
 
@@ -423,7 +423,7 @@ export class ReportsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
       this.reportsData = reports;
-      this.detechChanges();
+      this.detectChanges();
     }
   }
 
